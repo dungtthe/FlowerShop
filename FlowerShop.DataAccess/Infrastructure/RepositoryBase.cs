@@ -60,7 +60,7 @@ namespace FlowerShop.DataAccess.Infrastructure
             return await dbSet.FindAsync(id);
         }
 
-        public async Task<IEnumerable<T?>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await dbSet.ToListAsync();
         }

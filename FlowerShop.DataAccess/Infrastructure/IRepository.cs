@@ -17,6 +17,6 @@ namespace FlowerShop.DataAccess.Infrastructure
 
         Task<T?> GetSingleByIdAsync(int id);
 
-        Task<IEnumerable<T?>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync();
     }
 }
