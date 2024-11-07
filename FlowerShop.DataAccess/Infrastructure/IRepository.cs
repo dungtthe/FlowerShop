@@ -9,9 +9,9 @@ namespace FlowerShop.DataAccess.Infrastructure
     {
         Task<T> AddAsync(T entity);
 
-        Task<T> UpdateAsync(T entity);
+        T Update(T entity);
 
-        Task<bool> DeleteByEntityAsync(T entity);
+        bool DeleteByEntity(T entity);
 
         Task<bool> DeleteByIdAsync(int id);
 

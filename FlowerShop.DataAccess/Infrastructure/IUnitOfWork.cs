@@ -8,6 +8,6 @@ namespace FlowerShop.DataAccess.Infrastructure
 {
     public interface IUnitOfWork
     {
-        void Commit();
+        Task Commit();
     }
 }

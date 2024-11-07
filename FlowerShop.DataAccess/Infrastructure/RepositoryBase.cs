@@ -10,7 +10,7 @@ namespace FlowerShop.DataAccess.Infrastructure
     public abstract class RepositoryBase<T> : IRepository<T> where T : class
     {
         #region Properties
-        private FlowerShopContext ?dbContext;
+        private FlowerShopContext? dbContext;
         private readonly DbSet<T> dbSet;
 
         protected IDbFactory DbFactory { get; private set; }
@@ -24,7 +24,6 @@ namespace FlowerShop.DataAccess.Infrastructure
             dbSet = DbContext.Set<T>();
         }
 
-
         #region Implementation
 
         public async Task<T> AddAsync(T entity)
@@ -32,20 +31,16 @@ namespace FlowerShop.DataAccess.Infrastructure
             await dbSet.AddAsync(entity);
             return entity;
         }
-
-        public Task<T> UpdateAsync(T entity)
+        public T Update(T entity)
         {
-            dbSet.Attach(entity);
-            DbContext.Entry(entity).State = EntityState.Modified;
-            return Task.FromResult(entity);
+            dbSet.Update(entity);
+            return entity;
         }
-
-        public Task<bool> DeleteByEntityAsync(T entity)
+        public bool DeleteByEntity(T entity)
         {
             dbSet.Remove(entity);
-            return Task.FromResult(true);
+            return true;
         }
-
         public async Task<bool> DeleteByIdAsync(int id)
         {
             var entity = await dbSet.FindAsync(id);
@@ -54,7 +49,6 @@ namespace FlowerShop.DataAccess.Infrastructure
             dbSet.Remove(entity);
             return true;
         }
-
         public async Task<T?> GetSingleByIdAsync(int id)
         {
             return await dbSet.FindAsync(id);
@@ -64,8 +58,6 @@ namespace FlowerShop.DataAccess.Infrastructure
         {
             return await dbSet.ToListAsync();
         }
-
-
         #endregion
     }
 }

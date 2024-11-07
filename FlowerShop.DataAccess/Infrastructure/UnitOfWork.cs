@@ -10,7 +10,7 @@ namespace FlowerShop.DataAccess.Infrastructure
     public class UnitOfWork : IUnitOfWork
     {
         private readonly IDbFactory dbFactory;
-        private FlowerShopContext ?dbContext;
+        private FlowerShopContext? dbContext;
 
         public UnitOfWork(IDbFactory dbFactory)
         {
@@ -18,9 +18,10 @@ namespace FlowerShop.DataAccess.Infrastructure
         }
         public FlowerShopContext DbContext => dbContext ?? (dbContext = dbFactory.Init());
 
-        public void Commit()
+        public async Task Commit()
         {
-            DbContext.SaveChanges();
+            await DbContext.SaveChangesAsync();
         }
+
     }
 }
