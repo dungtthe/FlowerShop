@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FlowerShop.DataAccess\FlowerShop.DataAccess.csproj" />
+    <ProjectReference Include="..\FlowerShop.Service\FlowerShop.Service.csproj" />
   </ItemGroup>
 
 </Project>

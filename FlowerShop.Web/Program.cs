@@ -5,6 +5,8 @@ using FlowerShop.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using FlowerShop.DataAccess.Models;
 using Microsoft.AspNetCore.Identity;
+using FlowerShop.Service;
+using FlowerShop.Service.ServiceImpl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,12 +47,23 @@ builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierInvoiceRepository, SupplierInvoiceRepository>();
 
 //đăng ký Service
+builder.Services.AddScoped<IAppUserService, AppUserService>();
 
 
 //đăng ký Identity
-builder.Services.AddIdentity<AppUser, IdentityRole>()
-    .AddEntityFrameworkStores<FlowerShopContext>()
-    .AddDefaultTokenProviders();
+//builder.Services.AddIdentity<AppUser, IdentityRole>()
+//    .AddEntityFrameworkStores<FlowerShopContext>()
+//    .AddDefaultTokenProviders();
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false; // Không yêu cầu số
+    options.Password.RequiredLength = 1; // Đặt độ dài tối thiểu là 1
+    options.Password.RequireNonAlphanumeric = false; // Không yêu cầu ký tự đặc biệt
+    options.Password.RequireLowercase = false; // Không yêu cầu ký tự thường
+    options.Password.RequireUppercase = false; // Không yêu cầu ký tự in hoa
+})
+.AddEntityFrameworkStores<FlowerShopContext>()
+.AddDefaultTokenProviders();
 
 
 
@@ -83,8 +96,57 @@ app.UseSession();
 
 app.UseAuthorization();
 
+
+app.UseRouting();
+
+
+
+
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Access}/{action=Login}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Seed dữ liệu mẫu
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedData(services);
+}
 
 app.Run();
+
+
+static async Task SeedData(IServiceProvider serviceProvider)
+{
+    var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
+    var dbContext = serviceProvider.GetRequiredService<FlowerShopContext>();
+
+    if (userManager.Users.All(u => u.UserName != "1"))
+    {
+        // Tạo Cart trước
+        var cart = new Cart();
+        dbContext.Carts.Add(cart);
+        await dbContext.SaveChangesAsync(); // Lưu để lấy CartId
+
+        // Tạo AppUser và điền đầy đủ các thuộc tính bắt buộc
+        var user = new AppUser
+        {
+            UserName = "1",
+            Email = "example@example.com",
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true,
+            FullName = "Sample User", // Thuộc tính bắt buộc
+            IsLock = false, // Thuộc tính bắt buộc
+            IsDelete = false, // Thuộc tính bắt buộc
+            BirthDay = DateTime.Parse("2000-01-01"),
+            CartId = cart.Id, // Gán CartId đã tạo, thuộc tính bắt buộc
+            AccessFailedCount = 0, // Gán giá trị 0 cho AccessFailedCount để tránh null
+            LockoutEnabled = false,
+        };
+
+        // Tạo người dùng với UserManager
+        var flag = await userManager.CreateAsync(user, "1");
+        await dbContext.SaveChangesAsync();
+    }
+}

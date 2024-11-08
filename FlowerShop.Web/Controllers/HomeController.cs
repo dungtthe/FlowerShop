@@ -15,7 +15,7 @@ namespace FlowerShop.Web.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Login", "Access");
         }
 
         public IActionResult Privacy()

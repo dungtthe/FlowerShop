@@ -1,4 +1,4 @@
-﻿
+﻿@model LoginViewModel
 @{
     Layout = null;
 }
@@ -30,15 +30,12 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="login-wrap p-0">
                         <h3 class="mb-4 text-center">Đăng nhập</h3>
-                        <form action="#" class="signin-form">
+                        <form method="post" asp-action="Login" asp-controller="Access" class="signin-form">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Tên tài khoản" required>
+                                <input asp-for="UserName" type="text" class="form-control" placeholder="Tên tài khoản" required>
                             </div>
                             <div class="form-group">
-                                <input id="password-field" type="password" class="form-control" placeholder="Mật khẩu"
-                                       required>
-                                <span toggle="#password-field"
-                                      class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Mật khẩu" required>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="form-control btn btn-primary submit px-3">

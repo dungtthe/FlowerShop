@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ServiceImpl\" />
+    <ProjectReference Include="..\FlowerShop.Common\FlowerShop.Common.csproj" />
+    <ProjectReference Include="..\FlowerShop.DataAccess\FlowerShop.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
