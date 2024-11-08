@@ -15,12 +15,14 @@ namespace FlowerShop.DataAccess.Models
         public int Id { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; }
         [ForeignKey(nameof(CustomerId))]
+        [InverseProperty("CustomerConversations")]
         public AppUser ?Customer { get; set; }
 
-        public int? StaffId { get; set; }//staffid = null thì cho nó là chatbot
+        public string? StaffId { get; set; }//staffid = null thì cho nó là chatbot
         [ForeignKey(nameof(StaffId))]
+        [InverseProperty("StaffConversations")]
         public AppUser? Staff { get; set; }
 
         [Required]

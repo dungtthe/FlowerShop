@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,17 @@ namespace FlowerShop.DataAccess.Infrastructure
 {
     public class DbFactory : IDbFactory
     {
-        private FlowerShopContext ?dbContext;
+        private readonly DbContextOptions<FlowerShopContext> options;
+        private FlowerShopContext? dbContext;
+
+        public DbFactory(DbContextOptions<FlowerShopContext> options)
+        {
+            this.options = options;
+        }
 
         public FlowerShopContext Init()
         {
-            return dbContext ?? (dbContext = new FlowerShopContext());
+            return dbContext ??= new FlowerShopContext(options);
         }
-
     }
 }

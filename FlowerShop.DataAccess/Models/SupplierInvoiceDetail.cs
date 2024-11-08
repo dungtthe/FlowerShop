@@ -11,14 +11,12 @@ namespace FlowerShop.DataAccess.Models
     [Table("SupplierInvoiceDetails")]
     public class SupplierInvoiceDetail
     {
-        [Key, Column(Order = 0)]
         [Required]
         public int SupplierInvoiceId { get; set; }
         [ForeignKey(nameof(SupplierInvoiceId))]
         public  SupplierInvoice? SupplierInvoice { get; set; } 
 
 
-        [Key, Column(Order = 1)]
         [Required]
         public int ProductItemId { get; set; }
         [ForeignKey(nameof(ProductItemId))]

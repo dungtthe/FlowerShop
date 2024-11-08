@@ -28,7 +28,13 @@ namespace FlowerShop.DataAccess.Models
         public Cart? Cart { get; set; }
 
         public ICollection<Address>? Addresses { get; set; }
-        public ICollection<SaleInvoice> ?SaleInvoices { get; set; } 
-        public ICollection<Conversation> ?Conversations { get; set; }
+        public ICollection<SaleInvoice> ?SaleInvoices { get; set; }
+
+
+        [InverseProperty("Customer")]
+        public ICollection<Conversation>? CustomerConversations { get; set; }
+
+        [InverseProperty("Staff")]
+        public ICollection<Conversation>? StaffConversations { get; set; }
     }
 }

@@ -58,6 +58,41 @@ namespace FlowerShop.DataAccess.Infrastructure
         {
             return await dbSet.ToListAsync();
         }
+
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await dbSet.Where(predicate).ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> FindWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.Where(predicate).ToListAsync();
+        }
+
+        public async Task<T?> SingleOrDefaultWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.SingleOrDefaultAsync(predicate);
+        }
         #endregion
     }
 }

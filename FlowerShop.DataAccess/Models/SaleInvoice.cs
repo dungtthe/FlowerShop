@@ -18,7 +18,7 @@ namespace FlowerShop.DataAccess.Models
         public DateTime CreateDay { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public string? CustomerId { get; set; }
         [ForeignKey(nameof(CustomerId))]
         public AppUser? Customer { get; set; }
 

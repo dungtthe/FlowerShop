@@ -23,7 +23,7 @@ namespace FlowerShop.DataAccess.Models
         [Required]
         public bool IsDelete { get; set; }
 
-        public int AppUserId { get; set; }
+        public string ?AppUserId { get; set; }
         [ForeignKey(nameof(AppUserId))]
         public AppUser? AppUser { get; set; }
     }

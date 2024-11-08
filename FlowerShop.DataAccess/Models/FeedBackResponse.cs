@@ -11,6 +11,8 @@ namespace FlowerShop.DataAccess.Models
     [Table("FeedBackResponses")]
     public class FeedBackResponse
     {
+        [Key]
+        public int Id { get; set; } 
         public int FeedBackId { get; set; }
         [ForeignKey(nameof(FeedBackId))]
         public FeedBack ?FeedBack { get; set; }
