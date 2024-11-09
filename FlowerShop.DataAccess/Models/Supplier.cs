@@ -32,6 +32,9 @@ namespace FlowerShop.DataAccess.Models
 
         public int Type { get; set; }
 
+        [MaxLength(1500)]
+        public string? Images { get; set; }
+
         public string ?Description { get; set; }
 
         [Required]

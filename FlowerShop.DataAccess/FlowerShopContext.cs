@@ -53,6 +53,25 @@ namespace FlowerShop.DataAccess
             base.OnModelCreating(modelBuilder);
 
 
+            #region add default
+            modelBuilder.Entity<Product>()
+                .Property(e => e.Images)
+                .HasDefaultValue("[\"no_img.png\"]");
+
+            modelBuilder.Entity<AppUser>()
+                .Property(e => e.Images)
+                .HasDefaultValue("[\"no_img.png\"]");
+
+            modelBuilder.Entity<ProductItem>()
+                .Property(e => e.Images)
+                .HasDefaultValue("[\"no_img.png\"]");
+
+            modelBuilder.Entity<Supplier>()
+               .Property(e => e.Images)
+               .HasDefaultValue("[\"no_img.png\"]");
+
+            #endregion
+
             #region add khóa chính
             modelBuilder.Entity<CartDetail>()
             .HasKey(cd => new { cd.CartId, cd.ProductId });

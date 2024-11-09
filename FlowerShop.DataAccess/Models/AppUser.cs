@@ -17,6 +17,10 @@ namespace FlowerShop.DataAccess.Models
         public string? FullName { get; set; }
         public DateTime? BirthDay { set; get; }
 
+
+        [MaxLength(1500)]
+        public string? Images { get; set; }
+
         [Required]
         public bool IsLock { get; set; }
         [Required]

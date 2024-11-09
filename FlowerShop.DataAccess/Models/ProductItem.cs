@@ -18,7 +18,7 @@ namespace FlowerShop.DataAccess.Models
         public int ImportPrice { get; set; }
 
         [MaxLength(1500)]
-        public string ?Image { get; set; }
+        public string ?Images { get; set; }
 
         public string ?Description { get; set; }
 

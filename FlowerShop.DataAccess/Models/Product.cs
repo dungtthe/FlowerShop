@@ -24,7 +24,7 @@ namespace FlowerShop.DataAccess.Models
 
 
         [MaxLength(1500)]
-        public string ?Image { get; set; }
+        public string ?Images { get; set; }
 
         [Required]
         public int PackagingId { get; set; }
