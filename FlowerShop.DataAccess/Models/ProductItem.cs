@@ -15,6 +15,10 @@ namespace FlowerShop.DataAccess.Models
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(100)]
+        public string? Name { get; set; }
+
+        [Required]
         public int ImportPrice { get; set; }
 
         public int CategoryId { get; set; }

@@ -1,4 +1,4 @@
-﻿using FlowerShop.Web.Models;
+﻿using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

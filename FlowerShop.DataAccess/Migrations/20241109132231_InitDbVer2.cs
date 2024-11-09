@@ -165,6 +165,7 @@ namespace FlowerShop.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ImportPrice = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Images = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true, defaultValue: "[\"no_img.png\"]"),

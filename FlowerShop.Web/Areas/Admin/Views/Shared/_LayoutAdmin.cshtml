@@ -76,7 +76,7 @@
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Thao tác</h6>
-                        <a class="collapse-item" href="utilities-color.html">Danh sách sản phẩm</a>
+                        <a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Index">Danh sách sản phẩm</a>
                         <a class="collapse-item" href="utilities-border.html">Nhập hàng</a>
                     </div>
                 </div>
@@ -248,13 +248,13 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePhuongThucThanhToan"
                    aria-expanded="true" aria-controls="collapsePhuongThucThanhToan">
                     <i class="fas fa-fw fa-wrench"></i>
-                    <span>Phương thức thay toán</span>
+                    <span>Phương thức thanh toán</span>
                 </a>
                 <div id="collapsePhuongThucThanhToan" class="collapse" aria-labelledby="headingUtilities"
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Thao tác</h6>
-                        <a class="collapse-item" href="utilities-color.html">Xem danh sách</a>
+                        <a class="collapse-item" asp-area="Admin" asp-controller="PaymentMethod" asp-action="Index">Xem danh sách</a>
                         <a class="collapse-item" href="utilities-border.html">Thêm phương thức</a>
                     </div>
                 </div>
@@ -548,6 +548,9 @@
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>
+
+
+    @RenderSection("Scripts", required: false)
 
 </body>
 

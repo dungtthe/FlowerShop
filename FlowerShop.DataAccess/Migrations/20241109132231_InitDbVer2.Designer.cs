@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerShop.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20241109112801_InitDbVer2")]
+    [Migration("20241109132231_InitDbVer2")]
     partial class InitDbVer2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -465,6 +465,11 @@ namespace FlowerShop.DataAccess.Migrations
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 

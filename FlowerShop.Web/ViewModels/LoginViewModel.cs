@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FlowerShop.Web.Models
+namespace FlowerShop.Web.ViewModels
 {
     public class LoginViewModel
     {

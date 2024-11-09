@@ -1,6 +1,6 @@
 ﻿using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
-using FlowerShop.Web.Models;
+using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
