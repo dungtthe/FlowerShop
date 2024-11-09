@@ -22,7 +22,11 @@ namespace FlowerShop.DataAccess.Models
         [ForeignKey(nameof(ParentCategoryId))]
         public Category ?ParentCategory { set; get; }
 
+        [Required]
+        public bool IsCategorySell { get; set; }
+
         public  ICollection<Category> ?SubCategories { get; set; } 
         public  ICollection<ProductCategory> ? ProductCategories { get; set; } 
+        public  ICollection<ProductItem> ? ProductItems { get; set; } 
     }
 }

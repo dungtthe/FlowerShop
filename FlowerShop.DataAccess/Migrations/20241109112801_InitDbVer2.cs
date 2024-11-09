@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FlowerShop.DataAccess.Migrations
 {
-    public partial class InitDbVer1 : Migration
+    public partial class InitDbVer2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,7 +28,8 @@ namespace FlowerShop.DataAccess.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    ParentCategoryId = table.Column<int>(type: "int", nullable: true)
+                    ParentCategoryId = table.Column<int>(type: "int", nullable: true),
+                    IsCategorySell = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,28 +77,13 @@ namespace FlowerShop.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<byte>(type: "tinyint", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentMethods", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ImportPrice = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,6 +111,7 @@ namespace FlowerShop.DataAccess.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    Images = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true, defaultValue: "[\"no_img.png\"]"),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Industry = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
@@ -142,6 +129,7 @@ namespace FlowerShop.DataAccess.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     BirthDay = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Images = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true, defaultValue: "[\"no_img.png\"]"),
                     IsLock = table.Column<bool>(type: "bit", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false),
                     CartId = table.Column<int>(type: "int", nullable: false),
@@ -172,6 +160,29 @@ namespace FlowerShop.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImportPrice = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Images = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true, defaultValue: "[\"no_img.png\"]"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductItems_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -179,7 +190,7 @@ namespace FlowerShop.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
+                    Images = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true, defaultValue: "[\"no_img.png\"]"),
                     PackagingId = table.Column<int>(type: "int", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -663,6 +674,11 @@ namespace FlowerShop.DataAccess.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductItems_CategoryId",
+                table: "ProductItems",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductPrices_ProductId",
                 table: "ProductPrices",
                 column: "ProductId");
@@ -803,9 +819,6 @@ namespace FlowerShop.DataAccess.Migrations
                 name: "Conversations");
 
             migrationBuilder.DropTable(
-                name: "Categories");
-
-            migrationBuilder.DropTable(
                 name: "ProductItems");
 
             migrationBuilder.DropTable(
@@ -816,6 +829,9 @@ namespace FlowerShop.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "SaleInvoiceDetails");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Suppliers");

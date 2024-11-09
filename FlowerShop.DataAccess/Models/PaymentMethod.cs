@@ -20,6 +20,9 @@ namespace FlowerShop.DataAccess.Models
         public string? Description { get; set; }
 
         [Required]
+        public decimal? Price { get; set; }
+
+        [Required]
         public byte Status { get; set; }
 
         [Required]

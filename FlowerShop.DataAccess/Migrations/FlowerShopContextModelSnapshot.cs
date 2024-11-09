@@ -180,6 +180,9 @@ namespace FlowerShop.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<bool>("IsCategorySell")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -372,6 +375,10 @@ namespace FlowerShop.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal?>("Price")
+                        .IsRequired()
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<byte>("Status")
                         .HasColumnType("tinyint");
 
@@ -439,6 +446,9 @@ namespace FlowerShop.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -455,6 +465,8 @@ namespace FlowerShop.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("ProductItems");
                 });
@@ -934,6 +946,17 @@ namespace FlowerShop.DataAccess.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("FlowerShop.DataAccess.Models.ProductItem", b =>
+                {
+                    b.HasOne("FlowerShop.DataAccess.Models.Category", "Category")
+                        .WithMany("ProductItems")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("FlowerShop.DataAccess.Models.ProductPrice", b =>
                 {
                     b.HasOne("FlowerShop.DataAccess.Models.Product", "Product")
@@ -1102,6 +1125,8 @@ namespace FlowerShop.DataAccess.Migrations
             modelBuilder.Entity("FlowerShop.DataAccess.Models.Category", b =>
                 {
                     b.Navigation("ProductCategories");
+
+                    b.Navigation("ProductItems");
 
                     b.Navigation("SubCategories");
                 });

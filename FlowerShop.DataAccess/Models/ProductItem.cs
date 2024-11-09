@@ -17,6 +17,12 @@ namespace FlowerShop.DataAccess.Models
         [Required]
         public int ImportPrice { get; set; }
 
+        public int CategoryId { get; set; }
+        [ForeignKey(nameof(CategoryId))]
+        public Category? Category { get; set; }
+
+        
+
         [MaxLength(1500)]
         public string ?Images { get; set; }
 
