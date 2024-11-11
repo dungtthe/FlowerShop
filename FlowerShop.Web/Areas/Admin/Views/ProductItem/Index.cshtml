@@ -1,17 +1,20 @@
-﻿@model IEnumerable<FlowerShop.DataAccess.Models.ProductItem>
-
+﻿@model IEnumerable<FlowerShop.Web.ViewModels.ProductItemViewModel>
+@using Newtonsoft.Json;
+@using FlowerShop.Common.Helpers;
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách sản phẩm trong kho";
+    int stt = 1;
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
+            <th>
+                STT
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
@@ -24,42 +27,45 @@
             <th>
                 @Html.DisplayNameFor(model => model.Images)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsDelete)
-            </th>
+
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImportPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Images)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDelete)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @(stt++)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @{
+                        var priceConverted = Converter.ConvertToVietnameseDong(item.ImportPrice);
+                    }
+                    @Html.DisplayFor(modelItem => priceConverted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    @{
+                        string[] listImg = item.Images != null
+                        ? JsonConvert.DeserializeObject<string[]>(item.Images)
+                        : new string[] { "no_img.png" };
+
+                        var firstImg = listImg[0];
+                    }
+                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;"  />
+                </td>
+
+                <td>
+                    <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id">Sửa</a> |
+                    <a asp-action="Delete" asp-area="Admin" asp-controller="ProductItem"  asp-route-id="@item.Id">Xóa</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -1,4 +1,6 @@
-﻿using FlowerShop.DataAccess.Infrastructure;
+﻿using FlowerShop.Common.Template;
+using FlowerShop.Common;
+using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using System;
@@ -23,14 +25,34 @@ namespace FlowerShop.Service.ServiceImpl
             _unitOfWork = unitOfWork;
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            var productItem = await _productItemRepository.GetSingleByIdAsync(id);
+            if (productItem == null)
+            {
+                return;
+            }
+            productItem.IsDelete = true;
+            await _unitOfWork.Commit();
+        }
 
-        public async Task<ICollection<ProductItem>> GetProductsAsync()
+
+
+        public async Task<ICollection<ProductItem>> GetProductsItemAsync()
         {
             var productItems = await _productItemRepository.GetAllWithIncludeAsync(p => p.Category);
             return productItems.ToList();
         }
 
-
+        public async Task<ProductItem> GetSingleById(int id)
+        {
+            if (id == -1)
+            {
+                return null;
+            }
+            var productItem = await _productItemRepository.SingleOrDefaultWithIncludeAsync(p=>p.Id==id , p=>p.Category);
+            return productItem;
+        }
 
         public async Task<ProductItem> UpdateAsync(ProductItem productItem)
         {

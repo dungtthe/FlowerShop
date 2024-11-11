@@ -1,16 +1,59 @@
-﻿@model FlowerShop.DataAccess.Models.ProductItem
-
+﻿@model FlowerShop.Web.ViewModels.ProductItemViewModel
+@using Newtonsoft.Json;
 @{
-    ViewData["Title"] = "Edit";
+
+    ViewData["Title"] = "Sửa thông tin sản phẩm";
+    string[] listImg = Model.Images != null
+     ? JsonConvert.DeserializeObject<string[]>(Model.Images)
+     : new string[] { "no_img.png" };
 }
 
-<h1>Edit</h1>
 
-<h4>ProductItem</h4>
+@section CustomStyles{
+    <style>
+        .image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .product-image {
+            transition: 0.3s;
+        }
+
+        .image-container .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            border-radius: 0.25rem;
+        }
+
+        .image-container:hover .product-image {
+            filter: brightness(0.7);
+        }
+
+        .image-container:hover .overlay {
+            opacity: 1;
+        }
+    </style>
+}
+
+<h1>@ViewData["Title"]</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form method="post" asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@Model.Id">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -20,31 +63,48 @@
             </div>
             <div class="form-group">
                 <label asp-for="ImportPrice" class="control-label"></label>
-                <input asp-for="ImportPrice" class="form-control" />
-                <span asp-validation-for="ImportPrice" class="text-danger"></span>
+                <input asp-for="ImportPrice" class="form-control" readonly />                
+                @* <span asp-validation-for="ImportPrice" class="text-danger"></span> *@
             </div>
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
                 <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+           @*  <div class="form-group">
                 <label asp-for="Images" class="control-label"></label>
                 <input asp-for="Images" class="form-control" />
                 <span asp-validation-for="Images" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <label asp-for="Images" class="control-label"></label>
+                <br />
+                <div class="d-flex flex-wrap">
+                    @foreach (var im in listImg)
+                    {
+                        <div class="p-2 position-relative image-container">
+                            @if (im != "no_img.png")
+                            {
+                                <img src="~/images/products/@im" alt="Product Image" class="img-thumbnail rounded shadow-sm img-fluid product-image" style="width: 100px; height: 100px; object-fit: cover;" />
+                                <div class="overlay text-center" onclick="deleteImage('@im')">Xóa</div>
+                            }
+                            else
+                            {
+                                <img src="~/images/products/@im" alt="Product Image" class="img-thumbnail rounded shadow-sm img-fluid" style="width: 100px; height: 100px; object-fit: cover;" />
+                            }
+                        </div>
+                    }
+                </div>
+                <br />
+                <a asp-area="Admin" asp-controller="ProductItem" asp-action="UploadPhoto" asp-route-id="@Model.Id" class="btn" style="background: green !important; color: white !important;">Upload ảnh</a>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsDelete" /> @Html.DisplayNameFor(model => model.IsDelete)
-                </label>
-            </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Lưu" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -56,4 +116,24 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function deleteImage(imageName) {
+            if (confirm("Bạn có chắc chắn muốn xóa ảnh này không?")) {
+                $.ajax({
+                    url: '/admin/quan-li-danh-muc/deleteimage',
+                    type: 'DELETE',
+                    data: JSON.stringify({ fileName: imageName, id: @Model.Id }),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        alert("Ảnh đã được xóa thành công.");
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Có lỗi xảy ra khi xóa ảnh: " + error);
+                    }
+                });
+            }
+        }
+    </script>
 }

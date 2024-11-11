@@ -128,13 +128,13 @@ INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hamper
 
 
 -- 6. Insert data for [Users]
-INSERT INTO [dbo].[Users] (Id, FullName, BirthDay, Images, IsLock, IsDelete, CartId, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount)
+INSERT INTO [dbo].[Users] (Id, FullName, BirthDay, IsLock, IsDelete, CartId, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount)
 VALUES 
-('101', 'John Doe', '1990-01-01', '[\"no_img.png\"]', 0, 0, 1, 'johndoe', 'JOHNDOE', 'john@example.com', 'JOHN@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('102', 'Jane Smith', '1992-02-02', '[\"no_img.png\"]', 0, 0, 2, 'janesmith', 'JANESMITH', 'jane@example.com', 'JANE@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('103', 'Alice Johnson', '1985-03-03', '[\"no_img.png\"]', 0, 0, 3, 'alicejohnson', 'ALICEJOHNSON', 'alice@example.com', 'ALICE@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('104', 'Bob Brown', '1978-04-04', '[\"no_img.png\"]', 0, 0, 4, 'bobbrown', 'BOBBROWN', 'bob@example.com', 'BOB@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('105', 'Charlie Green', '1995-05-05', '[\"no_img.png\"]', 0, 0, 5, 'charliegreen', 'CHARLIEGREEN', 'charlie@example.com', 'CHARLIE@EXAMPLE.COM', 1, 1, 0, 0, 0);
+('101', 'John Doe', '1990-01-01',  0, 0, 1, 'johndoe', 'JOHNDOE', 'john@example.com', 'JOHN@EXAMPLE.COM', 1, 1, 0, 0, 0),
+('102', 'Jane Smith', '1992-02-02', 0, 0, 2, 'janesmith', 'JANESMITH', 'jane@example.com', 'JANE@EXAMPLE.COM', 1, 1, 0, 0, 0),
+('103', 'Alice Johnson', '1985-03-03',  0, 0, 3, 'alicejohnson', 'ALICEJOHNSON', 'alice@example.com', 'ALICE@EXAMPLE.COM', 1, 1, 0, 0, 0),
+('104', 'Bob Brown', '1978-04-04',  0, 0, 4, 'bobbrown', 'BOBBROWN', 'bob@example.com', 'BOB@EXAMPLE.COM', 1, 1, 0, 0, 0),
+('105', 'Charlie Green', '1995-05-05',  0, 0, 5, 'charliegreen', 'CHARLIEGREEN', 'charlie@example.com', 'CHARLIE@EXAMPLE.COM', 1, 1, 0, 0, 0);
 
 -- 7. Insert data for [Addresses]
 INSERT INTO [dbo].[Addresses] (Description, Phone, IsDelete, AppUserId)
@@ -146,22 +146,22 @@ VALUES
 ('202 Birch St, City E', '567-890-1234', 0, '105');
 
 -- 8. Insert data for [Products] (Phụ thuộc vào Packaging đã có)
-INSERT INTO [dbo].[Products] (Title, Description, Images, PackagingId, IsDelete)
+INSERT INTO [dbo].[Products] (Title, Description, PackagingId, IsDelete)
 VALUES 
-('Rose Bouquet', 'A bouquet of red roses', '[\"no_img.png\"]', 1, 0),
-('Tulip Bouquet', 'A bouquet of fresh tulips', '[\"no_img.png\"]', 2, 0),
-('Chocolate Box', 'A box of assorted chocolates', '[\"no_img.png\"]', 3, 0),
-('Orchid Arrangement', 'Elegant orchid arrangement', '[\"no_img.png\"]', 4, 0),
-('Sunflower Bouquet', 'Bright sunflower bouquet', '[\"no_img.png\"]', 5, 0);
+('Rose Bouquet', 'A bouquet of red roses',  1, 0),
+('Tulip Bouquet', 'A bouquet of fresh tulips', 2, 0),
+('Chocolate Box', 'A box of assorted chocolates',  3, 0),
+('Orchid Arrangement', 'Elegant orchid arrangement', 4, 0),
+('Sunflower Bouquet', 'Bright sunflower bouquet',  5, 0);
 
 -- 9. Insert data for [ProductItems] (Phụ thuộc vào Categories)
-INSERT INTO [dbo].[ProductItems] (Name, ImportPrice, CategoryId, Images, Description, IsDelete)
+INSERT INTO [dbo].[ProductItems] (Name, ImportPrice, CategoryId, Description, IsDelete)
 VALUES 
-('Single Rose', 5, 3, '[\"no_img.png\"]', 'A single red rose', 0),
-('Single Tulip', 4, 4, '[\"no_img.png\"]', 'A single tulip', 0),
-('Dark Chocolate', 10, 5, '[\"no_img.png\"]', 'Dark chocolate piece', 0),
-('Milk Chocolate', 8, 5, '[\"no_img.png\"]', 'Milk chocolate piece', 0),
-('Orchid Plant', 20, 1, '[\"no_img.png\"]', 'Single orchid plant', 0);
+('Single Rose', 5, 3, 'A single red rose', 0),
+('Single Tulip', 4, 4,  'A single tulip', 0),
+('Dark Chocolate', 10, 5, 'Dark chocolate piece', 0),
+('Milk Chocolate', 8, 5,  'Milk chocolate piece', 0),
+('Orchid Plant', 20, 1,  'Single orchid plant', 0);
 
 -- 10. Insert data for [CartDetails] (Phụ thuộc vào Products và Carts đã có)
 INSERT INTO [dbo].[CartDetails] (CartId, ProductId, Quantity)

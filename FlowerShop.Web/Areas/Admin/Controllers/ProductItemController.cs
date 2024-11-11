@@ -9,6 +9,8 @@ using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Common;
+using FlowerShop.Web.ViewModels;
+using FlowerShop.Common.Helpers;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -18,11 +20,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
     {
         private readonly FlowerShopContext _context;
         private readonly IProductItemService _productItemService;
+        private readonly IProductProductItemService _productProductItemService;
 
-        public ProductItemController(FlowerShopContext context,IProductItemService productItemService)
+        public ProductItemController(FlowerShopContext context,IProductItemService productItemService, IProductProductItemService productProductItemService)
         {
             _context = context;
             _productItemService = productItemService;
+            _productProductItemService = productProductItemService;
         }
 
         // GET: Admin/ProductItem
@@ -30,28 +34,28 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             //var flowerShopContext = _context.ProductItems.Include(p => p.Category);
-            var flowerShopContext = await _productItemService.GetProductsAsync();
-            return View(flowerShopContext);
-        }
+            var productItems = await _productItemService.GetProductsItemAsync();
 
-        // GET: Admin/ProductItem/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.ProductItems == null)
+            var productItemsVM= new List<ProductItemViewModel>();
+            foreach(var item in productItems)
             {
-                return NotFound();
+                productItemsVM.Add(new ProductItemViewModel()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    ImportPrice = item.ImportPrice,
+                    CategoryId = item.CategoryId,
+                    Category=item.Category,
+                    Images = item.Images,
+                    Description = item.Description,
+                    IsDelete = item.IsDelete,
+                    ProductProductItems=item.ProductProductItems
+                });
             }
 
-            var productItem = await _context.ProductItems
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (productItem == null)
-            {
-                return NotFound();
-            }
-
-            return View(productItem);
+            return View(productItemsVM);
         }
+
 
         // GET: Admin/ProductItem/Create
         public IActionResult Create()
@@ -81,18 +85,23 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("edit")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.ProductItems == null)
+            var productItem = await _productItemService.GetSingleById(id ?? -1);
+            if(productItem == null)
             {
-                return NotFound();
+                return Content(ConstValues.CoLoiXayRa);
             }
+            var productItemVM= new ProductItemViewModel(){
+                Id=productItem.Id,
+                Name=productItem.Name,
+                ImportPrice=productItem.ImportPrice,
+                Images=productItem.Images,
+                CategoryId=productItem.CategoryId,
+                Category=productItem.Category,
+                Description=productItem.Description,
+            };
 
-            var productItem = await _context.ProductItems.FindAsync(id);
-            if (productItem == null)
-            {
-                return NotFound();
-            }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", productItem.CategoryId);
-            return View(productItem);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", productItemVM.CategoryId);
+            return View(productItemVM);
         }
 
         // POST: Admin/ProductItem/Edit/5
@@ -100,19 +109,26 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ImportPrice,CategoryId,Images,Description,IsDelete")] ProductItem productItem)
+        public async Task<IActionResult> Edit(int ?id, [Bind("Name,CategoryId,Description")] ProductItemViewModel productItemVM)
         {
-            if (id != productItem.Id)
+            var productItem = await _productItemService.GetSingleById(id ?? -1);
+            if (productItem == null)
             {
-                return NotFound();
+                return Content(ConstValues.CoLoiXayRa);
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //_context.Update(productItem);
-                    //await _context.SaveChangesAsync();
+
+                    productItem.Name= productItemVM.Name;
+                    productItem.CategoryId= productItemVM.CategoryId;
+                    //productItem.Images= productItemVM.Images;
+                    productItem.Description= productItemVM.Description;
+                    
+
+
                     var result= await _productItemService.UpdateAsync(productItem);
                     if (result == null)
                     {
@@ -121,7 +137,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductItemExists(productItem.Id))
+                    if (!ProductItemExists(productItemVM.Id))
                     {
                         return NotFound();
                     }
@@ -132,51 +148,100 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", productItem.CategoryId);
-            return View(productItem);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", productItemVM.CategoryId);
+            return View(productItemVM);
         }
 
-        // GET: Admin/ProductItem/Delete/5
+        [HttpGet("delete")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.ProductItems == null)
+            var product = await _productItemService.GetSingleById(id ?? -1);
+            if (product == null)
             {
-                return NotFound();
+                return Content(ConstValues.CoLoiXayRa);
             }
 
-            var productItem = await _context.ProductItems
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (productItem == null)
+            var checkExist = await _productProductItemService.CheckExistPrductItem(product.Id);
+            if (checkExist)
             {
-                return NotFound();
+                return Content("Sản phẩm này đang được bán nên không thể xóa!");
             }
+            await _productItemService.DeleteAsync(id??-1);
 
-            return View(productItem);
-        }
-
-        // POST: Admin/ProductItem/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.ProductItems == null)
-            {
-                return Problem("Entity set 'FlowerShopContext.ProductItems'  is null.");
-            }
-            var productItem = await _context.ProductItems.FindAsync(id);
-            if (productItem != null)
-            {
-                _context.ProductItems.Remove(productItem);
-            }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool ProductItemExists(int id)
         {
           return (_context.ProductItems?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+
+
+        [HttpGet("uploadphoto")]
+        public async Task<IActionResult> UploadPhoto(int ?id)
+        {
+            var product = await _productItemService.GetSingleById(id ?? -1);
+            if (product == null)
+            {
+                return Content(ConstValues.CoLoiXayRa);
+            }
+            ViewData["product"] = product;
+            return View(new UploadOneFile());
+        }
+
+
+        [HttpPost("uploadphoto"), ActionName("UploadPhoto")]
+        public async Task<IActionResult> UploadPhotoAsync(int ?id, [Bind("FileUpload")] UploadOneFile f)
+        {
+            var product = await _productItemService.GetSingleById(id ?? -1);
+            if (product == null)
+            {
+                return Content(ConstValues.CoLoiXayRa);
+            }
+            if (f != null && f.FileUpload!=null)
+            {
+                // fileName random
+                var fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName())
+                     + Path.GetExtension(f.FileUpload.FileName);
+                var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products");
+                var filePath = Path.Combine(wwwRootPath, fileName);
+
+                using (var filestream = new FileStream(filePath, FileMode.Create))
+                {
+                    await f.FileUpload.CopyToAsync(filestream);
+                }
+                var imgs = Utils.AddPhotoForProduct(fileName, product.Images);
+                product.Images = imgs;
+                await _productItemService.UpdateAsync(product);
+            }
+            return RedirectToAction(nameof(Edit), new { id = id });
+        }
+
+
+
+        [HttpDelete("/admin/quan-li-danh-muc/deleteimage")]
+        public async Task<IActionResult> DeleteImage([FromBody] DeleteImageRequest request)
+        {
+            var product = await _productItemService.GetSingleById(request.Id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", request.FileName);
+
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            var imgs = Utils.RemovePhotoForProduct(request.FileName, product.Images);
+            product.Images = imgs;
+            await _productItemService.UpdateAsync(product);
+
+            return Ok(new { message = "Ảnh đã được xóa thành công." });
         }
     }
 }
