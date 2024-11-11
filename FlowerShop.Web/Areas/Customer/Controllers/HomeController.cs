@@ -24,6 +24,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             if (result)
             {
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
+              //  return View();
             }
             return Content("Có lỗi xảy ra");
 

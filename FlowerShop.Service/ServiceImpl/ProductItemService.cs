@@ -32,12 +32,12 @@ namespace FlowerShop.Service.ServiceImpl
 
 
 
-        public ProductItem Update(ProductItem productItem)
+        public async Task<ProductItem> UpdateAsync(ProductItem productItem)
         {
             var result = _productItemRepository.Update(productItem);
             if(result != null)
             {
-                _unitOfWork.Commit();
+                await _unitOfWork.Commit();
             }
             return result;
         }

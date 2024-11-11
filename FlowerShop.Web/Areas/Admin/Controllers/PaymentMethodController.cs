@@ -132,7 +132,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 
 
-                    //var result = _paymentMethodService.Update(paymentMethod);
+                    //var result = await _paymentMethodService.Update(paymentMethod);
 
                     //if (result == null)
                     //{

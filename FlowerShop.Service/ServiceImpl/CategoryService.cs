@@ -80,7 +80,7 @@ namespace FlowerShop.Service.ServiceImpl
             var rs = await _categoryRepository.AddAsync(category);
             if (rs != null)
             {
-                _unitOfWork?.Commit();
+                await _unitOfWork?.Commit();
             }
             return rs;
         }
@@ -104,7 +104,7 @@ namespace FlowerShop.Service.ServiceImpl
                     subCategory.ParentCategoryId = null;
                 }
             }
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
         }
 
         public async Task<ResponeMessage> Delete(int id)
@@ -115,7 +115,7 @@ namespace FlowerShop.Service.ServiceImpl
                 return new ResponeMessage(0, ConstValues.CoLoiXayRa);
             }
             category.IsDelete = true;
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
             return new ResponeMessage(1, ConstValues.ThanhCong);
         }
     }

@@ -113,7 +113,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 {
                     //_context.Update(productItem);
                     //await _context.SaveChangesAsync();
-                    var result= _productItemService.Update(productItem);
+                    var result= await _productItemService.UpdateAsync(productItem);
                     if (result == null)
                     {
                         return Content(ConstValues.CoLoiXayRa);

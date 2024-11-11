@@ -39,7 +39,7 @@ namespace FlowerShop.Service.ServiceImpl
             var result = _paymentMethodRepository.Update(paymentMethod);
             if (result != null)
             {
-                _unitOfWork.Commit();
+                await _unitOfWork.Commit();
                 return true;
             }
             return false;
@@ -52,12 +52,12 @@ namespace FlowerShop.Service.ServiceImpl
             return result.ToList();
         }
 
-        public PaymentMethod Update(PaymentMethod paymentMethod)
+        public async Task<PaymentMethod> UpdateAsync(PaymentMethod paymentMethod)
         {
             var result = _paymentMethodRepository.Update(paymentMethod);
             if (result != null)
             {
-                _unitOfWork.Commit();
+                await _unitOfWork.Commit();
             }
             return result;
 

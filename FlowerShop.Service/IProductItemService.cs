@@ -10,7 +10,7 @@ namespace FlowerShop.Service
     public interface IProductItemService
     {
         Task<ICollection<ProductItem>> GetProductsAsync();
-        ProductItem Update(ProductItem productItem);
+        Task<ProductItem> UpdateAsync(ProductItem productItem);
 
     }
 }
