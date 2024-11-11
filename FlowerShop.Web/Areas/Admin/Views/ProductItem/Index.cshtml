@@ -34,7 +34,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr >
                 <td>
                     @(stt++)
                 </td>
@@ -62,8 +62,8 @@
                 </td>
 
                 <td>
-                    <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id">Sửa</a> |
-                    <a asp-action="Delete" asp-area="Admin" asp-controller="ProductItem"  asp-route-id="@item.Id">Xóa</a>
+                    <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i class="fa-solid fa-circle-info" ></i></a> |
+                    <a asp-action="Delete" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i class="fa-solid fa-trash" style="color:red;"></i></a>
                 </td>
             </tr>
         }
