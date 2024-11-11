@@ -10,5 +10,6 @@ namespace FlowerShop.Common
     {
         public static string CoLoiXayRa = "Có lỗi xảy ra!";
         public static string XoaThatBai = "Xóa thất bại!";
+        public static string ThanhCong = "Thành công!";
     }
 }

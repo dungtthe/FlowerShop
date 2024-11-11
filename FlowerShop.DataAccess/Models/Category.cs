@@ -24,6 +24,8 @@ namespace FlowerShop.DataAccess.Models
 
         [Required]
         public bool IsCategorySell { get; set; }
+        [Required]
+        public bool IsDelete { get; set; }
 
         public  ICollection<Category> ?SubCategories { get; set; } 
         public  ICollection<ProductCategory> ? ProductCategories { get; set; } 

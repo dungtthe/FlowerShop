@@ -35,13 +35,97 @@ VALUES
 ('Gift Card', 'Payment via gift card', 0, 1, 0);
 
 -- 5. Insert data for [Categories]
-INSERT INTO [dbo].[Categories] (Name, ParentCategoryId, IsCategorySell)
-VALUES 
-('Flowers', NULL, 1),
-('Gifts', NULL, 1),
-('Roses', 1, 1),
-('Tulips', 1, 1),
-('Chocolates', 2, 1);
+-- Thêm danh mục cha
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'CHỦ ĐỀ', NULL, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'ĐỐI TƯỢNG', NULL, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'KIỂU DÁNG', NULL, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'HOA TƯƠI', NULL, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'MÀU SẮC', NULL, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'BỘ SƯU TẬP', NULL, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'QUÀ TẶNG KÈM', NULL, 1);
+-- chủ đề
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Sinh Nhật', 1, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Khai Trương', 1, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Chúc Mừng', 1, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Chia Buồn', 1, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Chúc Sức Khỏe', 1, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tình Yêu', 1, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Cảm Ơn', 1, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Mừng Tốt Nghiệp', 1, 1);
+
+--đối tượng
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Người Yêu', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Bạn Bè', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Vợ', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Chồng', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Mẹ', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Trẻ Em', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Cho Nữ', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Cho Nam', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Sếp', 2, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tặng Đồng Nghiệp', 2, 1);
+
+
+--kiểu dáng
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bó Hoa Tươi', 3, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Giỏ Hoa Tươi', 3, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hộp Hoa Tươi', 3, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bình Hoa Tươi', 3, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Thả Bình', 3, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Lẵng Hoa Khai Trương', 3, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Lẵng Hoa Chia Buồn', 3, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hộp Mica', 3, 1);
+
+
+-- hoa tươi
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Only Rose', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Hồng', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Hướng Dương', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Đồng Tiền', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Lan Hồ Điệp', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Cẩm Chướng', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Cát Tường', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Ly', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Baby Flower', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Cúc', 4, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Sen Đá', 4, 1);
+
+--màu sắc
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Màu Trắng', 5, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Màu Đỏ', 5, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Màu Hồng', 5, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Màu Cam', 5, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Màu Tím', 5, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Màu Vàng', 5, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Màu Xanh (Xanh Dương, Xanh Lá)', 5, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Kết Hợp Màu', 5, 1);
+
+
+-- bộ sưu tập
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Cao Cấp', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Sinh Viên', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Mẫu Hoa Mới', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Khuyến Mãi', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Ngày Phụ Nữ Việt Nam (20/10)', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Ngày Nhà Giáo', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Giáng Sinh', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tết', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Sự Kiện', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Tình Yêu', 6, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Ngày Quốc Tế Phụ Nữ', 6, 1);
+
+
+-- quà tặng kèm
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bánh Kem Tous Les Jours', 7, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bánh Kem Brodard', 7, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Chocolate', 7, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Trái Cây', 7, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Gấu Bông', 7, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Nến Thơm', 7, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hamper', 7, 1);
+
+
+
 
 -- 6. Insert data for [Users]
 INSERT INTO [dbo].[Users] (Id, FullName, BirthDay, Images, IsLock, IsDelete, CartId, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount)

@@ -11,5 +11,6 @@ namespace FlowerShop.Service
     {
         Task<ICollection<ProductItem>> GetProductsAsync();
         ProductItem Update(ProductItem productItem);
+
     }
 }

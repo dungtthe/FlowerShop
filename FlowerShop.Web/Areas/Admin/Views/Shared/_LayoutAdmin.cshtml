@@ -19,7 +19,9 @@
     <!-- Custom styles for this template-->
     <link href="~/admin/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="~/admin/css/mystyle.css" rel="stylesheet">
+    
 
+    @RenderSection("CustomStyles", required: false)
 </head>
 
 <body id="page-top">
@@ -84,7 +86,7 @@
 
             <!-- Nav Item - Quản lý danh mục -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyDanhMuc"
+                <a class="nav-link collapsed"  data-toggle="collapse" data-target="#collapseQuanLyDanhMuc"
                    aria-expanded="true" aria-controls="collapseQuanLyDanhMuc">
                     <i class="fas fa-fw fa-wrench"></i>
                     <span>Quản lý danh mục</span>
@@ -93,8 +95,8 @@
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Thao tác</h6>
-                        <a class="collapse-item" href="utilities-color.html">Danh sách danh mục</a>
-                        <a class="collapse-item" href="utilities-border.html">Thêm danh mục</a>
+                        <a class="collapse-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Danh sách danh mục</a>
+                        <a class="collapse-item" asp-area="Admin" asp-controller="Category" asp-action="Create">Thêm danh mục</a>
                     </div>
                 </div>
             </li>
@@ -533,21 +535,22 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/admin/vendor/jquery/jquery.min.js"></script>
+    <script src="~/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
+    <script src="~/admin/js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
+    <script src="~/admin/vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+    <script src="~/admin/js/demo/chart-area-demo.js"></script>
+    <script src="~/admin/js/demo/chart-pie-demo.js"></script>
+
 
 
     @RenderSection("Scripts", required: false)

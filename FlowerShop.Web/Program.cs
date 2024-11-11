@@ -50,6 +50,7 @@ builder.Services.AddScoped<ISupplierInvoiceRepository, SupplierInvoiceRepository
 builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.AddScoped<IProductItemService, ProductItemService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
 //đăng ký Identity

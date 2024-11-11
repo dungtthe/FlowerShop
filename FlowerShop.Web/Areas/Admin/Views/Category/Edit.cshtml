@@ -1,0 +1,75 @@
+﻿@model FlowerShop.Web.ViewModels.CategoryViewModel
+
+@{
+    ViewData["Title"] = "Sửa thông tin danh mục";
+}
+<h1>Sửa thông tin danh mục</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-action="Edit" asp-area="Admin" asp-controller="Category" asp-route-id="@Model.Id">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ParentCategoryId" class="control-label"></label>
+                <select asp-for="ParentCategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
+                <span asp-validation-for="ParentCategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Danh mục con
+                    </button>
+                    <div class="dropdown-menu dropdown-checkbox" aria-labelledby="dropdownMenuButton">
+                        @foreach (var subCategory in Model.SubCategories)
+                        {
+                            <label class="dropdown-item">
+                                <input type="checkbox" class="mr-2" name="SelectedSubCategories" value="@subCategory.Id" checked /> @subCategory.Name
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsCategorySell" /> @Html.DisplayNameFor(model => model.IsCategorySell)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
+                <button type="submit" formaction="@Url.Action("Delete", "Category", new { area = "Admin", id = Model.Id })" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');">Xóa</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Danh sách danh mục</a>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Ngăn dropdown đóng lại khi chọn checkbox
+            $('.dropdown-menu').on('click', function (e) {
+                e.stopPropagation();
+            });
+
+            $('.dropdown-menu input[type="checkbox"]').on('change', function () {
+                let selected = [];
+                $('.dropdown-menu input[type="checkbox"]:checked').each(function () {
+                    selected.push($(this).next().text().trim());
+                });
+                // $('#dropdownMenuButton').text(selected.length > 0 ? selected.join(', ') : 'Danh mục con');
+            });
+        });
+    </script>
+}

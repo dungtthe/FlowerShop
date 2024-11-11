@@ -1,0 +1,56 @@
+﻿@using FlowerShop.DataAccess.Models
+@model List<Category>
+
+<h2>Danh sách danh mục</h2>
+
+<select id="filter" onchange="filterWithSelect(event)">
+    <option value="all">Tất cả</option>
+    <option value="inStock">Trong kho</option>
+    <option value="forSale">Để bán</option>
+</select>
+
+<ul>
+    @foreach (var category in Model.Where(c => c.ParentCategoryId == null))
+    {
+        @await Html.PartialAsync("_CategoryPartial", category)
+    }
+</ul>
+
+<script>
+    var listElement = [];
+    window.onload = () => {
+        listElement = document.getElementsByClassName("li-category");
+
+        //load xong thì mặc định là chọn tất cả
+        const filterSelect = document.getElementById("filter");
+        filterSelect.value = "all";
+        filterWithSelect({ target: filterSelect });
+    }
+
+    let filterWithSelect = (e) => {
+        let choice = e.target.value;
+        if (choice === 'all') {
+            for (let i = 0; i < listElement.length; i++) {
+                listElement[i].style.display = 'list-item';
+            }
+        } else if (choice === 'inStock') {
+            for (let i = 0; i < listElement.length; i++) {
+                if (listElement[i].getAttribute("data") === "0") {
+                    listElement[i].style.display = 'list-item';
+                }
+                else {
+                    listElement[i].style.display = 'none';
+                }
+            }
+        } else {
+            for (let i = 0; i < listElement.length; i++) {
+                if (listElement[i].getAttribute("data") === "1") {
+                    listElement[i].style.display = 'list-item';
+                }
+                else {
+                    listElement[i].style.display = 'none';
+                }
+            }
+        }
+    }
+</script>
