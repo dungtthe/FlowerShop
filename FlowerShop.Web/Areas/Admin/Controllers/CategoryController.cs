@@ -9,11 +9,11 @@ using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
-using FlowerShop.Common;
+using FlowerShop.Common.MyConst;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("ADMIN")]
     [Route("admin/quan-ly-danh-muc")]
     public class CategoryController : Controller
     {

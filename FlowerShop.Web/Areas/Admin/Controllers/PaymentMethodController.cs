@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
-using FlowerShop.Common;
 using FlowerShop.Web.ViewModels;
+using FlowerShop.Common.MyConst;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("ADMIN")]
     [Route("admin/quan-li-thanh-toan")]
     public class PaymentMethodController : Controller
     {
@@ -170,7 +170,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 return Content(ConstValues.XoaThatBai);
             }
 
-            return RedirectToAction("Index","PaymentMethod",new {area = "Admin"});
+            return RedirectToAction("Index","PaymentMethod",new {area = "ADMIN"});
         }
 
         //// POST: Admin/PaymentMethod/Delete/5

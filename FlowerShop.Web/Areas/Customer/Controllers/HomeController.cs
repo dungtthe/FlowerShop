@@ -5,7 +5,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
 {
 
 
-    [Area("Customer")]
+    [Area("CUSTOMER")]
     [Route("")]
     public class HomeController : Controller
     {
@@ -23,7 +23,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             bool result = await _appUserService.LoginAsync("1", "1", false);
             if (result)
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = "ADMIN" });
               //  return View();
             }
             return Content("Có lỗi xảy ra");

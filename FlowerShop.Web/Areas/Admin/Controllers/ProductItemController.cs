@@ -8,20 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
-using FlowerShop.Common;
 using FlowerShop.Web.ViewModels;
 using FlowerShop.Common.Helpers;
+using FlowerShop.Common.MyConst;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("ADMIN")]
     [Route("admin/quan-li-kho")]
     public class ProductItemController : Controller
     {
         private readonly FlowerShopContext _context;
         private readonly IProductItemService _productItemService;
         private readonly IProductProductItemService _productProductItemService;
-
         public ProductItemController(FlowerShopContext context,IProductItemService productItemService, IProductProductItemService productProductItemService)
         {
             _context = context;
@@ -33,6 +32,10 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
+
+
+
+
             //var flowerShopContext = _context.ProductItems.Include(p => p.Category);
             var productItems = await _productItemService.GetProductsItemAsync();
 
