@@ -9,6 +9,7 @@ using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Service;
+using FlowerShop.Web.ViewModels;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -32,8 +33,25 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			/*return _context.Suppliers != null ?
                         View(await _context.Suppliers.ToListAsync()) :
                         Problem("Entity set 'FlowerShopContext.Suppliers'  is null.");*/
-			var result = await _supplierService.GetSuppliersAsync();
-			return View(result);
+			//Cách 1
+			/*var result = await _supplierService.GetSuppliersAsync();
+			return View(result);*/
+
+			//Cách 2
+			var supplierList = await _supplierService.GetSuppliersAsync();
+			var supplierListVM = new List<SupplierViewModel>();
+			foreach (var item in supplierList)
+			{
+				supplierListVM.Add(new SupplierViewModel()
+				{
+					Id = item.Id,
+					CompanyName = item.CompanyName,
+					Email = item.Email,
+					Phone = item.Phone,
+					Description = item.Description,
+				});
+			}
+			return View(supplierListVM);
 		}
 
 		// GET: Admin/Suppliers/Details/5
