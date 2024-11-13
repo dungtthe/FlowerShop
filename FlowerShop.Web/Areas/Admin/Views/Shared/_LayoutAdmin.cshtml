@@ -20,13 +20,10 @@
     <link href="~/admin/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="~/admin/css/mystyle.css" rel="stylesheet">
 
-
     @RenderSection("CustomStyles", required: false)
 </head>
 
 <body id="page-top">
-
-   
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -120,7 +117,6 @@
                 </div>
             </li>
 
-
             <!-- Divider -->
             <hr class="sidebar-divider">
             <!-- sidebar-heading Quản lý hóa đơn -->
@@ -165,9 +161,6 @@
                     </div>
                 </div>
             </li>
-
-
-
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -219,12 +212,12 @@
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Thao tác</h6>
-                        <a class="collapse-item" href="utilities-color.html">Xem danh sách</a>
+                        <a class="collapse-item" asp-area="Admin" asp-controller="Suppliers"
+                                   asp-action="Index" >Xem danh sách</a>
                         <a class="collapse-item" href="utilities-border.html">Thêm nhà cung cấp</a>
                     </div>
                 </div>
             </li>
-
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -263,7 +256,6 @@
                     </div>
                 </div>
             </li>
-
 
         </ul>
         <!-- End of Sidebar -->
@@ -485,12 +477,9 @@
                 <!-- End of Topbar -->
                 <!-- Begin Page Content -->
 
-
                 <div class="container-fluid">
                     @RenderBody()
                 </div>
-
-
 
                 <!-- /.container-fluid -->
 
@@ -552,8 +541,6 @@
     <!-- Page level custom scripts -->
     <script src="~/admin/js/demo/chart-area-demo.js"></script>
     <script src="~/admin/js/demo/chart-pie-demo.js"></script>
-
-
 
     @RenderSection("Scripts", required: false)
 
