@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlowerShop.Common
+namespace FlowerShop.Common.MyConst
 {
     public static class ConstValues
     {
