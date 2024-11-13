@@ -1,4 +1,4 @@
-﻿namespace FlowerShop.Web.ViewModels
+﻿namespace FlowerShop.Common.ViewModels
 {
     public class PopupViewModel
     {

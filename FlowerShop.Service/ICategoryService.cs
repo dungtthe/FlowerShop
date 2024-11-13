@@ -1,5 +1,6 @@
 ﻿using FlowerShop.Common.Template;
 using FlowerShop.DataAccess.Models;
+using FlowerShop.Common.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace FlowerShop.Service
         Task<Category?> GetSingleByIdAsync(int id);
         Task Update(Category category, List<int> selectedSubCategories);
         Task<Category>AddAsync(Category category);
-        Task<ResponeMessage> Delete(int id);
+        Task<PopupViewModel> Delete(int id);
 
     }
 }

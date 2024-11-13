@@ -4,6 +4,7 @@ using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
+using FlowerShop.Common.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
@@ -16,12 +17,16 @@ namespace FlowerShop.Service.ServiceImpl
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductItemRepository _productItemRepository;
+        private readonly IProductCategoryRepository _productCategoryRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryService(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+        public CategoryService(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IProductItemRepository productItemRepository, IProductCategoryRepository productCategoryRepository)
         {
             _categoryRepository = categoryRepository;
             _unitOfWork = unitOfWork;
+            _productItemRepository = productItemRepository;
+            _productCategoryRepository = productCategoryRepository;
         }
 
         public async Task<ICollection<Category>> GetAllCategoriesWithHierarchy()
@@ -71,9 +76,9 @@ namespace FlowerShop.Service.ServiceImpl
             return allCategories.ToList();
         }
 
-   
 
-      
+
+
 
         public async Task<Category> AddAsync(Category category)
         {
@@ -88,7 +93,7 @@ namespace FlowerShop.Service.ServiceImpl
         public async Task Update(Category category, List<int> selectedSubCategories)
         {
             List<int> listUnselect = new List<int>();
-            foreach(var item in category.SubCategories)
+            foreach (var item in category.SubCategories)
             {
                 if (!selectedSubCategories.Contains(item.Id))
                 {
@@ -107,16 +112,28 @@ namespace FlowerShop.Service.ServiceImpl
             await _unitOfWork.Commit();
         }
 
-        public async Task<ResponeMessage> Delete(int id)
+        public async Task<PopupViewModel> Delete(int id)
         {
-            var category =  await _categoryRepository.GetSingleByIdAsync(id);
+            var category = await _categoryRepository.GetSingleByIdAsync(id);
             if (category == null)
             {
-                return new ResponeMessage(0, ConstValues.CoLoiXayRa);
+                return new PopupViewModel(PopupViewModel.ERROR,"Lỗi", ConstValues.CoLoiXayRa);
             }
+
+            var cannotDelete = (await _productItemRepository.GetAllAsync()).Where(p => p.IsDelete == false && p.CategoryId == id).Any();
+            if (!cannotDelete)
+            {
+                cannotDelete= (await _productCategoryRepository.GetAllAsync()).Where(p=>p.CategoryId == id).Any();
+            }
+
+            if (cannotDelete)
+            {
+                return new PopupViewModel(PopupViewModel.ERROR,"Lỗi","Không thể xóa do đang có ít nhất 1 sản phẩm thuộc danh mục này");
+            }
+
             category.IsDelete = true;
             await _unitOfWork.Commit();
-            return new ResponeMessage(1, ConstValues.ThanhCong);
+            return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Xóa sản phẩm thành công");
         }
     }
 

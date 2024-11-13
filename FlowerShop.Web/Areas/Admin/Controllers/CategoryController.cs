@@ -10,6 +10,9 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
 using FlowerShop.Common.MyConst;
+using AutoMapper;
+using FlowerShop.Common.ViewModels;
+using Newtonsoft.Json;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -19,43 +22,23 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
     {
         private readonly FlowerShopContext _context;
         private readonly ICategoryService _categoryService;
+        private readonly IMapper _mapper;
 
-        public CategoryController(FlowerShopContext context,ICategoryService categoryService)
+        public CategoryController(FlowerShopContext context,ICategoryService categoryService,IMapper mapper)
         {
             _context = context;
             _categoryService = categoryService;
+            _mapper = mapper;
         }
 
         // GET: Admin/Category
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            //var flowerShopContext = _context.Categories.Include(c => c.ParentCategory);
-            //return View(await flowerShopContext.ToListAsync());
-
             var categoriesHierarchy = await _categoryService.GetAllCategoriesWithHierarchy();
             return View(categoriesHierarchy);
         }
 
-        // GET: Admin/Category/Details/5
-        [HttpGet("detail")]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Categories == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Categories
-                .Include(c => c.ParentCategory)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
 
         // GET: Admin/Category/Create
         [HttpGet("create")]
@@ -83,10 +66,12 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
 
-                Category category = new Category();
-                category.Name=categoryViewModel.Name;
-                category.ParentCategoryId=(categoryViewModel.ParentCategoryId==0)?null:categoryViewModel.ParentCategoryId;
-               
+                //Category category = new Category();
+                //category.Name=categoryViewModel.Name;
+                //category.ParentCategoryId=(categoryViewModel.ParentCategoryId==0)?null:categoryViewModel.ParentCategoryId;
+
+
+                Category category= _mapper.Map<Category>(categoryViewModel);
                 var rs= await _categoryService.AddAsync(category);
                 if (rs != null)
                 {
@@ -121,15 +106,20 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 return Content(ConstValues.CoLoiXayRa);
             }
 
-            var categoryVM = new CategoryViewModel
-            {
-                Id = rs.Id,
-                Name = rs.Name,
-                ParentCategoryId = rs.ParentCategoryId,
-                ParentCategory = rs.ParentCategory,
-                IsCategorySell = rs.IsCategorySell,
-                SubCategories = rs.SubCategories,
-            };
+            //var categoryVM = new CategoryViewModel
+            //{
+            //    Id = rs.Id,
+            //    Name = rs.Name,
+            //    ParentCategoryId = rs.ParentCategoryId,
+            //    ParentCategory = rs.ParentCategory,
+            //    IsCategorySell = rs.IsCategorySell,
+            //    SubCategories = rs.SubCategories,
+            //};
+
+
+            var categoryVM=_mapper.Map<CategoryViewModel>(rs);  
+
+
 
             var categories = new List<Category>
             {
@@ -150,7 +140,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CategoryViewModel model)
+        public async Task<IActionResult> Edit(int id, CategoryViewModel categoryVM)
         {
             if (!ModelState.IsValid)
             {
@@ -163,9 +153,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
                 ViewBag.Categories = new SelectList(categories.Where(c => c.Id != id), "Id", "Name");
 
-                ViewBag.SelectedSubCategories = model.SelectedSubCategories;
+                ViewBag.SelectedSubCategories = categoryVM.SelectedSubCategories;
 
-                return View(model);
+                return View(categoryVM);
             }
 
             // Xử lý cập nhật danh mục như bình thường
@@ -175,10 +165,14 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 return Content(ConstValues.CoLoiXayRa);
             }
 
-            category.Name = model.Name;
-            category.ParentCategoryId = (model.ParentCategoryId==0)?null:model.ParentCategoryId;
-            category.IsCategorySell = model.IsCategorySell;
-             await _categoryService.Update(category, model.SelectedSubCategories);
+            category.Name = categoryVM.Name;
+            category.ParentCategoryId = (categoryVM.ParentCategoryId == 0) ? null : categoryVM.ParentCategoryId;
+            category.IsCategorySell = categoryVM.IsCategorySell;
+
+            //categoryVM.Id=category.Id;
+            //category=_mapper.Map<Category>(categoryVM);
+
+            await _categoryService.Update(category, categoryVM.SelectedSubCategories);
 
             return RedirectToAction("Index");
         }
@@ -193,11 +187,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             }
 
             // Thực hiện xóa danh mục
-           var rsp=  await _categoryService.Delete(id);
-            if (rsp.Id == 0)
-            {
-                return Content(rsp.Message);
-            }
+            PopupViewModel rsp =  await _categoryService.Delete(id);
+            //TempData[nameof(PopupViewModel)] = JsonConvert.SerializeObject(rsp);
+            TempData["PopupViewModel"] = JsonConvert.SerializeObject(rsp);
             return RedirectToAction("Index"); 
         }
 

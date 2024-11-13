@@ -1,5 +1,13 @@
-﻿@if (ViewData["PopupViewModel"] is PopupViewModel popupViewModel)
+﻿@using FlowerShop.Common.ViewModels
+@using Newtonsoft.Json
+@{
+    var popupViewModel = TempData["PopupViewModel"] != null
+        ? JsonConvert.DeserializeObject<PopupViewModel>(TempData["PopupViewModel"].ToString())
+        : null;
+}
+@if (popupViewModel!=null)
 {
+   
     @if (popupViewModel.Type == PopupViewModel.YES_NO)
     {
         <div class="modal fade" id="layout-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
