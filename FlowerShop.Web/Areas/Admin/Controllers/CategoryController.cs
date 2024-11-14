@@ -183,7 +183,8 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             var category = await _categoryService.GetSingleByIdAsync(id);
             if (category == null)
             {
-                return Content(ConstValues.CoLoiXayRa);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR,"Lỗi","Không tìm thấy danh mục để xóa"));
+                return RedirectToAction("Index");
             }
 
             // Thực hiện xóa danh mục
