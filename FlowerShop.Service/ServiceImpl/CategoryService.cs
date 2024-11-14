@@ -72,7 +72,7 @@ namespace FlowerShop.Service.ServiceImpl
 
         public async Task<ICollection<Category>> GetAllCategoriesNotWithHierarchy()
         {
-            var allCategories = await _categoryRepository.GetAllAsync();
+            var allCategories = (await _categoryRepository.GetAllAsync()).Where(c=>c.IsDelete==false);
             return allCategories.ToList();
         }
 

@@ -40,7 +40,7 @@ namespace FlowerShop.Service.ServiceImpl
 
         public async Task<ICollection<ProductItem>> GetProductsItemAsync()
         {
-            var productItems = await _productItemRepository.GetAllWithIncludeAsync(p => p.Category);
+            var productItems = (await _productItemRepository.GetAllWithIncludeAsync(p => p.Category)).Where(p=>p.IsDelete==false);
             return productItems.ToList();
         }
 
