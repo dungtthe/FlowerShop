@@ -1,4 +1,5 @@
-﻿using FlowerShop.DataAccess.Models;
+﻿using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,7 @@ namespace FlowerShop.Service
 		Task<Supplier> UpdateAsync(Supplier supplier);
 
 		Task<Supplier> GetSingleById(int id);
+
+		Task<PopupViewModel> Delete(int id);
 	}
 }

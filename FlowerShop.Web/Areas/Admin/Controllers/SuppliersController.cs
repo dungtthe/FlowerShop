@@ -12,6 +12,9 @@ using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
 using FlowerShop.Common.MyConst;
 using static System.Net.Mime.MediaTypeNames;
+using FlowerShop.Common.ViewModels;
+using Newtonsoft.Json;
+using System.Security.Cryptography;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -45,7 +48,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 					Description = item.Description,
 				});
 			}
-			return View(supplierListVM);
+			return View(supplierList);
 		}
 
 		// GET: Admin/Suppliers/Details/5
@@ -162,40 +165,18 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		}
 
 		// GET: Admin/Suppliers/Delete/5
-		public async Task<IActionResult> Delete(int? id)
-		{
-			if (id == null || _context.Suppliers == null)
-			{
-				return NotFound();
-			}
 
-			var supplier = await _context.Suppliers
-				.FirstOrDefaultAsync(m => m.Id == id);
+		[HttpPost("delete/{id:int}")]
+		public async Task<IActionResult> Delete(int id)
+		{
+			var supplier = await _supplierService.GetSingleById(id);
 			if (supplier == null)
 			{
-				return NotFound();
+				TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy danh mục để xóa"));
 			}
-
-			return View(supplier);
-		}
-
-		// POST: Admin/Suppliers/Delete/5
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int id)
-		{
-			if (_context.Suppliers == null)
-			{
-				return Problem("Entity set 'FlowerShopContext.Suppliers'  is null.");
-			}
-			var supplier = await _context.Suppliers.FindAsync(id);
-			if (supplier != null)
-			{
-				_context.Suppliers.Remove(supplier);
-			}
-
-			await _context.SaveChangesAsync();
-			return RedirectToAction(nameof(Index));
+			PopupViewModel rsp = await _supplierService.Delete(id);
+			TempData["PopupViewModel"] = JsonConvert.SerializeObject(rsp);
+			return RedirectToAction("Index", "Suppliers", new { area = "ADMIN" });
 		}
 
 		private bool SupplierExists(int id)

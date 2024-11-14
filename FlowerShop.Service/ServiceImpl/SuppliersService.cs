@@ -1,4 +1,6 @@
-﻿using FlowerShop.DataAccess.Infrastructure;
+﻿using FlowerShop.Common.MyConst;
+using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
@@ -19,6 +21,18 @@ namespace FlowerShop.Service.ServiceImpl
 		{
 			_supplierRepository = supplierRepository;
 			_unitOfWork = unitOfWork;
+		}
+
+		public async Task<PopupViewModel> Delete(int id)
+		{
+			var supplier = await _supplierRepository.GetSingleByIdAsync(id);
+			if (supplier == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			supplier.IsDelete = true;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đã xóa thành công");
 		}
 
 		public async Task<Supplier> GetSingleById(int id)
