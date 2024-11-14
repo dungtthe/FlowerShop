@@ -1,0 +1,56 @@
+﻿@model IEnumerable<FlowerShop.Web.ViewModels.CustomerViewModel>
+@using FlowerShop.Common.Helpers;
+@{
+	ViewData["Title"] = "Danh sách khách hàng";
+	int stt = 1;
+}
+
+<h1>Danh sách khách hàng</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th style="width: 20px">
+				STT
+			</th>
+			<th style="width: 200px">
+				Tên khách hàng
+			</th>
+			<th>
+				Ngày sinh
+			</th>
+			<th style="width: 140px">
+				SĐT
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@(stt++)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.FullName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.BirthDay)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.PhoneNumber)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id">
+						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
+					</a>|
+
+					<a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id">
+						<i class="fa-solid fa-trash" style="color:red; width: 20px; height: 30px"></i>
+					</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
