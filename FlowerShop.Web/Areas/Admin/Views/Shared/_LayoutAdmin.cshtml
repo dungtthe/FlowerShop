@@ -100,22 +100,22 @@
 				</div>
 			</li>
 
-			<!-- Nav Item - Quản lý sản phẩm bán -->
-			<li class="nav-item">
-				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLySanPhamBan"
-				   aria-expanded="true" aria-controls="collapseQuanLySanPhamBan">
-					<i class="fas fa-fw fa-wrench"></i>
-					<span>Quản lý sản phẩm bán</span>
-				</a>
-				<div id="collapseQuanLySanPhamBan" class="collapse" aria-labelledby="headingUtilities"
-					 data-parent="#accordionSidebar">
-					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" href="utilities-color.html">Danh sách sản phẩm</a>
-						<a class="collapse-item" href="utilities-border.html">Thêm sản phẩm bán</a>
-					</div>
-				</div>
-			</li>
+            <!-- Nav Item - Quản lý sản phẩm bán -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLySanPhamBan"
+                   aria-expanded="true" aria-controls="collapseQuanLySanPhamBan">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Quản lý sản phẩm bán</span>
+                </a>
+                <div id="collapseQuanLySanPhamBan" class="collapse" aria-labelledby="headingUtilities"
+                     data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Thao tác</h6>
+                        <a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Danh sách sản phẩm</a>
+                        <a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Create">Thêm sản phẩm</a>
+                    </div>
+                </div>
+            </li>
 
 			<!-- Divider -->
 			<hr class="sidebar-divider">
@@ -544,6 +544,8 @@
 	@RenderSection("Scripts", required: false)
 
 	@await Html.PartialAsync("_PopUp.cshtml")
+
+    @await Html.PartialAsync("_MessageBox")
 
 </body>
 
