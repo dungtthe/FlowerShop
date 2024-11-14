@@ -224,27 +224,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 
 
-        [HttpDelete("/admin/quan-li-danh-muc/deleteimage")]
-        public async Task<IActionResult> DeleteImage([FromBody] DeleteImageRequest request)
-        {
-            var product = await _productItemService.GetSingleById(request.Id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", request.FileName);
-
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-
-            var imgs = Utils.RemovePhotoForProduct(request.FileName, product.Images);
-            product.Images = imgs;
-            await _productItemService.UpdateAsync(product);
-
-            return Ok(new { message = "Ảnh đã được xóa thành công." });
-        }
+       
     }
 }

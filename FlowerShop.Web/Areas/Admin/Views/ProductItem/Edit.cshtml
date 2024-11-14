@@ -26,17 +26,38 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 0.25rem;
+        }
+
+        .image-container .overlay-top,
+        .image-container .overlay-bottom {
+            width: 100%;
+            height: 50%; /* Mỗi phần chiếm 50% chiều cao */
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
-            transition: opacity 0.3s;
-            border-radius: 0.25rem;
+        }
+
+        .image-container .overlay-top {
+            background: rgba(0, 128, 0, 0.8); 
+            color: white;
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+        }
+
+        .image-container .overlay-bottom {
+            background: rgba(255, 0, 0, 0.8); 
+            color: white;
+            border-bottom-left-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
         }
 
         .image-container:hover .product-image {
@@ -46,6 +67,7 @@
         .image-container:hover .overlay {
             opacity: 1;
         }
+
     </style>
 }
 
@@ -86,7 +108,10 @@
                             @if (im != "no_img.png")
                             {
                                 <img src="~/images/products/@im" alt="Product Image" class="img-thumbnail rounded shadow-sm img-fluid product-image" style="width: 100px; height: 100px; object-fit: cover;" />
-                                <div class="overlay text-center" onclick="deleteImage('@im')">Xóa</div>
+                                <div class="overlay">
+                                    <div class="overlay-top" onclick="setDefaultImage('@im')">Đặt làm mặc định</div>
+                                    <div class="overlay-bottom" onclick="deleteImage('@im')">Xóa</div>
+                                </div>
                             }
                             else
                             {
@@ -95,6 +120,7 @@
                         </div>
                     }
                 </div>
+
                 <br />
                 <a asp-area="Admin" asp-controller="ProductItem" asp-action="UploadPhoto" asp-route-id="@Model.Id" class="btn" style="background: green !important; color: white !important;">Upload ảnh</a>
             </div>
@@ -118,22 +144,64 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
-        function deleteImage(imageName) {
-            if (confirm("Bạn có chắc chắn muốn xóa ảnh này không?")) {
-                $.ajax({
-                    url: '/admin/quan-li-danh-muc/deleteimage',
-                    type: 'DELETE',
-                    data: JSON.stringify({ fileName: imageName, id: @Model.Id }),
-                    contentType: 'application/json',
-                    success: function (response) {
-                        alert("Ảnh đã được xóa thành công.");
-                        location.reload();
-                    },
-                    error: function (xhr, status, error) {
-                        alert("Có lỗi xảy ra khi xóa ảnh: " + error);
+
+        const deleteImage = async (imageName) => {
+            showConfirm("Bạn có chắc chắn muốn xóa ảnh này không?", async () => {
+                try {
+                    const response = await fetch('/api/admin/quan-li-kho/deleteimage', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ fileName: imageName, id: @Model.Id }),
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        showError('Có lỗi xảy ra');
+                        return;
                     }
-                });
-            }
-        }
+
+                    const result = await response.json();
+                    showSuccess('Đã xóa ảnh thành công.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } catch (error) {
+                    showError('Có lỗi xảy ra');
+                }
+            });
+        };
+
+
+
+        const setDefaultImage = async (imageName) => {
+            showConfirm("Bạn có muốn đặt ảnh này làm mặc định không?", async () => {
+                try {
+                    const response = await fetch('/api/admin/quan-li-kho/set-default-img', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ fileName: imageName, id: @Model.Id }),
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        showError('Có lỗi xảy ra');
+                        return;
+                    }
+
+                    const result = await response.json();
+                    showSuccess('Ảnh đã được đặt làm mặc định thành công.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } catch (error) {
+                    showError('Có lỗi xảy ra');
+                }
+            });
+        };
+
     </script>
 }

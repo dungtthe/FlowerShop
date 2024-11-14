@@ -58,5 +58,29 @@ namespace FlowerShop.Common.Helpers
 
             return JsonConvert.SerializeObject(images);
         }
+
+        public static string SetDefaultProductImage(string fileName, string imgPre)
+        {
+            if (string.IsNullOrEmpty(imgPre))
+            {
+                 return "[\"no_img.png\"]";
+            }
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return imgPre;
+            }
+
+            string[] s = JsonConvert.DeserializeObject<string[]>(imgPre);
+            List<string> images = new List<string>();
+            images.Add(fileName);
+            foreach(var im in s)
+            {
+                if (!(fileName == im))
+                {
+                    images.Add(im);
+                }
+            }
+            return JsonConvert.SerializeObject(images);
+        }
     }
 }
