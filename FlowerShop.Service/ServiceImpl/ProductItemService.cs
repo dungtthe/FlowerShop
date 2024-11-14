@@ -38,10 +38,10 @@ namespace FlowerShop.Service.ServiceImpl
 
 
 
-        public async Task<ICollection<ProductItem>> GetProductsItemAsync()
+        public async Task<IEnumerable<ProductItem>> GetProductsItemAsync()
         {
             var productItems = (await _productItemRepository.GetAllWithIncludeAsync(p => p.Category)).Where(p=>p.IsDelete==false);
-            return productItems.ToList();
+            return productItems;
         }
 
         public async Task<ProductItem> GetSingleById(int id)

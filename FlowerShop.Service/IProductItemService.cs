@@ -9,7 +9,7 @@ namespace FlowerShop.Service
 {
     public interface IProductItemService
     {
-        Task<ICollection<ProductItem>> GetProductsItemAsync();
+        Task<IEnumerable<ProductItem>> GetProductsItemAsync();
         Task<ProductItem> UpdateAsync(ProductItem productItem);
         Task<ProductItem> GetSingleById(int id);
         Task DeleteAsync(int id);

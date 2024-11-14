@@ -19,37 +19,44 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ImportPrice)
+                @Html.DisplayNameFor(model => model.Category)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Category)
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImportPrice)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Images)
             </th>
-
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr >
+            <tr>
                 <td>
                     @(stt++)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
+               
                 <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                 <td>
                     @{
                         var priceConverted = Converter.ConvertToVietnameseDong(item.ImportPrice);
                     }
                     @Html.DisplayFor(modelItem => priceConverted)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Category.Name)
-                </td>
+                
                 <td>
                     @{
                         string[] listImg = item.Images != null
@@ -58,11 +65,11 @@
 
                         var firstImg = listImg[0];
                     }
-                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;"  />
+                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
                 </td>
 
                 <td>
-                    <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i class="fa-solid fa-circle-info" ></i></a> |
+                    <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i class="fa-solid fa-circle-info"></i></a> |
                     <a asp-action="Delete" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i class="fa-solid fa-trash" style="color:red;"></i></a>
                 </td>
             </tr>

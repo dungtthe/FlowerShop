@@ -9,7 +9,7 @@ namespace FlowerShop.Service
 {
     public interface IPaymentMethodService
     {
-        Task<ICollection<PaymentMethod>> GetPaymentMethodsAsync();
+        Task<IEnumerable<PaymentMethod>> GetPaymentMethodsAsync();
         Task<PaymentMethod> UpdateAsync(PaymentMethod paymentMethod);
         Task<bool> DeleteAsync(int? id);
 

@@ -29,7 +29,7 @@ namespace FlowerShop.Service.ServiceImpl
             _productCategoryRepository = productCategoryRepository;
         }
 
-        public async Task<ICollection<Category>> GetAllCategoriesWithHierarchy()
+        public async Task<IEnumerable<Category>> GetAllCategoriesWithHierarchy()
         {
             var allCategories = await _categoryRepository.GetAllAsync();
             var rootCategories = allCategories.Where(c => c.ParentCategoryId == null).ToList();
@@ -70,10 +70,10 @@ namespace FlowerShop.Service.ServiceImpl
             return result;
         }
 
-        public async Task<ICollection<Category>> GetAllCategoriesNotWithHierarchy()
+        public async Task<IEnumerable<Category>> GetAllCategoriesNotWithHierarchy()
         {
             var allCategories = (await _categoryRepository.GetAllAsync()).Where(c=>c.IsDelete==false);
-            return allCategories.ToList();
+            return allCategories;
         }
 
 

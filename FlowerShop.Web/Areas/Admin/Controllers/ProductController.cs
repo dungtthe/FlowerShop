@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
+using FlowerShop.Service;
+using FlowerShop.Web.ViewModels;
+using AutoMapper;
+using FlowerShop.Common.ViewModels;
+using Newtonsoft.Json;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -15,17 +20,34 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly FlowerShopContext _context;
+        private readonly IProductService _productService;
+        private readonly IProductItemService _productItemService;
+        private readonly IMapper _mapper;
 
-        public ProductController(FlowerShopContext context)
+        public ProductController(FlowerShopContext context, IProductService productService,IMapper mapper,IProductItemService productItemService)
         {
             _context = context;
+            _productService = productService;
+            _mapper = mapper;
+            _productItemService = productItemService;
         }
 
-        // GET: Admin/Product
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var flowerShopContext = _context.Products.Include(p => p.Packaging);
-            return View(await flowerShopContext.ToListAsync());
+            var products = await _productService.GetProductsForIndexAsync();
+            if (products == null)
+            {
+                return NotFound();
+            }
+
+            var productsVM = new List<ProductViewModel>();
+            foreach(var item in products)
+            {
+                var productVM = _mapper.Map<ProductViewModel>(item);
+                productsVM.Add(productVM);
+            }
+            return View(productsVM);
         }
 
         // GET: Admin/Product/Details/5
@@ -47,9 +69,16 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(product);
         }
 
-        // GET: Admin/Product/Create
-        public IActionResult Create()
+        [HttpGet("create")]
+        public async Task<IActionResult> Create()
         {
+            var productsItem = await _productItemService.GetProductsItemAsync();
+            if (productsItem == null)
+            {
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Có lỗi xảy ra!"));
+                return RedirectToAction("Index");   
+            }
+            ViewBag.ProductsItem =productsItem;
             ViewData["PackagingId"] = new SelectList(_context.Packagings, "Id", "Name");
             return View();
         }
@@ -157,14 +186,14 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

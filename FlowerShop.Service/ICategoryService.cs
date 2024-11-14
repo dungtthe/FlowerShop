@@ -11,8 +11,8 @@ namespace FlowerShop.Service
 {
     public interface ICategoryService
     {
-        Task<ICollection<Category>> GetAllCategoriesWithHierarchy();
-        Task<ICollection<Category>> GetAllCategoriesNotWithHierarchy();
+        Task<IEnumerable<Category>> GetAllCategoriesWithHierarchy();
+        Task<IEnumerable<Category>> GetAllCategoriesNotWithHierarchy();
         Task<Category?> GetSingleByIdAsync(int id);
         Task Update(Category category, List<int> selectedSubCategories);
         Task<Category>AddAsync(Category category);

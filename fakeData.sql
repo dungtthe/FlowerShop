@@ -145,23 +145,15 @@ VALUES
 ('101 Maple St, City D', '456-789-0123', 0, '104'),
 ('202 Birch St, City E', '567-890-1234', 0, '105');
 
--- 8. Insert data for [Products] (Phụ thuộc vào Packaging đã có)
-INSERT INTO [dbo].[Products] (Title, Description, PackagingId, IsDelete)
-VALUES 
-('Rose Bouquet', 'A bouquet of red roses',  1, 0),
-('Tulip Bouquet', 'A bouquet of fresh tulips', 2, 0),
-('Chocolate Box', 'A box of assorted chocolates',  3, 0),
-('Orchid Arrangement', 'Elegant orchid arrangement', 4, 0),
-('Sunflower Bouquet', 'Bright sunflower bouquet',  5, 0);
 
 -- 9. Insert data for [ProductItems] (Phụ thuộc vào Categories)
-INSERT INTO [dbo].[ProductItems] (Name, ImportPrice, CategoryId, Description, IsDelete)
+INSERT INTO [dbo].[ProductItems] (Name, ImportPrice, CategoryId, Description, IsDelete,Quantity)
 VALUES 
-('Single Rose', 5, 3, 'A single red rose', 0),
-('Single Tulip', 4, 4,  'A single tulip', 0),
-('Dark Chocolate', 10, 5, 'Dark chocolate piece', 0),
-('Milk Chocolate', 8, 5,  'Milk chocolate piece', 0),
-('Orchid Plant', 20, 1,  'Single orchid plant', 0);
+('Single Rose', 5, 3, 'A single red rose', 0,99),
+('Single Tulip', 4, 4,  'A single tulip', 0,3232),
+('Dark Chocolate', 10, 5, 'Dark chocolate piece', 0,54354),
+('Milk Chocolate', 8, 5,  'Milk chocolate piece', 0,43),
+('Orchid Plant', 20, 1,  'Single orchid plant', 0,3);
 
 -- 10. Insert data for [CartDetails] (Phụ thuộc vào Products và Carts đã có)
 INSERT INTO [dbo].[CartDetails] (CartId, ProductId, Quantity)

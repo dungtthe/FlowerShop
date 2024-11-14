@@ -46,10 +46,10 @@ namespace FlowerShop.Service.ServiceImpl
 
         }
 
-        public async Task<ICollection<PaymentMethod>> GetPaymentMethodsAsync()
+        public async Task<IEnumerable<PaymentMethod>> GetPaymentMethodsAsync()
         {
             var result = await _paymentMethodRepository.GetAllAsync();
-            return result.ToList();
+            return result;
         }
 
         public async Task<PaymentMethod> UpdateAsync(PaymentMethod paymentMethod)

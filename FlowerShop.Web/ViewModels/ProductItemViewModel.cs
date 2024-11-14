@@ -18,6 +18,10 @@ namespace FlowerShop.Web.ViewModels
         [DisplayName("Giá sản phẩm")]
         public int ImportPrice { get; set; }
 
+        [Required]
+        [DisplayName("Số lượng")]
+        public int Quantity { get; set; }
+
 
         [Required(ErrorMessage = "Phải thuộc 1 danh mục")]
         [DisplayName("Danh mục thuộc về")]
