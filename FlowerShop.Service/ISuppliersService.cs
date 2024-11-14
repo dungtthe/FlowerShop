@@ -10,5 +10,9 @@ namespace FlowerShop.Service
 	public interface ISuppliersService
 	{
 		Task<ICollection<Supplier>> GetSuppliersAsync();
+
+		Task<Supplier> UpdateAsync(Supplier supplier);
+
+		Task<Supplier> GetSingleById(int id);
 	}
 }

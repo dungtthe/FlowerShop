@@ -5,6 +5,8 @@ namespace FlowerShop.Web.ViewModels
 {
 	public class SupplierViewModel
 	{
+		#region Hiển thị lên view danh sách
+
 		public int Id { get; set; }
 
 		[Required(ErrorMessage = "Tên nhà cung cấp không được để trống")]
@@ -20,5 +22,27 @@ namespace FlowerShop.Web.ViewModels
 
 		[Required(ErrorMessage = "Mô tả không được để trống")]
 		public string? Description { get; set; }
+
+		#endregion Hiển thị lên view danh sách
+
+		[Required]
+		[MaxLength(100)]
+		public string? TaxCode { get; set; }
+
+		public int Type { get; set; }
+
+		[Required]
+		[MaxLength(300)]
+		public string? Industry { get; set; }
+
+		[Required]
+		[MaxLength(500)]
+		public string? Address { get; set; }
+
+		[MaxLength(1500)]
+		public string? Images { get; set; }
+
+		[Required]
+		public bool IsDelete { get; set; }
 	}
 }

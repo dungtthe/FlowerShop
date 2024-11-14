@@ -10,6 +10,8 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
+using FlowerShop.Common.MyConst;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -30,14 +32,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		[HttpGet("")]
 		public async Task<IActionResult> Index()
 		{
-			/*return _context.Suppliers != null ?
-                        View(await _context.Suppliers.ToListAsync()) :
-                        Problem("Entity set 'FlowerShopContext.Suppliers'  is null.");*/
-			//Cách 1
-			/*var result = await _supplierService.GetSuppliersAsync();
-			return View(result);*/
-
-			//Cách 2
 			var supplierList = await _supplierService.GetSuppliersAsync();
 			var supplierListVM = new List<SupplierViewModel>();
 			foreach (var item in supplierList)
@@ -79,8 +73,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		}
 
 		// POST: Admin/Suppliers/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create([Bind("Id,CompanyName,TaxCode,Email,Phone,Type,Images,Description,Industry,Address,IsDelete")] Supplier supplier)
@@ -95,39 +87,63 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		}
 
 		// GET: Admin/Suppliers/Edit/5
+		[HttpGet("edit")]
 		public async Task<IActionResult> Edit(int? id)
 		{
-			if (id == null || _context.Suppliers == null)
-			{
-				return NotFound();
-			}
-
-			var supplier = await _context.Suppliers.FindAsync(id);
+			var supplier = await _supplierService.GetSingleById(id ?? -1);
 			if (supplier == null)
 			{
-				return NotFound();
+				return Content(ConstValues.CoLoiXayRa);
 			}
-			return View(supplier);
+			var supplierVM = new SupplierViewModel()
+			{
+				Id = supplier.Id,
+				CompanyName = supplier.CompanyName,
+				TaxCode = supplier.TaxCode,
+				Type = supplier.Type,
+				Images = supplier.Images,
+				Industry = supplier.Industry,
+				Address = supplier.Address,
+				IsDelete = supplier.IsDelete,
+				Email = supplier.Email,
+				Phone = supplier.Phone,
+				Description = supplier.Description,
+			};
+
+			return View(supplierVM);
 		}
 
 		// POST: Admin/Suppliers/Edit/5
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
+		[HttpPost("edit")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyName,TaxCode,Email,Phone,Type,Images,Description,Industry,Address,IsDelete")] Supplier supplier)
+		public async Task<IActionResult> Edit(int? id, [Bind("Id,CompanyName,TaxCode,Email,Phone,Type,Images,Description,Industry,Address,IsDelete")] SupplierViewModel supplierVM)
 		{
-			if (id != supplier.Id)
+			var supplier = await _supplierService.GetSingleById(id ?? -1);
+			if (supplier == null)
 			{
-				return NotFound();
+				return Content(ConstValues.CoLoiXayRa);
 			}
 
 			if (ModelState.IsValid)
 			{
 				try
 				{
-					_context.Update(supplier);
-					await _context.SaveChangesAsync();
+					supplier.CompanyName = supplierVM.CompanyName;
+					supplier.TaxCode = supplierVM.TaxCode;
+					supplier.Type = supplierVM.Type;
+					supplier.Images = supplierVM.Images;
+					supplier.Industry = supplierVM?.Industry;
+					supplier.Address = supplierVM?.Address;
+					supplier.IsDelete = supplierVM.IsDelete;
+					supplier.Email = supplierVM.Email;
+					supplier.Phone = supplierVM.Phone;
+					supplier.Description = supplierVM.Description;
+
+					var result = _supplierService.UpdateAsync(supplier);
+					if (result == null)
+					{
+						return Content(ConstValues.CoLoiXayRa);
+					}
 				}
 				catch (DbUpdateConcurrencyException)
 				{
