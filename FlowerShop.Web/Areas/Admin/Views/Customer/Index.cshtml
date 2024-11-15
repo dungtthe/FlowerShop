@@ -1,0 +1,87 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.AppUser>
+@using FlowerShop.Common.Helpers;
+@{
+	ViewData["Title"] = "Danh sách khách hàng";
+	int stt = 1;
+}
+
+<h1>Danh sách khách hàng</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th style="width: 20px">
+				STT
+			</th>
+			<th style="width: 200px">
+				Tên khách hàng
+			</th>
+			<th>
+				Ngày sinh
+			</th>
+			<th>
+				Đã khóa
+			</th>
+			<th style="width: 140px">
+				SĐT
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@(stt++)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.FullName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.BirthDay)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.IsLock)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.PhoneNumber)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id">
+						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
+					</a>|
+
+					<!-- Form cho nút xóa -->
+					<form asp-action="Delete" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn khóa tài khoản của khách hàng này?');">
+						<button type="submit" style="border: none; background: none; cursor: pointer;">
+							<i class="fa-solid fa-lock" style="color:red; width: 20px; height: 30px"></i>
+						</button>
+					</form>
+
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script>
+		$(document).ready(function () {
+			// Ngăn dropdown đóng lại khi chọn checkbox
+			$('.dropdown-menu').on('click', function (e) {
+				e.stopPropagation();
+			});
+
+			$('.dropdown-menu input[type="checkbox"]').on('change', function () {
+				let selected = [];
+				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
+					selected.push($(this).next().text().trim());
+				});
+			});
+		});
+	</script>
+}

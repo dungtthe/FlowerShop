@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using FlowerShop.DataAccess.Models;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace FlowerShop.DataAccess.Models
+namespace FlowerShop.Web.ViewModels
 {
-	[Table("SaleInvoices")]
-	public class SaleInvoice
+	public class SaleInvoiceViewModel
 	{
-		[Key]
 		public int Id { get; set; }
 
 		[Required]
@@ -21,13 +15,10 @@ namespace FlowerShop.DataAccess.Models
 		[Required]
 		public string? CustomerId { get; set; }
 
-		[ForeignKey(nameof(CustomerId))]
 		public AppUser? Customer { get; set; }
 
-		[Required]
 		public int PaymentMethodId { get; set; }
 
-		[ForeignKey(nameof(PaymentMethodId))]
 		public PaymentMethod? PaymentMethod { get; set; }
 
 		[Required]

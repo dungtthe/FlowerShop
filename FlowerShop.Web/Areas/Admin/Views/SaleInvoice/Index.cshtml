@@ -1,0 +1,73 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
+
+@{
+	ViewData["Title"] = "Chờ xác nhận";
+}
+
+<h1>Danh sách đơn hàng chờ xác nhận</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Tên khách hàng
+			</th>
+			<th>
+				Ngày tạo hóa đơn
+			</th>
+			<th>
+				Phương thức thanh toán
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Customer.FullName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateDay)
+				</td>
+
+				<td>
+					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
+				</td>
+				<td>
+					<a asp-action="DaXacNhan" asp-area="Admin" asp-controller="SaleInvoice" asp-route-id="@item.Id">
+						<i class="fa-solid fa-check fa-1,5x" style="color: #28a745; width: 25px; height: 30px; font-size: 25px"></i> <!-- Màu xanh lá cây -->
+					</a>|
+
+					<!-- Form cho nút xóa -->
+					<form asp-action="Huy" asp-area="Admin" asp-controller="SaleInvoice" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?');">
+						<button type="submit" style="border: none; background: none; cursor: pointer;">
+							<i class="fa-solid fa-trash" style="color:red; width: 20px; height: 30px"></i>
+						</button>
+					</form>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script>
+		$(document).ready(function () {
+			// Ngăn dropdown đóng lại khi chọn checkbox
+			$('.dropdown-menu').on('click', function (e) {
+				e.stopPropagation();
+			});
+
+			$('.dropdown-menu input[type="checkbox"]').on('change', function () {
+				let selected = [];
+				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
+					selected.push($(this).next().text().trim());
+				});
+			});
+		});
+	</script>
+}

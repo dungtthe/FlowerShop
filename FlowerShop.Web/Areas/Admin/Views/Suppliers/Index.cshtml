@@ -1,0 +1,87 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.Supplier>
+@using FlowerShop.Common.Helpers;
+
+@{
+	ViewData["Title"] = "Danh sách nhà cung cấp";
+	int stt = 1;
+}
+
+<h1>Danh sách các nhà cung cấp</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th style="width: 20px">
+				STT
+			</th>
+			<th style="width: 140px">
+				Nhà cung cấp
+			</th>
+			<th style="width: 140px">
+				SĐT
+			</th>
+			<th style="width: 170px">
+				Ngừng cung cấp
+			</th>
+			<th style="width: 270px">
+				Mô tả
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@(stt++)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CompanyName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Phone)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.IsDelete)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Description)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-area="Admin" asp-controller="Suppliers" asp-route-id="@item.Id">
+						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
+					</a>|
+
+					<!-- Form cho nút xóa -->
+					<form asp-action="Delete" asp-area="Admin" asp-controller="Suppliers" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?');">
+						<button type="submit" style="border: none; background: none; cursor: pointer;">
+							<i class="fa-solid fa-trash" style="color:red; width: 20px; height: 30px"></i>
+						</button>
+					</form>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script>
+		$(document).ready(function () {
+			// Ngăn dropdown đóng lại khi chọn checkbox
+			$('.dropdown-menu').on('click', function (e) {
+				e.stopPropagation();
+			});
+
+			$('.dropdown-menu input[type="checkbox"]').on('change', function () {
+				let selected = [];
+				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
+					selected.push($(this).next().text().trim());
+				});
+			});
+		});
+	</script>
+}
