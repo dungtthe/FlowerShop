@@ -27,16 +27,48 @@ namespace FlowerShop.Service.ServiceImpl
 			_context = context;
 		}
 
-		public async Task<PopupViewModel> Delete(int id)
+		/*public async Task<PopupViewModel> Delete(string id)
 		{
-			var customer = await _appUserRepository.GetSingleByIdAsync(id);
-			if (customer == null)
+			try
 			{
-				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+				var customer = await _appUserRepository.FindByIdAsync(id);
+				if (customer == null)
+				{
+					return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+				}
+
+				//Khóa tài khoản
+				customer.IsLock = true;
+				var rs = _appUserRepository.Update(customer);
+				if (rs == null)
+				{
+					return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
+				}
+				return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đã khóa tài khoản khách hàng thành công");
 			}
-			customer.IsDelete = true;
-			await _unitOfWork.Commit();
-			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đã xóa thành công");
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
+			}
+		}*/
+
+		public async Task<PopupViewModel> Delete(AppUser appUser)
+		{
+			try
+			{
+				appUser.IsLock = true;
+				var rs = await UpdateAsync(appUser);
+				if (rs == null)
+				{
+					return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
+				}
+				return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đã khóa tài khoản khách hàng thành công");
+			}
+			catch
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
+			}
 		}
 
 		public async Task<ICollection<AppUser>> GetCustomerAsync()
@@ -56,9 +88,9 @@ namespace FlowerShop.Service.ServiceImpl
 			return customerList;
 		}
 
-		public async Task<AppUser> GetSingleById(int id)
+		public async Task<AppUser> GetSingleById(string id)
 		{
-			if (id == -1)
+			if (id == "-1")
 			{
 				return null;
 			}

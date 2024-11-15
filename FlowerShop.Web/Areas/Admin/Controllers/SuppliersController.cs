@@ -172,7 +172,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			var supplier = await _supplierService.GetSingleById(id);
 			if (supplier == null)
 			{
-				TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy danh mục để xóa"));
+				TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy nhà cung cấp để xóa"));
 			}
 			PopupViewModel rsp = await _supplierService.Delete(id);
 			TempData["PopupViewModel"] = JsonConvert.SerializeObject(rsp);

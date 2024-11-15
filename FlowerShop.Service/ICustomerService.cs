@@ -14,8 +14,10 @@ namespace FlowerShop.Service
 
 		Task<AppUser> UpdateAsync(AppUser customer);
 
-		Task<AppUser> GetSingleById(int id);
+		Task<AppUser> GetSingleById(string id);
 
-		Task<PopupViewModel> Delete(int id);
+		//Task<PopupViewModel> Delete(string id);
+
+		Task<PopupViewModel> Delete(AppUser appUser);
 	}
 }

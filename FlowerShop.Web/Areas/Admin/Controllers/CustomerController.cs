@@ -1,10 +1,12 @@
 ﻿using FlowerShop.Common.MyConst;
+using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess;
 using FlowerShop.Service;
 using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -30,6 +32,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			{
 				customerListVM.Add(new CustomerViewModel
 				{
+					Id = customer.Id,
 					FullName = customer.FullName,
 					BirthDay = customer.BirthDay,
 					PhoneNumber = customer.PhoneNumber,
@@ -41,9 +44,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		}
 
 		[HttpGet("edit")]
-		public async Task<IActionResult> Edit(int? id)
+		public async Task<IActionResult> Edit(string? id)
 		{
-			var customer = await _customerService.GetSingleById(id ?? -1);
+			var customer = await _customerService.GetSingleById(id ?? "-1");
 			if (customer == null)
 			{
 				return Content(ConstValues.CoLoiXayRa);
@@ -66,9 +69,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		// POST: Admin/Suppliers/Edit/5
 		[HttpPost("edit")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int? id, [Bind("Id,FullName,BirthDay,Images,IsLock,IsDelete,Email,PhoneNumber")] CustomerViewModel customerVM)
+		public async Task<IActionResult> Edit(string? id, [Bind("Id,FullName,BirthDay,Images,IsLock,IsDelete,Email,PhoneNumber")] CustomerViewModel customerVM)
 		{
-			var customer = await _customerService.GetSingleById(id ?? -1);
+			var customer = await _customerService.GetSingleById(id ?? "-1");
 			if (customer == null)
 			{
 				return Content(ConstValues.CoLoiXayRa);
@@ -106,6 +109,19 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 				return RedirectToAction(nameof(Index));
 			}
 			return View(customer);
+		}
+
+		[HttpPost("delete/{id}")]
+		public async Task<IActionResult> Delete(string id)
+		{
+			var customer = await _customerService.GetSingleById(id);
+			if (customer == null)
+			{
+				TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy khách hàng để xóa"));
+			}
+			PopupViewModel rsp = await _customerService.Delete(customer);
+			TempData["PopupViewModel"] = JsonConvert.SerializeObject(rsp);
+			return RedirectToAction("Index", "Customer", new { area = "ADMIN" });
 		}
 
 		private bool CustomerExists(string id)

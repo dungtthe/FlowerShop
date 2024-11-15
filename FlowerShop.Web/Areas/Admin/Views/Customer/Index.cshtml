@@ -52,11 +52,36 @@
 						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
 					</a>|
 
-					<a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id">
-						<i class="fa-solid fa-trash" style="color:red; width: 20px; height: 30px"></i>
-					</a>
+					<!-- Form cho nút xóa -->
+					<form asp-action="Delete" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn khóa tài khoản của khách hàng này?');">
+						<button type="submit" style="border: none; background: none; cursor: pointer;">
+							<i class="fa-solid fa-lock" style="color:red; width: 20px; height: 30px"></i>
+						</button>
+					</form>
+
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script>
+		$(document).ready(function () {
+			// Ngăn dropdown đóng lại khi chọn checkbox
+			$('.dropdown-menu').on('click', function (e) {
+				e.stopPropagation();
+			});
+
+			$('.dropdown-menu input[type="checkbox"]').on('change', function () {
+				let selected = [];
+				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
+					selected.push($(this).next().text().trim());
+				});
+			});
+		});
+	</script>
+}
