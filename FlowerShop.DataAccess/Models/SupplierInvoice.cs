@@ -28,5 +28,7 @@ namespace FlowerShop.DataAccess.Models
         public bool IsDelete { get; set; }
 
         public ICollection<SupplierInvoiceDetail> ?SupplierInvoiceDetails {  get; set; }
+        [MaxLength(2000)]
+        public string? Note { get; set; }
     }
 }

@@ -35,5 +35,8 @@ namespace FlowerShop.DataAccess.Models
 
 		[Required]
 		public bool IsDelete { get; set; }
+
+		[MaxLength(2000)]
+		public string? Note {  get; set; }
 	}
 }
