@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FlowerShop.Web.ViewModels.CustomerViewModel>
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.AppUser>
 @using FlowerShop.Common.Helpers;
 @{
 	ViewData["Title"] = "Danh sách khách hàng";
@@ -18,6 +18,9 @@
 			</th>
 			<th>
 				Ngày sinh
+			</th>
+			<th>
+				Đã khóa
 			</th>
 			<th style="width: 140px">
 				SĐT
@@ -39,10 +42,13 @@
 					@Html.DisplayFor(modelItem => item.BirthDay)
 				</td>
 				<td>
+					@Html.DisplayFor(modelItem => item.IsLock)
+				</td>
+				<td>
 					@Html.DisplayFor(modelItem => item.PhoneNumber)
 				</td>
 				<td>
-					<a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id">
+					<a asp-action="Edit" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id">
 						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
 					</a>|
 

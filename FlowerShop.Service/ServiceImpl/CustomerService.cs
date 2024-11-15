@@ -1,7 +1,10 @@
-﻿using FlowerShop.DataAccess;
+﻿using FlowerShop.Common.MyConst;
+using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
+using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,6 +27,18 @@ namespace FlowerShop.Service.ServiceImpl
 			_context = context;
 		}
 
+		public async Task<PopupViewModel> Delete(int id)
+		{
+			var customer = await _appUserRepository.GetSingleByIdAsync(id);
+			if (customer == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			customer.IsDelete = true;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đã xóa thành công");
+		}
+
 		public async Task<ICollection<AppUser>> GetCustomerAsync()
 		{
 			var khachhang = _context.UserRoles.Where(x => x.RoleId == "2").ToList();
@@ -39,6 +54,26 @@ namespace FlowerShop.Service.ServiceImpl
 				}
 			}
 			return customerList;
+		}
+
+		public async Task<AppUser> GetSingleById(int id)
+		{
+			if (id == -1)
+			{
+				return null;
+			}
+			var customer = await _appUserRepository.SingleOrDefaultWithIncludeAsync(x => x.Id == id.ToString());
+			return customer;
+		}
+
+		public async Task<AppUser> UpdateAsync(AppUser customer)
+		{
+			var result = _appUserRepository.Update(customer);
+			if (result != null)
+			{
+				await _unitOfWork.Commit();
+			}
+			return result;
 		}
 	}
 }

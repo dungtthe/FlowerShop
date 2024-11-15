@@ -2,7 +2,7 @@
 @using FlowerShop.Common.Helpers;
 
 @{
-	ViewData["Title"] = "Danh sách sản phẩm trong kho";
+	ViewData["Title"] = "Danh sách nhà cung cấp";
 	int stt = 1;
 }
 
@@ -81,7 +81,6 @@
 				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
 					selected.push($(this).next().text().trim());
 				});
-				// $('#dropdownMenuButton').text(selected.length > 0 ? selected.join(', ') : 'Danh mục con');
 			});
 		});
 	</script>
