@@ -42,5 +42,6 @@ namespace FlowerShop.DataAccess.Repositories.RepositoriesImpl
             return await _userManager.DeleteAsync(user);
         }
 
+        
     }
 }
