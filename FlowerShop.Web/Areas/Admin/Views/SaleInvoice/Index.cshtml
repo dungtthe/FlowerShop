@@ -1,0 +1,45 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
+
+@{
+	ViewData["Title"] = "Chờ xác nhận";
+}
+
+<h1>Danh sách đơn hàng chờ xác nhận</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Tên khách hàng
+			</th>
+			<th>
+				Ngày tạo hóa đơn
+			</th>
+			<th>
+				Phương thức thanh toán
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Customer.FullName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateDay)
+				</td>
+
+				<td>
+					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+					<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

@@ -10,10 +10,8 @@ using FlowerShop.Service.ServiceImpl;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 //add mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -58,6 +56,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductProductItemService, ProductProductItemService>();
 builder.Services.AddScoped<ISuppliersService, SuppliersService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ISaleInvoiceService, SaleInvoiceService>();
 
 //đăng ký Identity
 //builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -77,10 +76,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 //đăng ký session
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Không làm gì cả trong 30p thì session sẽ hết hạn
-    options.Cookie.HttpOnly = true; // Cookie chỉ truy cập qua HTTP, không qua JavaScript(không cho phép js, các thư viện js đọc cookie này )
-    options.Cookie.IsEssential = true; // Cookie này là thiết yếu, luôn được lưu bất kể quyền riêng tư
-    options.Cookie.Name = "MyWeb";//đặt tên cookie lưu trữ id session trên trình duyệt của khách hàng
+	options.IdleTimeout = TimeSpan.FromMinutes(30); // Không làm gì cả trong 30p thì session sẽ hết hạn
+	options.Cookie.HttpOnly = true; // Cookie chỉ truy cập qua HTTP, không qua JavaScript(không cho phép js, các thư viện js đọc cookie này )
+	options.Cookie.IsEssential = true; // Cookie này là thiết yếu, luôn được lưu bất kể quyền riêng tư
+	options.Cookie.Name = "MyWeb";//đặt tên cookie lưu trữ id session trên trình duyệt của khách hàng
 });
 
 builder.Services.AddHttpContextAccessor(); // Đăng ký IHttpContextAccessor để hỗ trợ lấy base url
