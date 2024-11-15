@@ -58,6 +58,7 @@ builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductProductItemService, ProductProductItemService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IPackagingService, PackagingService>();
 
 
 //đăng ký Identity

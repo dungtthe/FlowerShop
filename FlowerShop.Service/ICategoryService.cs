@@ -17,6 +17,6 @@ namespace FlowerShop.Service
         Task Update(Category category, List<int> selectedSubCategories);
         Task<Category>AddAsync(Category category);
         Task<PopupViewModel> Delete(int id);
-
+        Task<IEnumerable<Category>> GetCategoriesWithoutSubCategories();
     }
 }

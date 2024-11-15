@@ -22,14 +22,18 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         private readonly FlowerShopContext _context;
         private readonly IProductService _productService;
         private readonly IProductItemService _productItemService;
+        private readonly ICategoryService _categoryService;
+        private readonly IPackagingService _packagingService;
         private readonly IMapper _mapper;
 
-        public ProductController(FlowerShopContext context, IProductService productService,IMapper mapper,IProductItemService productItemService)
+        public ProductController(FlowerShopContext context, IProductService productService,IMapper mapper,IProductItemService productItemService,ICategoryService categoryService,IPackagingService packagingService)
         {
             _context = context;
             _productService = productService;
             _mapper = mapper;
             _productItemService = productItemService;
+            _categoryService = categoryService;
+            _packagingService = packagingService;
         }
 
         [HttpGet("")]
@@ -73,13 +77,16 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Create()
         {
             var productsItem = await _productItemService.GetProductsItemAsync();
-            if (productsItem == null)
+            var categories = await _categoryService.GetCategoriesWithoutSubCategories();
+            var packagings=await _packagingService.GetAllPackagingAsync();
+            if (productsItem == null|| categories==null)
             {
                 TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Có lỗi xảy ra!"));
                 return RedirectToAction("Index");   
             }
             ViewBag.ProductsItem =productsItem;
-            ViewData["PackagingId"] = new SelectList(_context.Packagings, "Id", "Name");
+            ViewBag.categories = categories; 
+            ViewBag.packagings = new SelectList(packagings, "Id", "Name");
             return View();
         }
 

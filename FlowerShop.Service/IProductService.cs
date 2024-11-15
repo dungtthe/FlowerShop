@@ -1,4 +1,5 @@
-﻿using FlowerShop.DataAccess.Models;
+﻿using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace FlowerShop.Service
     public interface IProductService
     {
         Task<IEnumerable<Product>> GetProductsForIndexAsync();
+        Task<Product> AddNewProductAsync();
     }
 }

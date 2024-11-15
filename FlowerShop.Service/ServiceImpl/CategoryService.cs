@@ -135,6 +135,18 @@ namespace FlowerShop.Service.ServiceImpl
             await _unitOfWork.Commit();
             return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Xóa sản phẩm thành công");
         }
+
+
+        public async Task<IEnumerable<Category>> GetCategoriesWithoutSubCategories()
+        {
+            var allCategories = (await _categoryRepository.GetAllAsync()).Where(c=>c.IsDelete==false);
+            var categoriesWithoutSubCategories = allCategories
+                .Where(c => c.SubCategories == null || !c.SubCategories.Any())  
+                .ToList();
+
+            return categoriesWithoutSubCategories;
+        }
+
     }
 
 }

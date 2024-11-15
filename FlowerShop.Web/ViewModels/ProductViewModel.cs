@@ -19,17 +19,6 @@ namespace FlowerShop.Web.ViewModels
         public string? Description { get; set; }
 
 
-
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Giá bán phải lớn hơn 0.")]
-        [DisplayName("Giá bán")]
-        public int PriceDefault { get; set; }
-
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn 0.")]
-        [DisplayName("Số lượng")]
-        public int Quantity { get; set; }
-
         [MaxLength(1500)]
         [DisplayName("Hình ảnh")]
         public string? Images { get; set; }
@@ -46,5 +35,38 @@ namespace FlowerShop.Web.ViewModels
         ICollection<ProductPrice>? ProductPrices { get; set; }
         ICollection<ProductProductItem>? ProductProductItems { get; set; }
         ICollection<ProductCategory>? ProductCategories { get; set; }
+    }
+
+
+
+    public class CreateProductViewModel
+    {
+
+        public class ProductItemViewModel
+        {
+            public int Id { get; set; }
+            
+            public int Quantity {  get; set; }
+        }
+
+        [DisplayName("Tiêu đề")]
+        public string? Title { get; set; }
+
+        [DisplayName("Mô tả")]
+        public string? Description { get; set; }
+
+        [DisplayName("Giá bán")]
+        public int PriceDefault { get; set; }
+
+        [DisplayName("Số lượng")]
+        public int Quantity { get; set; }
+
+        [DisplayName("Cách đóng gói")]
+        public int PackagingId { get; set; }
+        [DisplayName("Danh mục thuộc về")]
+
+        public List<int>? CategoriesId { get; set; }
+        public List<ProductItemViewModel> ?ProductItems { get; set; }
+      
     }
 }

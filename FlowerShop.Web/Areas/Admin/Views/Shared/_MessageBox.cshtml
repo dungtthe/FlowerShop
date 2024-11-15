@@ -65,6 +65,11 @@
         $('#errorModal').modal('show');
     }
 
+    const showErrorHTML = (message) => {
+        $('#errorMessage').html(message);  
+        $('#errorModal').modal('show');
+    }
+
     function showConfirm(message, yesCallback) {
         $('#confirmMessage').text(message);
         $('#confirmYesButton').off('click').on('click', function () {

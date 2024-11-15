@@ -21,6 +21,11 @@ namespace FlowerShop.Service.ServiceImpl
             _unitOfWork = unitOfWork;
         }
 
+        public Task<Product> AddNewProductAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<Product>> GetProductsForIndexAsync()
         {
             var products = (await _productRepository.GetAllWithIncludeAsync(p=>p.Packaging)).Where(p => p.IsDelete == false);
