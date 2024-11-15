@@ -68,32 +68,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			return View(saleInvoice);
 		}
 
-		// GET: Admin/SaleInvoice/Create
-		public IActionResult Create()
-		{
-			ViewData["CustomerId"] = new SelectList(_context.AppUsers, "Id", "Id");
-			ViewData["PaymentMethodId"] = new SelectList(_context.PaymentMethods, "Id", "Name");
-			return View();
-		}
-
-		// POST: Admin/SaleInvoice/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,CreateDay,CustomerId,PaymentMethodId,Status,IsDelete")] SaleInvoice saleInvoice)
-		{
-			if (ModelState.IsValid)
-			{
-				_context.Add(saleInvoice);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
-			}
-			ViewData["CustomerId"] = new SelectList(_context.AppUsers, "Id", "Id", saleInvoice.CustomerId);
-			ViewData["PaymentMethodId"] = new SelectList(_context.PaymentMethods, "Id", "Name", saleInvoice.PaymentMethodId);
-			return View(saleInvoice);
-		}
-
 		// GET: Admin/SaleInvoice/Edit/5
 		public async Task<IActionResult> Edit(int? id)
 		{
