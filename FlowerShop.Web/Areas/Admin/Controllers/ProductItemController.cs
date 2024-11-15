@@ -70,7 +70,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("edit")]
         public async Task<IActionResult> Edit(int? id)
         {
-            var productItem = await _productItemService.GetSingleById(id ?? -1);
+            var productItem = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (productItem == null)
             {
                 return Content(ConstValues.CoLoiXayRa);
@@ -86,7 +86,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [Bind("Name,CategoryId,Description")] ProductItemViewModel productItemVM)
         {
-            var productItem = await _productItemService.GetSingleById(id ?? -1);
+            var productItem = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (productItem == null)
             {
                 return Content(ConstValues.CoLoiXayRa);
@@ -126,7 +126,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("delete")]
         public async Task<IActionResult> Delete(int? id)
         {
-            var product = await _productItemService.GetSingleById(id ?? -1);
+            var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (product == null)
             {
                 return Content(ConstValues.CoLoiXayRa);
@@ -148,7 +148,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("uploadphoto")]
         public async Task<IActionResult> UploadPhoto(int? id)
         {
-            var product = await _productItemService.GetSingleById(id ?? -1);
+            var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (product == null)
             {
                 return Content(ConstValues.CoLoiXayRa);
@@ -161,7 +161,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpPost("uploadphoto"), ActionName("UploadPhoto")]
         public async Task<IActionResult> UploadPhotoAsync(int? id, [Bind("FileUpload")] UploadOneFile f)
         {
-            var product = await _productItemService.GetSingleById(id ?? -1);
+            var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (product == null)
             {
                 return Content(ConstValues.CoLoiXayRa);

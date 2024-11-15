@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlowerShop.DataAccess.Models;
 
 namespace FlowerShop.Service.ServiceImpl
 {
@@ -20,6 +21,16 @@ namespace FlowerShop.Service.ServiceImpl
         {
             this._productProductItemRepository = productProductItemRepository;
             this._unitOfWork = unitOfWork;
+        }
+
+        public async Task<ProductProductItem> AddAsync(ProductProductItem productProductItem)
+        {
+            if (productProductItem == null)
+            {
+                return null;
+            }
+
+            return await _productProductItemRepository.AddAsync(productProductItem);
         }
 
         public async Task<bool> CheckExistPrductItem(int id)

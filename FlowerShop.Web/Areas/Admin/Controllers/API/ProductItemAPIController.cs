@@ -25,7 +25,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
         [HttpDelete("deleteimage")]
         public async Task<IActionResult> DeleteImage([FromBody] RequestImage request)
         {
-            var product = await _productItemService.GetSingleById(request.Id);
+            var product = await _productItemService.FindOneWithIncludeByIdAsync(request.Id);
             if (product == null)
             {
                 return NotFound();
@@ -52,7 +52,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
         [HttpPut("set-default-img")]
         public async Task<IActionResult> SetDefaultImg([FromBody] RequestImage request)
         {
-            var product = await _productItemService.GetSingleById(request.Id);
+            var product = await _productItemService.FindOneWithIncludeByIdAsync(request.Id);
             if (product == null)
             {
                 return NotFound();

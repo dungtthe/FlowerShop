@@ -1,4 +1,5 @@
-﻿using FlowerShop.DataAccess.Models;
+﻿using FlowerShop.Common.Template;
+using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
             try
             {
 
-                StringBuilder message = new StringBuilder();
+                StringBuilder message = new StringBuilder("");
                 if (string.IsNullOrEmpty(productData.Title))
                 {
                     message.AppendLine("- Tiêu đề không được để trống!");
@@ -50,21 +51,30 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
                 {
                     message.AppendLine("- Phải có ít nhất 1 sản phẩm trong kho");
                 }
-                message = new StringBuilder(message.ToString().Replace("\n", "<br />"));
 
+                if (message.ToString() != "")
+                {
+                    message = new StringBuilder(message.ToString().Replace("\n", "<br />"));
+                    return Ok(new { success = false, message = message.ToString() });
+                }
+                else
+                {
+                    List<Tuple<int, int>> productsItem = new List<Tuple<int, int>>();
+                    foreach(var item in productData.ProductItems)
+                    {
+                        productsItem.Add(new Tuple<int, int>(item.Id, item.Quantity));
+                    }
+                    var rsAddProduct = await _productService.AddNewProductAsync(productData.Title,productData.Description,(decimal)productData.PriceDefault,productData.Quantity,productData.PackagingId,productData.CategoriesId,productsItem);
+                    if (rsAddProduct.Id == ResponeMessage.ERROR)
+                    {
+                        return Ok(new { success = false, message =rsAddProduct.Message });
+                    }
+                    else
+                    {
+                        return Ok(new { success = true, message = rsAddProduct.Message });
+                    }
 
-                //// Gọi service để lưu sản phẩm
-                //var result = await _productService.AddNewProductAsync();
-
-                //if (result==null)
-                //{
-                //    return Ok(new { success = true, message = "Thêm sản phẩm thành công." });
-                //}
-                //else
-                //{
-                //    return BadRequest(new { success = false, message = "Có lỗi xảy ra khi lưu sản phẩm." });
-                //}
-                return Ok(new { success = false, message = message.ToString() });
+                }
             }
             catch (Exception ex)
             {

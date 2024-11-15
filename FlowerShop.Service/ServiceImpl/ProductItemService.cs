@@ -37,14 +37,13 @@ namespace FlowerShop.Service.ServiceImpl
         }
 
 
-
         public async Task<IEnumerable<ProductItem>> GetProductsItemAsync()
         {
             var productItems = (await _productItemRepository.GetAllWithIncludeAsync(p => p.Category)).Where(p=>p.IsDelete==false);
             return productItems;
         }
 
-        public async Task<ProductItem> GetSingleById(int id)
+        public async Task<ProductItem> FindOneWithIncludeByIdAsync(int id)
         {
             if (id == -1)
             {
@@ -62,6 +61,19 @@ namespace FlowerShop.Service.ServiceImpl
                 await _unitOfWork.Commit();
             }
             return result;
+        }
+
+        public async Task<ProductItem> FindOneWithoutIncludeByIdAsync(int id)
+        {
+            var rs = await _productItemRepository.GetSingleByIdAsync(id);
+            if(rs != null)
+            {
+                if (rs.IsDelete)
+                {
+                    rs = null;
+                }
+            }
+            return rs;
         }
     }
 }

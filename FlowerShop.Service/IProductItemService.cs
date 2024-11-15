@@ -11,7 +11,9 @@ namespace FlowerShop.Service
     {
         Task<IEnumerable<ProductItem>> GetProductsItemAsync();
         Task<ProductItem> UpdateAsync(ProductItem productItem);
-        Task<ProductItem> GetSingleById(int id);
+        Task<ProductItem> FindOneWithIncludeByIdAsync(int id);
         Task DeleteAsync(int id);
+
+        Task<ProductItem> FindOneWithoutIncludeByIdAsync(int id);
     }
 }

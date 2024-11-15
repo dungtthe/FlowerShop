@@ -100,7 +100,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("edit")]
         public async Task<IActionResult> Edit(int? id)
         {
-            var rs = await _categoryService.GetSingleByIdAsync(id ?? -1);
+            var rs = await _categoryService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (rs == null)
             {
                 return Content(ConstValues.CoLoiXayRa);
@@ -159,7 +159,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             }
 
             // Xử lý cập nhật danh mục như bình thường
-            var category = await _categoryService.GetSingleByIdAsync(id);
+            var category = await _categoryService.FindOneWithIncludeByIdAsync(id);
             if (category == null)
             {
                 return Content(ConstValues.CoLoiXayRa);
@@ -180,7 +180,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _categoryService.GetSingleByIdAsync(id);
+            var category = await _categoryService.FindOneWithIncludeByIdAsync(id);
             if (category == null)
             {
                 TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR,"Lỗi","Không tìm thấy danh mục để xóa"));

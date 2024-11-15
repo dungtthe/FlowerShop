@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlowerShop.DataAccess.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace FlowerShop.Service
     {
         Task<bool> CheckExistPrductItem(int id);
         Task DeleteAsync(int id);
+        Task<ProductProductItem> AddAsync(ProductProductItem productProductItem);
 
     }
 }

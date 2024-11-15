@@ -16,5 +16,8 @@ namespace FlowerShop.Common.Template
             this.Id = id;
             this.Message = msg;
         }
+
+        public static readonly int ERROR = 0;
+        public static readonly int SUCCESS = 1;
     }
 }

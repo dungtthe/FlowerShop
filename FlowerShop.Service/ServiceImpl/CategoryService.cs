@@ -56,7 +56,7 @@ namespace FlowerShop.Service.ServiceImpl
         }
 
 
-        public async Task<Category?> GetSingleByIdAsync(int id)
+        public async Task<Category?> FindOneWithIncludeByIdAsync(int id)
         {
             if (id == -1)
             {
@@ -147,6 +147,22 @@ namespace FlowerShop.Service.ServiceImpl
             return categoriesWithoutSubCategories;
         }
 
+        public async Task<Category?> FindOneWithoutIncludeByIdAsync(int id)
+        {
+            if (id == -1)
+            {
+                return null;
+            }
+            var result = await _categoryRepository.GetSingleByIdAsync(id);
+            if (result != null)
+            {
+                if (result.IsDelete)
+                {
+                    result = null;
+                }
+            }
+            return result;
+        }
     }
 
 }

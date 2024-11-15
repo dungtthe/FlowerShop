@@ -16,6 +16,16 @@ namespace FlowerShop.Service.ServiceImpl
             _packagingRepository = packagingRepository;
         }
 
+        public async Task<Packaging> FindOneById(int id)
+        {
+            var rs = (await _packagingRepository.GetSingleByIdAsync(id));
+            if(rs==null || rs.IsDelete)
+            {
+                rs = null;
+            }
+            return rs;
+        }
+
         public async Task<IEnumerable<Packaging>> GetAllPackagingAsync()
         {
             var ls = (await _packagingRepository.GetAllAsync()).Where(p => p.IsDelete == false);

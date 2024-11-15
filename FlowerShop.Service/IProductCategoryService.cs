@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace FlowerShop.Service
 {
-    public interface IPackagingService
+    public interface IProductCategoryService
     {
-        Task<IEnumerable<Packaging>> GetAllPackagingAsync();
-        Task<Packaging> FindOneById(int id);
+        Task<ProductCategory> FindOneById(int id);
     }
 }
