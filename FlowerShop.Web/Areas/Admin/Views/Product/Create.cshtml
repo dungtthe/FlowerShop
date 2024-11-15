@@ -47,22 +47,26 @@
             <div class="box-item">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                @* <span asp-validation-for="Title" class="text-danger"></span> *@
+                <span id="errorTitle" class="text-danger"></span>
             </div>
             <div class="box-item">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                @* <span asp-validation-for="Description" class="text-danger"></span> *@
+                <span id="errorDescription" class="text-danger"></span>
             </div>
             <div class="box-item">
                 <label asp-for="PriceDefault" class="control-label"></label>
                 <input asp-for="PriceDefault" class="form-control" />
-                <span asp-validation-for="PriceDefault" class="text-danger"></span>
+                @*  <span asp-validation-for="PriceDefault" class="text-danger"></span> *@
+                <span id="errorPriceDefault" class="text-danger"></span>
             </div>
             <div class="box-item">
                 <label asp-for="Quantity" class="control-label"></label>
                 <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
+                @*   <span asp-validation-for="Quantity" class="text-danger"></span> *@
+                <span id="errorQuantity" class="text-danger"></span>
             </div>
             <div class="box-item mb-2 mt-1">
                 <div class="dropdown">
@@ -78,17 +82,18 @@
                         }
                     </div>
                 </div>
-
-
+                <span id="errorCategoriesId" class="text-danger"></span>
             </div>
             <div class="box-item">
                 <label asp-for="PackagingId" class="control-label"></label>
                 <button class="btn btn-info btn-sm" onclick="RedirectToAddPackaging()"><i class="fa-solid fa-plus"></i></button>
                 <select asp-for="PackagingId" class="form-control" asp-items="ViewBag.packagings"></select>
+                <span id="errorPackaging" class="text-danger"></span>
             </div>
         </div>
 
         <div class="box-productsitem">
+
             <table class="table">
                 <thead>
                     <tr>
@@ -108,11 +113,13 @@
             <div class="text-right font-weight-bold mt-3" onclick="copyTotalToClipboard()">
                 Tổng tiền: <span id="totalAmount">0</span> VND
             </div>
-
+           
 
 
         </div>
-
+        <div>
+            <span id="errorProductsItem" class="text-danger"></span>
+        </div>
         <button class="btn btn-success" onclick="CreateProduct()">Đồng ý</button>
 
     </div>
@@ -243,29 +250,29 @@
                 totalAmount += totalPrice; // Cộng dồn vào tổng tiền
 
                 row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${product.name}</td>
-                            <td>${product.price}</td>
-                            <td>
-                                <input type="number"
-                                       id="quantityInput-${product.id}"
-                                       class="form-control form-control-sm"
-                                       min="1"
-                                       max="${product.maxQuantity}"
-                                       value="${product.quantity}"
-                                       onchange="updateQuantity(${product.id}, this.value)" />
-                                <span id="error-${product.id}" class="text-danger small"></span>
-                            </td>
-                            <td>${totalPrice.toLocaleString()} VND</td>
-                            <td>
-                                <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
-                            </td>
-                            <td>
-                                <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
+                                                    <td>${index + 1}</td>
+                                                    <td>${product.name}</td>
+                                                    <td>${product.price}</td>
+                                                    <td>
+                                                        <input type="number"
+                                                               id="quantityInput-${product.id}"
+                                                               class="form-control form-control-sm"
+                                                               min="1"
+                                                               max="${product.maxQuantity}"
+                                                               value="${product.quantity}"
+                                                               onchange="updateQuantity(${product.id}, this.value)" />
+                                                        <span id="error-${product.id}" class="text-danger small"></span>
+                                                    </td>
+                                                    <td>${totalPrice.toLocaleString()} VND</td>
+                                                    <td>
+                                                        <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                `;
                 tableBody.appendChild(row);
             });
 
@@ -345,23 +352,95 @@
         };
 
 
+        //hàm thêm 1 sản phẩm mới
 
 
+
+        var flagValidationCreateProduct = true;
         const CreateProduct = () => {
+            flagValidationCreateProduct = true;
+
+
+            let getTitle = document.querySelector('[name="Title"]').value;
+            let getDescription = document.querySelector('[name="Description"]').value;
+            let getPriceDefault = document.querySelector('[name="PriceDefault"]').value;
+            let getQuantity = document.querySelector('[name="Quantity"]').value;
+            let getPackagingId = document.querySelector('[name="PackagingId"]').value;
+            let getCategoriesId = [...document.querySelectorAll('[name="SelectedSubCategories"]:checked')].map(input => input.value);
+            let getProductItems = selectedProducts.map(product => ({
+                id: product.id,
+                quantity: product.quantity
+            }));
+
+
+            //validation phía client
+            if (!getTitle.trim()) {
+                showErrorForCreateProduct('Title', 'Tiêu đề không được để trống!');
+
+            } else {
+                clearErrorForCreateProduct('Title');
+            }
+
+            if (!getDescription.trim()) {
+                showErrorForCreateProduct('Description', 'Mô tả không được để trống!');
+            } else {
+                clearErrorForCreateProduct('Description');
+            }
+
+            if (parseInt(getPriceDefault) <= 0) {
+                showErrorForCreateProduct('PriceDefault', 'Giá bán phải > 0');
+            } else {
+                clearErrorForCreateProduct('PriceDefault');
+            }
+
+            if (!getPriceDefault.trim()) {
+                showErrorForCreateProduct('PriceDefault', 'Giá bán không được để trống');
+            }
+            else {
+                clearErrorForCreateProduct('PriceDefault');
+            }
+
+            if (parseInt(getQuantity) <= 0) {
+                showErrorForCreateProduct('Quantity', 'Số lượng phải > 0');
+            } else {
+                clearErrorForCreateProduct('Quantity');
+            }
+
+            if (!getQuantity.trim()) {
+                showErrorForCreateProduct('Quantity', 'Số lượng không được để trống');
+            }
+            else {
+                clearErrorForCreateProduct('Quantity');
+            }
+
+
+
+
+            if (getCategoriesId.length < 1) {
+                showErrorForCreateProduct('CategoriesId', 'Phải thuộc về ít nhất một danh mục');
+            } else {
+                clearErrorForCreateProduct('CategoriesId');
+            }
+            if (getProductItems.length < 1) {
+                showErrorForCreateProduct('ProductsItem', 'Phải có ít nhất một sản phẩm');
+            } else {
+                clearErrorForCreateProduct('ProductsItem');
+            }
+            if (flagValidationCreateProduct === false) {
+                return;
+            }
+
+
             showConfirm("Bạn muốn tạo sản phẩm để bán này chứ?", async () => {
                 try {
-                    // Lấy thông tin từ form
                     const productData = {
-                        title: document.querySelector('[name="Title"]').value,
-                        description: document.querySelector('[name="Description"]').value,
-                        priceDefault: document.querySelector('[name="PriceDefault"]').value,
-                        quantity: document.querySelector('[name="Quantity"]').value,
-                        packagingId: document.querySelector('[name="PackagingId"]').value,
-                        categoriesId: [...document.querySelectorAll('[name="SelectedSubCategories"]:checked')].map(input => input.value),
-                        productItems: selectedProducts.map(product => ({
-                            id: product.id,
-                            quantity: product.quantity
-                        }))
+                        title: getTitle,
+                        description: getDescription,
+                        priceDefault: getPriceDefault,
+                        quantity: getQuantity,
+                        packagingId: getPackagingId,
+                        categoriesId: getCategoriesId,
+                        productItems: getProductItems
                     };
                     const response = await fetch('/api/admin/quan-li-sp/create', {
                         method: 'POST',
@@ -373,10 +452,7 @@
 
                     if (!response.ok) {
                         //const errorText = await response.text();
-                        showError(`Có lỗi xảy ra
-                        
-                        
-                        `);
+                        showError(`Có lỗi xảy ra`);
                         return;
                     }
 
@@ -395,7 +471,18 @@
             });
         };
 
+        // Hiển thị lỗi cho các trường không hợp lệ
+        const showErrorForCreateProduct = (fieldId, message) => {
+            const errorSpan = document.getElementById(`error${fieldId}`);
+            errorSpan.innerText = message;
+            flagValidationCreateProduct = false;
+        };
 
+        // Xóa lỗi khi trường hợp lệ
+        const clearErrorForCreateProduct = (fieldId) => {
+            const errorSpan = document.getElementById(`error${fieldId}`);
+            errorSpan.innerText = '';
+        };
 
     </script>
 }

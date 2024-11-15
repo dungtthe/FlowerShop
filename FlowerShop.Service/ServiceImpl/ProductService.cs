@@ -15,29 +15,31 @@ namespace FlowerShop.Service.ServiceImpl
         private readonly IProductRepository _productRepository;
         private readonly IProductCategoryRepository _productCategoryRepository;
         private readonly IProductPriceRepository _productPriceRepository;
-        private readonly IPackagingService _packagingService;
-        private readonly ICategoryService _categoryService;
-        private readonly IProductItemService _productItemService;
+        private readonly IPackagingRepository _packagingRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductItemRepository _productItemRepository;
         private readonly IProductProductItemRepository _productProductItemRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public ProductService(IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, IUnitOfWork unitOfWork, IProductPriceRepository productPriceRepository, IPackagingService packagingService, ICategoryService categoryService,IProductItemService productItemService, IProductProductItemRepository productProductItemRepository)
+
+
+        public ProductService(IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, IUnitOfWork unitOfWork, IProductPriceRepository productPriceRepository, IPackagingRepository packagingRepository, ICategoryRepository categoryRepository, IProductItemRepository productItemRepository, IProductProductItemRepository productProductItemRepository)
         {
             _productRepository = productRepository;
             _productCategoryRepository = productCategoryRepository;
             _unitOfWork = unitOfWork;
             _productPriceRepository = productPriceRepository;
-            _packagingService = packagingService;
-            _categoryService = categoryService;
-            _productItemService = productItemService;
-        _productProductItemRepository = productProductItemRepository;
+            _packagingRepository = packagingRepository;
+            _categoryRepository = categoryRepository;
+            _productItemRepository = productItemRepository;
+            _productProductItemRepository = productProductItemRepository;
         }
 
         public async Task<ResponeMessage> AddNewProductAsync(string title, string desc, decimal price, int quantity, int packId, List<int> categoriesId, List<Tuple<int, int>> productsItem)
         {
 
             //kiểm tra cách đóng gói có hợp lệ hay không
-            Packaging rsFindPackaging = await _packagingService.FindOneById(packId);
-            if (rsFindPackaging == null)
+            Packaging? rsFindPackaging = await _packagingRepository.GetSingleByIdAsync(packId);
+            if (rsFindPackaging == null || rsFindPackaging.IsDelete)
             {
                 return new ResponeMessage(ResponeMessage.ERROR, "Không tìm thấy cách đóng gói tương ứng");
             }
@@ -78,8 +80,8 @@ namespace FlowerShop.Service.ServiceImpl
             //add ProductCategory
             foreach (var catId in categoriesId)
             {
-                var rsFindCat = await _categoryService.FindOneWithoutIncludeByIdAsync(catId);
-                if (rsFindCat == null)
+                var rsFindCat = await _categoryRepository.GetSingleByIdAsync(catId);
+                if (rsFindCat == null || rsFindCat.IsDelete)
                 {
                     return new ResponeMessage(ResponeMessage.ERROR, $"Không tìm thấy danh mục");
                 }
@@ -99,19 +101,25 @@ namespace FlowerShop.Service.ServiceImpl
 
 
             //add ProductProductItem
-            foreach(var productItem in productsItem)
+            foreach (var productItem in productsItem)
             {
-                var rsFindProductItem = await _productItemService.FindOneWithoutIncludeByIdAsync(productItem.Item1);
-                if (rsFindProductItem == null)
+                var rsFindProductItem =  await _productItemRepository.GetSingleByIdAsync(productItem.Item1);
+                if (rsFindProductItem == null || rsFindProductItem.IsDelete)
                 {
                     return new ResponeMessage(ResponeMessage.ERROR, $"Không tìm thấy sản phẩm trong kho");
                 }
 
                 //số lượng trong kho với số lượng product muốn bán
-                if (productItem.Item2*quantity > rsFindProductItem.Quantity)
+                if (productItem.Item2 * quantity > rsFindProductItem.Quantity)
                 {
                     return new ResponeMessage(ResponeMessage.ERROR, $"Sản phẩm {rsFindProductItem.Name} trong kho có số lượng không đủ");
                 }
+
+                //cập nhật lại số lượng trong kho
+                rsFindProductItem.Quantity=rsFindProductItem.Quantity-productItem.Item2*quantity;
+
+                 _productItemRepository.Update(rsFindProductItem);
+
 
                 var rsAddProductProductItem = await _productProductItemRepository.AddAsync(new ProductProductItem()
                 {
@@ -119,11 +127,11 @@ namespace FlowerShop.Service.ServiceImpl
                     ProductItemId = productItem.Item1,
                 });
 
-                if(rsAddProductProductItem == null)
+                if (rsAddProductProductItem == null)
                 {
                     return new ResponeMessage(ResponeMessage.ERROR, $"Có lỗi xảy ra");
                 }
-                
+
             }
 
 
@@ -132,7 +140,7 @@ namespace FlowerShop.Service.ServiceImpl
 
         }
 
-   
+
         public async Task<IEnumerable<Product>> GetProductsForIndexAsync()
         {
             var products = (await _productRepository.GetAllWithIncludeAsync(p => p.Packaging)).Where(p => p.IsDelete == false);
