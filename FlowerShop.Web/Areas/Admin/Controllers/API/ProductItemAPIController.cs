@@ -4,6 +4,7 @@ using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers.API
 {
@@ -11,7 +12,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
     [Area("ADMIN")]
     [Route("api/admin/quan-li-kho")]
     [ApiController]
-    public class ProductItemAPIController:ControllerBase
+    public class ProductItemAPIController : ControllerBase
     {
 
         private readonly IProductItemService _productItemService;
@@ -63,5 +64,38 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
             return Ok(new { message = "Thành công." });
         }
+
+
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
+        {
+
+            if (reqData == null)
+            {
+                return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
+            }
+
+
+            int? id = reqData.Id;
+
+
+            var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
+            if (product == null)
+            {
+                return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
+            }
+
+            var checkExist = await _productProductItemService.CheckExistPrductItem(product.Id);
+            if (checkExist)
+            {
+                return Ok(new { success = false, message = "Sản phẩm này đang được bán nên không thể xóa" });
+            }
+            await _productItemService.DeleteAsync(id ?? -1);
+
+            return Ok(new { success = true, message = "Xóa sản phẩm thành công" });
+        }
+
+
     }
 }

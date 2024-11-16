@@ -36,27 +36,27 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr id="product-row-@item.Id">
                 <td>
                     @(stt++)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
-               
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Category.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Quantity)
                 </td>
-                 <td>
+                <td>
                     @{
                         var priceConverted = Converter.ConvertToVietnameseDong(item.ImportPrice);
                     }
                     @Html.DisplayFor(modelItem => priceConverted)
                 </td>
-                
+
                 <td>
                     @{
                         string[] listImg = item.Images != null
@@ -65,14 +65,66 @@
 
                         var firstImg = listImg[0];
                     }
-                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image"
+                        style="width: 70px; height: 70px; object-fit: cover;" />
                 </td>
 
                 <td>
-                    <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i class="fa-solid fa-circle-info"></i></a> |
-                    <a asp-action="Delete" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i class="fa-solid fa-trash" style="color:red;"></i></a>
+                    <a asp-action="Edit" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i
+                            class="fa-solid fa-circle-info"></i></a> |
+                    @*         <a asp-action="Delete" asp-area="Admin" asp-controller="ProductItem" asp-route-id="@item.Id"><i
+                            class="fa-solid fa-trash" style="color:red;"></i></a> *@
+
+                    <button onclick="DeleteProductItemById(@item.Id)" class="bg-transparent" style="border: none;">
+                        <i class="fa-solid fa-trash" style="color:red;"></i>
+                    </button>
+
                 </td>
             </tr>
         }
     </tbody>
 </table>
+<script>
+    const DeleteProductItemById = (id) => {
+        showConfirm("Bạn có muốn xóa sản phẩm này không?", () => {
+            const reqData = { id: id };
+
+            fetchDelete('/api/admin/quan-li-kho/delete', reqData,
+                (responeData) => {
+                    if (responeData.success) {
+                        showSuccess(responeData.message);
+
+                        // Xóa dòng trong bảng
+                        const row = document.getElementById('product-row-' + id);
+                        if (row) {
+                            row.remove();
+                        }
+                        updateRowNumbers();
+                        // Thông báo xóa thành công
+                        setTimeout(() => {
+                            showSuccess('Sản phẩm đã được xóa');
+                        }, 500);
+                    }
+                    else {
+                        showError(responeData.message);
+                    }
+                }, () => {
+                    showError("Có lỗi xảy ra");
+                });
+        });
+    }
+
+
+
+
+    // Cập nhật lại số thứ tự (STT) cho tất cả các sản phẩm còn lại
+    const updateRowNumbers = () => {
+        let rows = document.querySelectorAll('table tbody tr');
+        rows.forEach((row, index) => {
+            const sttCell = row.querySelector('td:first-child');
+            if (sttCell) {
+                sttCell.textContent = index + 1;
+            }
+        });
+    }
+</script>
