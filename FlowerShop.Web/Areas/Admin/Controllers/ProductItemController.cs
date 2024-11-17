@@ -77,7 +77,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             }
             var productItemVM = _mapper.Map<ProductItemViewModel>(productItem);
 
-            var categories = await _categoryService.GetAllCategoriesNotWithHierarchy();
+            var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c=>c.IsCategorySell==false);
 
             ViewData["Categories"] = new SelectList(categories, "Id", "Name", productItemVM.CategoryId);
             return View(productItemVM);
@@ -122,27 +122,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             ViewData["Categories"] = new SelectList(categories, "Id", "Name", productItemVM.CategoryId);
             return View(productItemVM);
         }
-
-        [HttpGet("delete")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
-            if (product == null)
-            {
-                return Content(ConstValues.CoLoiXayRa);
-            }
-
-            var checkExist = await _productProductItemService.CheckExistPrductItem(product.Id);
-            if (checkExist)
-            {
-                return Content("Sản phẩm này đang được bán nên không thể xóa!");
-            }
-            await _productItemService.DeleteAsync(id ?? -1);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-
 
 
         [HttpGet("uploadphoto")]
