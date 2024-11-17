@@ -67,12 +67,39 @@
 </table>
 
 <script>
-    // Hàm hủy hóa đơn
+    // Hàm xác nhận hóa đơn
     const ConfirmInvoiceById = (id) => {
         showConfirm("Xác nhận chuyển hóa đơn sang trạng thái đã xác nhận?", () => {
             const reqData = { id: id };
 
             fetchPost('/api/admin/quan-li-don-hang/cho-xac-nhan', reqData,
+                (response) => {
+                    if (response.success) {
+						 // Xóa dòng trong bảng
+                        const row = document.getElementById('hoadon-row-' + id);
+                        if (row) {
+                            row.remove();
+                        }
+						setTimeout(() => {
+                        	showSuccess(response.message);
+                        }, 500);
+                    } else {
+                        showError(response.message);
+                    }
+                },
+                () => {
+                    showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+                }
+            );
+        });
+    };
+
+    // Hàm hủy hóa đơn
+    const CancelInvoiceById = (id) => {
+        showConfirm("Xác nhận hủy hóa đơn?", () => {
+            const reqData = { id: id };
+
+            fetchPost('/api/admin/quan-li-don-hang/huy', reqData,
                 (response) => {
                     if (response.success) {
 						 // Xóa dòng trong bảng

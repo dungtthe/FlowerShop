@@ -57,5 +57,17 @@ namespace FlowerShop.Service.ServiceImpl
             await _unitOfWork.Commit();
             return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã chuyển sang đã xác nhận");
         }
+
+        public async Task<PopupViewModel> Huy(int id)
+        {
+            var customer = await _saleInvoiceRepository.GetSingleByIdAsync(id);
+            if (customer == null)
+            {
+                return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+            }
+            customer.Status = ConstStatusSaleInvoice.DA_HUY;
+            await _unitOfWork.Commit();
+            return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã hủy");
+        }
     }
 }

@@ -15,5 +15,7 @@ namespace FlowerShop.Service
         Task<SaleInvoice> GetSingleById(int id);
 
         Task<PopupViewModel> ChoXacNhan(int id);
+
+        Task<PopupViewModel> Huy(int id);
     }
 }

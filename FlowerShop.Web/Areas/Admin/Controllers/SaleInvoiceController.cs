@@ -69,18 +69,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(saleInvoice);
         }
 
-        [HttpPost("cho-xac-nhan")]
-        public async Task<IActionResult> ChoXacNhan(int id)
-        {
-            var supplier = await _saleInvoiceService.GetSingleById(id);
-            if (supplier == null)
-            {
-                return Content(ConstValues.CoLoiXayRa);
-            }
-            await _saleInvoiceService.ChoXacNhan(id);
-            return RedirectToAction(nameof(Index));
-        }
-
         private bool SaleInvoiceExists(int id)
         {
             return (_context.SaleInvoices?.Any(e => e.Id == id)).GetValueOrDefault();

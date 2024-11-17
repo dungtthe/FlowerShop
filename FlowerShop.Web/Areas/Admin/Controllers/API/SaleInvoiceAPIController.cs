@@ -38,5 +38,23 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
             return Ok(new { success = true, message = "Đơn hàng đã xác nhận thành công!" });
         }
+
+        [HttpPost("huy")]
+        public async Task<IActionResult> Huy([FromBody] RequestDeleteByIdViewModel reqData)
+        {
+            if (reqData == null)
+            {
+                return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+            }
+            int? id = reqData.Id;
+            var product = await _saleInvoiceService.GetSingleById(id ?? -1);
+            if (product == null)
+            {
+                return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+            }
+            await _saleInvoiceService.Huy(id ?? -1);
+
+            return Ok(new { success = true, message = "Đơn hàng đã hủy thành công!" });
+        }
     }
 }
