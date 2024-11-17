@@ -28,11 +28,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
             {
                 return Ok(new { success = false, message = "Không tìm thấy nhà cung cấp" });
             }
-
-
             int? id = reqData.Id;
-
-
             var product = await _supplierService.GetSingleById(id ?? -1);
             if (product == null)
             {

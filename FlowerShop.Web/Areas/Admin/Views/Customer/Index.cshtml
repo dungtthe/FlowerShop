@@ -1,87 +1,137 @@
 ﻿@model IEnumerable<FlowerShop.DataAccess.Models.AppUser>
 @using FlowerShop.Common.Helpers;
 @{
-	ViewData["Title"] = "Danh sách khách hàng";
-	int stt = 1;
+    ViewData["Title"] = "Danh sách khách hàng";
+    int stt = 1;
 }
 
 <h1>Danh sách khách hàng</h1>
 
 <table class="table">
-	<thead>
-		<tr>
-			<th style="width: 20px">
-				STT
-			</th>
-			<th style="width: 200px">
-				Tên khách hàng
-			</th>
-			<th>
-				Ngày sinh
-			</th>
-			<th>
-				Đã khóa
-			</th>
-			<th style="width: 140px">
-				SĐT
-			</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var item in Model)
-		{
-			<tr>
-				<td>
-					@(stt++)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.FullName)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.BirthDay)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsLock)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.PhoneNumber)
-				</td>
-				<td>
-					<a asp-action="Edit" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id">
-						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
-					</a>|
+    <thead>
+        <tr>
+            <th style="width: 20px">
+                STT
+            </th>
+            <th style="width: 200px">
+                Tên khách hàng
+            </th>
+            <th>
+                Ngày sinh
+            </th>
+            <th>
+                Đã khóa
+            </th>
+            <th style="width: 140px">
+                SĐT
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @(stt++)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BirthDay)
+                </td>
+               <td class="is-lock" data-is-lock="@item.IsLock">
+                @if (item.IsLock)
+                {
+                    <i class="fa-solid fa-lock icon-lock" style="color: red"></i>
+                }
+                else
+                {
+                    <i class="fa-solid fa-unlock icon-unlock" style="color: green;"></i>
+                }
+                </td>
 
-					<!-- Form cho nút xóa -->
-					<form asp-action="Delete" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn khóa tài khoản của khách hàng này?');">
-						<button type="submit" style="border: none; background: none; cursor: pointer;">
-							<i class="fa-solid fa-lock" style="color:red; width: 20px; height: 30px"></i>
-						</button>
-					</form>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id">
+                        <i class="fa-solid fa-pencil" style="color: #FFCC99;"></i>
+                    </a> |
 
-				</td>
-			</tr>
-		}
-	</tbody>
+                    <!-- Nút khóa -->
+                <button onclick= "LockCustomerById(@item.Id)"  class="bg-transparent" style="border: none;">
+                        @if (item.IsLock)
+                        {
+                            <i class="fa-solid fa-lock" style="color:red;"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-unlock" style="color:green;"></i>
+                        }
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
 
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-	<script>
-		$(document).ready(function () {
-			// Ngăn dropdown đóng lại khi chọn checkbox
-			$('.dropdown-menu').on('click', function (e) {
-				e.stopPropagation();
-			});
+<script>
+    //Lấy id khách hàng được chọn
+    const getIsLockValue = (id) =>
+    {
+        const button = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+         if (button) {
+        const tr = button.closest('tr');
+        if (tr) {
+            const isLockCell = tr.querySelector('.is-lock');
+            if (isLockCell) {
+                const hasLockIcon = isLockCell.querySelector('.icon-lock') !== null;
+                return hasLockIcon;
+            }
+        }
+    }
+    return null; // Trường hợp không tìm thấy
+    };
 
-			$('.dropdown-menu input[type="checkbox"]').on('change', function () {
-				let selected = [];
-				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
-					selected.push($(this).next().text().trim());
-				});
-			});
-		});
-	</script>
-}
+
+    // Hàm để khóa khách hàng
+    const LockCustomerById = (id) => {
+    const currentIsLock = getIsLockValue(id);
+    if (currentIsLock === true) {
+        showError("Tài khoản khách hàng đã bị khóa.");
+        return;
+    }
+    showConfirm("Bạn có muốn khóa khách hàng này không?", () => {
+        const reqData = { id: id };
+
+        fetchDelete('/api/admin/quan-li-khach-hang/delete', reqData,
+            (response) => {
+                if (response.success) {
+                    showSuccess(response.message);
+                    // Cập nhật giá trị IsLock
+                    const iconCell = document.querySelector(`button[onclick="LockCustomerById(${id})"]`)
+                        .closest('tr')
+                        .querySelector('.is-lock');
+                    if (iconCell) {
+                        iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+                        iconCell.setAttribute('data-is-lock', 'true');
+                    }
+
+                    // Cập nhật icon của nút khóa
+                    const lockButton = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+                    if (lockButton) {
+                        lockButton.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+                    }
+                } else {
+                    showError(response.message);
+                }
+            },
+            () => {
+                showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+            }
+        );
+    });
+};
+</script>

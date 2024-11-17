@@ -111,7 +111,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			return View(customer);
 		}
 
-		[HttpPost("delete/{id}")]
+		[HttpPost("delete")]
 		public async Task<IActionResult> Delete(string id)
 		{
 			var customer = await _customerService.GetSingleById(id);
