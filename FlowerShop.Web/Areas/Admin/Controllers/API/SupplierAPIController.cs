@@ -11,19 +11,18 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
     [Area("ADMIN")]
     [Route("api/admin/quan-li-nha-cung-cap")]
     [ApiController]
-
     public class SupplierAPIController : ControllerBase
     {
         private readonly ISuppliersService _supplierService;
+
         public SupplierAPIController(ISuppliersService supplierService)
         {
             _supplierService = supplierService;
-          
         }
-         [HttpDelete("delete")]
-        public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
-       {
 
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
+        {
             if (reqData == null)
             {
                 return Ok(new { success = false, message = "Không tìm thấy nhà cung cấp" });
@@ -33,13 +32,10 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
             if (product == null)
             {
                 return Ok(new { success = false, message = "Không tìm thấy nhà cung cấp" });
-            }   
+            }
             await _supplierService.Delete(id ?? -1);
 
             return Ok(new { success = true, message = "Nhà cung cấp đã tạm ngưng" });
         }
-
     }
-
-
 }

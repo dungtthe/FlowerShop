@@ -1,4 +1,5 @@
-﻿using FlowerShop.DataAccess.Models;
+﻿using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace FlowerShop.Service
 {
-	public interface ISaleInvoiceService
-	{
-		Task<ICollection<SaleInvoice>> GetSaleInvoiceWithIcludeAsync();
-	}
+    public interface ISaleInvoiceService
+    {
+        Task<ICollection<SaleInvoice>> GetSaleInvoiceWithIcludeAsync();
+
+        Task<SaleInvoice> GetSingleById(int id);
+
+        Task<PopupViewModel> ChoXacNhan(int id);
+    }
 }

@@ -10,6 +10,9 @@
 	<thead>
 		<tr>
 			<th>
+				Mã hóa đơn
+			</th>
+			<th>
 				Tên khách hàng
 			</th>
 			<th>
@@ -24,7 +27,10 @@
 	<tbody>
 		@foreach (var item in Model)
 		{
-			<tr>
+            <tr id="hoadon-row-@item.Id">
+				<td class="text-center" style="padding-right:60px">
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
 				<td>
 					@Html.DisplayFor(modelItem => item.Customer.FullName)
 				</td>
@@ -36,38 +42,56 @@
 					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
 				</td>
 				<td>
-					<a asp-action="DaXacNhan" asp-area="Admin" asp-controller="SaleInvoice" asp-route-id="@item.Id">
-						<i class="fa-solid fa-check fa-1,5x" style="color: #28a745; width: 25px; height: 30px; font-size: 25px"></i> <!-- Màu xanh lá cây -->
-					</a>|
-
-					<!-- Form cho nút xóa -->
-					<form asp-action="Huy" asp-area="Admin" asp-controller="SaleInvoice" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?');">
-						<button type="submit" style="border: none; background: none; cursor: pointer;">
-							<i class="fa-solid fa-trash" style="color:red; width: 20px; height: 30px"></i>
-						</button>
-					</form>
+					<!-- Nút xác nhận -->
+				<button onclick="ConfirmInvoiceById(@item.Id)"
+						class="btn btn-success btn-sm"
+						data-toggle="tooltip"
+						style="width: 95px;"
+						title="Xác nhận hóa đơn">
+					<i class="fa-solid fa-check"></i> Xác nhận
+				</button>
+    <!-- Khoảng cách giữa các nút -->
+   				 <span style="margin: 0 5px;"></span>
+					<!-- Nút húy hóa đơn -->
+				<button onclick="CancelInvoiceById(@item.Id)"
+					class="btn btn-danger btn-sm"
+					data-toggle="tooltip"
+					style="width: 95px;"
+					title="Hủy hóa đơn">
+					<i class="fa-solid fa-trash"></i> Hủy
+				</button>
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-	<script>
-		$(document).ready(function () {
-			// Ngăn dropdown đóng lại khi chọn checkbox
-			$('.dropdown-menu').on('click', function (e) {
-				e.stopPropagation();
-			});
 
-			$('.dropdown-menu input[type="checkbox"]').on('change', function () {
-				let selected = [];
-				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
-					selected.push($(this).next().text().trim());
-				});
-			});
-		});
-	</script>
-}
+<script>
+    // Hàm hủy hóa đơn
+    const ConfirmInvoiceById = (id) => {
+        showConfirm("Xác nhận chuyển hóa đơn sang trạng thái đã xác nhận?", () => {
+            const reqData = { id: id };
+
+            fetchPost('/api/admin/quan-li-don-hang/cho-xac-nhan', reqData,
+                (response) => {
+                    if (response.success) {
+						 // Xóa dòng trong bảng
+                        const row = document.getElementById('hoadon-row-' + id);
+                        if (row) {
+                            row.remove();
+                        }
+						setTimeout(() => {
+                        	showSuccess(response.message);
+                        }, 500);
+                    } else {
+                        showError(response.message);
+                    }
+                },
+                () => {
+                    showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+                }
+            );
+        });
+    };
+
+</script>
