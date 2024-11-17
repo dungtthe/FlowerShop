@@ -137,6 +137,8 @@ namespace FlowerShop.Service.ServiceImpl
         }
 
 
+
+        //bổ trợ phần thêm product, chỉ cho phép product thuộc danh mục cuối cùng trong hệ phân cấp tương ứng
         public async Task<IEnumerable<Category>> GetCategoriesWithoutSubCategories()
         {
             var allCategories = (await _categoryRepository.GetAllAsync()).Where(c=>c.IsDelete==false);
@@ -162,6 +164,21 @@ namespace FlowerShop.Service.ServiceImpl
                 }
             }
             return result;
+        }
+
+        public async Task<bool> IsDescendantAsync(int childCategoryId, int parentCategoryId)
+        {
+            var childCategory = await _categoryRepository.GetSingleByIdAsync(childCategoryId);
+            while (childCategory != null)
+            {
+                if (childCategory.ParentCategoryId == parentCategoryId)
+                {
+                    return true;
+                }
+
+                childCategory = await _categoryRepository.GetSingleByIdAsync(childCategory.ParentCategoryId ?? 0);
+            }
+            return false; 
         }
     }
 

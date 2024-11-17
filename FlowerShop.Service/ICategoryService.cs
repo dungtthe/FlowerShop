@@ -19,7 +19,7 @@ namespace FlowerShop.Service
         Task<PopupViewModel> Delete(int id);
         Task<IEnumerable<Category>> GetCategoriesWithoutSubCategories();
         Task<Category?> FindOneWithoutIncludeByIdAsync(int id);
-
+        Task<bool> IsDescendantAsync(int childCategoryId, int parentCategoryId);
 
     }
 }

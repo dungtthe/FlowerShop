@@ -105,28 +105,22 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             {
                 return Content(ConstValues.CoLoiXayRa);
             }
-
-            //var categoryVM = new CategoryViewModel
-            //{
-            //    Id = rs.Id,
-            //    Name = rs.Name,
-            //    ParentCategoryId = rs.ParentCategoryId,
-            //    ParentCategory = rs.ParentCategory,
-            //    IsCategorySell = rs.IsCategorySell,
-            //    SubCategories = rs.SubCategories,
-            //};
-
-
-            var categoryVM=_mapper.Map<CategoryViewModel>(rs);  
-
-
-
+            var categoryVM=_mapper.Map<CategoryViewModel>(rs);
+            var temp = (await _categoryService.GetAllCategoriesNotWithHierarchy()).Where(c=>c.Id!=id);
             var categories = new List<Category>
             {
                 new Category { Id = 0, Name = "Không có" }
             };
-            categories.AddRange(await _categoryService.GetAllCategoriesNotWithHierarchy());
 
+
+            foreach (var c in temp)
+            {
+                var flag = await _categoryService.IsDescendantAsync(c.Id,rs.Id);
+                if (!flag)
+                {
+                    categories.Add(c);
+                }
+            }
             ViewBag.Categories = new SelectList(categories.Where(c => c.Id != id), "Id", "Name");
 
             ViewBag.SelectedSubCategories = categoryVM.SubCategories?.Select(c => c.Id).ToList() ?? new List<int>();
