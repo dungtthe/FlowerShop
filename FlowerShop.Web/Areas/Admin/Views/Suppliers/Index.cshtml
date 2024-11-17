@@ -20,9 +20,8 @@
 			<th style="width: 140px">
 				SĐT
 			</th>
-			<th style="width: 170px">
-				Ngừng cung cấp
-			</th>
+			<th style="width: 170px">Trạng thái</th> <!-- Đổi tên cột tại đây -->
+
 			<th style="width: 270px">
 				Mô tả
 			</th>
@@ -42,9 +41,17 @@
 				<td>
 					@Html.DisplayFor(modelItem => item.Phone)
 				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsDelete)
+				<td class="is-delete-icon">
+					@if (item.IsDelete)
+					{
+						<i class="fa-solid fa-times" style="color: red; font-size: 28px; "></i>
+					}
+					else
+					{
+						<i class="fa-solid fa-check" style="color: green; font-size: 28px;"></i>
+					}
 				</td>
+
 				<td>
 					@Html.DisplayFor(modelItem => item.Description)
 				</td>
@@ -53,35 +60,66 @@
 						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
 					</a>|
 
-					<!-- Form cho nút xóa -->
-					<form asp-action="Delete" asp-area="Admin" asp-controller="Suppliers" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?');">
-						<button type="submit" style="border: none; background: none; cursor: pointer;">
-							<i class="fa-solid fa-trash" style="color:red; width: 20px; height: 30px"></i>
-						</button>
-					</form>
+					<!-- Nút xóa -->
+					<button onclick="DeleteSupplierById(@item.Id)" class="bg-transparent" style="border: none;">
+						<i class="fa-solid fa-trash" style="color:red;"></i>
+					</button>
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
 
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-	<script>
-		$(document).ready(function () {
-			// Ngăn dropdown đóng lại khi chọn checkbox
-			$('.dropdown-menu').on('click', function (e) {
-				e.stopPropagation();
-			});
+<script>
+	const DeleteSupplierById = (id) => {
+		const currentIsDelete = getIsDeleteValue(id);
+		if (currentIsDelete == true )
+		{
+			showError("Nhà cung cấp đã tạm ngưng rồi");
+			return;
+		}
+		showConfirm("Bạn có muốn đánh dấu nhà cung cấp này là ngừng cung cấp không?", () => {
+			const reqData = { id: id };
 
-			$('.dropdown-menu input[type="checkbox"]').on('change', function () {
-				let selected = [];
-				$('.dropdown-menu input[type="checkbox"]:checked').each(function () {
-					selected.push($(this).next().text().trim());
-				});
-			});
+			fetchDelete('/api/admin/quan-li-nha-cung-cap/delete', reqData,
+				(response) => {
+					if (response.success) {
+						showSuccess(response.message);
+						// Cập nhật biểu tượng IsDelete
+						const iconCell = document.querySelector(`button[onclick="DeleteSupplierById(${id})"]`)
+							.closest('tr')
+							.querySelector('.is-delete-icon');
+						if (iconCell) {
+							iconCell.innerHTML = `<i class="fa-solid fa-times" style="color: red; font-size:28px;"></i>`;
+						}
+					} else {
+						showError(response.message);
+					}
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+			);
 		});
-	</script>
-}
+	};
+
+	//Lấy thuộc tính IsDelete của ô được chọn
+	const getIsDeleteValue = (id) => {
+    const button = document.querySelector(`button[onclick="DeleteSupplierById(${id})"]`);
+    if (button) {
+        // Lấy hàng chứa nút
+        const tr = button.closest('tr');
+        if (tr) {
+            // Lấy ô chứa IsDelete
+            const isDeleteCell = tr.querySelector('.is-delete-icon');
+            if (isDeleteCell) {
+                const hasTimesIcon = isDeleteCell.querySelector('.fa-times') !== null;
+                return hasTimesIcon;
+            }
+        }
+    }
+    return null; // Trường hợp không tìm thấy
+};
+
+
+</script>
