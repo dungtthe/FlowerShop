@@ -60,6 +60,7 @@ builder.Services.AddScoped<ISaleInvoiceService, SaleInvoiceService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPackagingService, PackagingService>();
 builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 //đăng ký Identity
