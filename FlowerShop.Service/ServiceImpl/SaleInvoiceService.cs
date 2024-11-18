@@ -93,5 +93,17 @@ namespace FlowerShop.Service.ServiceImpl
 			}
 			return result.ToList();
 		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDaHuy()
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DA_HUY)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
 	}
 }

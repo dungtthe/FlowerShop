@@ -14,6 +14,8 @@ namespace FlowerShop.Service
 
 		Task<ICollection<SaleInvoice>> LayCacDonHangDaXacNhan();
 
+		Task<ICollection<SaleInvoice>> LayCacDonHangDaHuy();
+
 		Task<SaleInvoice> GetSingleById(int id);
 
 		Task<PopupViewModel> ChoXacNhan(int id);

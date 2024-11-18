@@ -1,0 +1,53 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
+
+@{
+	ViewData["Title"] = "Đã hủy";
+}
+
+<h1>Danh sách đơn hàng đã hủy</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Mã hóa đơn
+			</th>
+			<th>
+				Tên khách hàng
+			</th>
+			<th>
+				Ngày tạo hóa đơn
+			</th>
+			<th>
+				Phương thức thanh toán
+			</th>
+			<th>
+				Trạng thái 
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr id="hoadon-row-@item.Id">
+				<td class="text-center" style="padding-right:60px">
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Customer.FullName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateDay)
+				</td>
+
+				<td>
+					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
+				</td>
+				<td>
+					<span class="badge badge-danger" style="font-size: 100%; width: 75px;">Đã hủy</span>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
