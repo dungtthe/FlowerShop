@@ -70,6 +70,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			return View(saleInvoice);
 		}
 
+		[HttpGet("dang-giao-hang")]
+		public async Task<IActionResult> OrderDelivery()
+		{
+			var saleInvoice = await _saleInvoiceService.LayCacDonHangDangGiao();
+			return View(saleInvoice);
+		}
+
 		// GET: Admin/SaleInvoice/Details/5
 		public async Task<IActionResult> Details(int? id)
 		{

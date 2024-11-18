@@ -29,8 +29,8 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
-			var product = await _saleInvoiceService.GetSingleById(id ?? -1);
-			if (product == null)
+			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
+			if (order == null)
 			{
 				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
 			}
@@ -47,8 +47,8 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
-			var product = await _saleInvoiceService.GetSingleById(id ?? -1);
-			if (product == null)
+			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
+			if (order == null)
 			{
 				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
 			}
@@ -65,14 +65,50 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
-			var product = await _saleInvoiceService.GetSingleById(id ?? -1);
-			if (product == null)
+			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
+			if (order == null)
 			{
 				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.DangChuanBi(id ?? -1);
 
 			return Ok(new { success = true, message = "Đơn hàng đã qua giai đoạn giao hàng!" });
+		}
+
+		[HttpPost("giao-thanh-cong")]
+		public async Task<IActionResult> GiaoThanhCong([FromBody] RequestDeleteByIdViewModel reqData)
+		{
+			if (reqData == null)
+			{
+				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+			}
+			int? id = reqData.Id;
+			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
+			if (order == null)
+			{
+				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+			}
+			await _saleInvoiceService.GiaoThanhCong(id ?? -1);
+
+			return Ok(new { success = true, message = "Đơn hàng đã giao thành công!" });
+		}
+
+		[HttpPost("giao-that-bai")]
+		public async Task<IActionResult> GiaoThatBai([FromBody] RequestDeleteByIdViewModel reqData)
+		{
+			if (reqData == null)
+			{
+				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+			}
+			int? id = reqData.Id;
+			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
+			if (order == null)
+			{
+				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+			}
+			await _saleInvoiceService.GiaoThatBai(id ?? -1);
+
+			return Ok(new { success = true, message = "Đơn hàng giao không thành công!" });
 		}
 
 		[HttpPost("huy")]

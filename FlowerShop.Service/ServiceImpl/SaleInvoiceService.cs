@@ -129,5 +129,41 @@ namespace FlowerShop.Service.ServiceImpl
 			await _unitOfWork.Commit();
 			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã sẵn sàng và chuyển sang trạng thái giao hàng.");
 		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDangGiao()
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DANG_GIAO_HANG)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<PopupViewModel> GiaoThanhCong(int id)
+		{
+			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
+			if (order == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			order.Status = ConstStatusSaleInvoice.GIAO_HANG_THANH_CONG;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã giao thành công!");
+		}
+
+		public async Task<PopupViewModel> GiaoThatBai(int id)
+		{
+			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
+			if (order == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			order.Status = ConstStatusSaleInvoice.GIAO_HANG_THAT_BAI;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng giao không thành công!");
+		}
 	}
 }

@@ -1,0 +1,122 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
+
+@{
+	ViewData["Title"] = "Đang giao hàng";
+}
+
+<h1>Danh sách đơn hàng đang giao</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Mã hóa đơn
+			</th>
+			<th>
+				Tên khách hàng
+			</th>
+			<th>
+				Ngày tạo hóa đơn
+			</th>
+			<th>
+				Phương thức thanh toán
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr id="hoadon-row-@item.Id">
+				<td class="text-center" style="padding-right:60px">
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Customer.FullName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateDay)
+				</td>
+
+				<td>
+					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
+				</td>
+				<td>
+					<!-- Nút xác nhận -->
+					<button onclick="Success(@item.Id)"
+							class="btn btn-success btn-sm"
+							data-toggle ="tooltip"
+							style="width: 110px;"
+							title="Giao hàng thành công">
+						<i class="fa-solid fa-check"></i> Thành công
+					</button>
+					<!-- Khoảng cách giữa các nút -->
+					<span style="margin: 0 5px;"></span>
+					<!-- Nút húy hóa đơn -->
+					<button onclick="Fail(@item.Id)"
+							class="btn btn-danger btn-sm"
+							data-toggle="tooltip"
+							style="width: 110px;"
+							title="Giao hàng thất bại">
+						<i class="fa-solid fa-frown"></i> Thất bại
+					</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<script>
+	const Success = (id) => {
+		showConfirm("Xác nhận đơn hàng giao thành công?", () => {
+			const reqData = { id: id };
+
+			fetchPost('/api/admin/quan-li-don-hang/giao-thanh-cong', reqData,
+				(response) => {
+					if (response.success) {
+						// Xóa dòng trong bảng
+						const row = document.getElementById('hoadon-row-' + id);
+						if (row) {
+							row.remove();
+						}
+						setTimeout(() => {
+							showSuccess(response.message);
+						}, 500);
+					} else {
+						showError(response.message);
+					}
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+			);
+		});
+	};
+
+	const Fail = (id) => {
+		showConfirm("Xác nhận đơn hàng giao thất bại?", () => {
+			const reqData = { id: id };
+
+			fetchPost('/api/admin/quan-li-don-hang/giao-that-bai', reqData,
+				(response) => {
+					if (response.success) {
+						// Xóa dòng trong bảng
+						const row = document.getElementById('hoadon-row-' + id);
+						if (row) {
+							row.remove();
+						}
+						setTimeout(() => {
+							showSuccess(response.message);
+						}, 500);
+					} else {
+						showError(response.message);
+					}
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+			);
+		});
+	};
+
+</script>
