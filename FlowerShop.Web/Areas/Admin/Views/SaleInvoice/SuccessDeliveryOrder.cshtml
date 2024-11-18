@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
 
 @{
-	ViewData["Title"] = "Đã hủy";
+	ViewData["Title"] = "Giao thành công";
 }
 
-<h1>Danh sách đơn hàng đã hủy</h1>
+<h1>Danh sách đơn hàng giao thành công</h1>
 
 <table class="table">
 	<thead>
@@ -22,9 +22,7 @@
 				Phương thức thanh toán
 			</th>
 			<th>
-				Trạng thái
 			</th>
-			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -45,7 +43,9 @@
 					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
 				</td>
 				<td>
-					<span class="badge badge-danger" style="font-size: 100%; width: 75px;">Đã hủy</span>
+					<span class="badge badge-success d-flex align-items-center justify-content-center" style="font-size: 100%; width: 90px;">
+						Đã giao
+					</span>
 				</td>
 			</tr>
 		}

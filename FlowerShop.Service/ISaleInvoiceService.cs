@@ -20,6 +20,10 @@ namespace FlowerShop.Service
 
 		Task<ICollection<SaleInvoice>> LayCacDonHangDangGiao();
 
+		Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThanhCong();
+
+		Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThatBai();
+
 		Task<SaleInvoice> GetSingleById(int id);
 
 		Task<PopupViewModel> ChoXacNhan(int id);
