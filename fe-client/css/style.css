@@ -1,4 +1,6 @@
-
+.breadcrumb-item a {
+    color: white !important; /* Đặt màu chữ thành trắng */
+}
 /*** Spinner Start ***/
 #spinner {
     opacity: 0;
@@ -26,7 +28,22 @@
     z-index: 99;
 }
 /*** Spinner End ***/
+.btn-custom {
+    background-color: #681c1c; /* Màu nền mặc định */
+    color: white; /* Màu chữ mặc định */
+    border: 2px solid #681c1c; /* Màu viền mặc định */
+    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu */
+}
 
+.btn-custom:hover {
+    background-color: red; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+.btn-custom:active {
+    background-color: darkred; /* Màu nền khi bấm */
+    color: white; /* Màu chữ khi bấm */
+}
 
 /*** Button Start ***/
 .btn {
@@ -70,14 +87,14 @@
 }
 
 .btn.border-secondary:hover {
-    background: var(--bs-secondary) !important;
+    background: var(--bs-white) !important;
     color: var(--bs-white) !important;
 }
 
 /*** Topbar Start ***/
 .fixed-top {
     transition: 0.5s;
-    background: var(--bs-white);
+    background: #fff1e8;
     border: 0;
 }
 
@@ -132,7 +149,7 @@
 .navbar .navbar-nav .nav-link.active,
 .fixed-top.bg-white .navbar .navbar-nav .nav-link:hover,
 .fixed-top.bg-white .navbar .navbar-nav .nav-link.active {
-    color: var(--bs-primary);
+    color: #681c1c;
 }
 
 .navbar .dropdown-toggle::after {
@@ -158,7 +175,7 @@
 }
 
 .dropdown .dropdown-menu a:hover {
-    background: var(--bs-secondary);
+    background: #FFF;
     color: var(--bs-primary);
 }
 
@@ -482,7 +499,7 @@
 /*** Footer Start ***/
 .footer .footer-item .btn-link {
     line-height: 35px;
-    color: rgba(255, 255, 255, .5);
+    color: #000;
     transition: 0.5s;
 }
 
