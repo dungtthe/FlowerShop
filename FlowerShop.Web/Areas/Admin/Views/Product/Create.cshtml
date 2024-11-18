@@ -10,34 +10,59 @@
     var stt = 1;
 }
 
-@section CustomStyles {
-    <style>
-        .box-input .box-item {
-            width: 600px;
-        }
+<style>
+    .box-input .box-item {
+        width: 600px;
+    }
 
-        .dropdown-menu {
-            max-height: 300px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #888 #e0e0e0;
-        }
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #888 #e0e0e0;
+    }
 
-        .dropdown button {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 50px;
-            width: 250px;
-        }
+    .dropdown button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        width: 250px;
+    }
 
-        .control-label {
-            margin: 0;
-            text-align: center;
-        }
+    .control-label {
+        margin: 0;
+        text-align: center;
+    }
 
-    </style>
-}
+    .section-search {
+        background-color: #C1CDC1;
+        height: 36px;
+        width: 350px;
+        position: relative;
+        left: 130px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-left: 10px;
+    }
+
+    .section-search .inner-wrap {
+        display: flex;
+        align-items: center;
+    }
+
+    .section-search .inner-icon {
+        margin-right: 10px;
+    }
+
+    .section-search input {
+        border: none;
+        background-color: #C1CDC1;
+        outline: none;
+    }
+</style>
 
 <h1>@ViewData["Title"]</h1>
 <hr />
@@ -70,14 +95,16 @@
             </div>
             <div class="box-item mb-2 mt-1">
                 <div class="dropdown">
-                    <button style="height:50px;" class="btn dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button style="height:50px;" class="btn dropdown-toggle btn-secondary" type="button"
+                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <label asp-for="CategoriesId" class="control-label"></label>
                     </button>
                     <div class="dropdown-menu dropdown-checkbox" aria-labelledby="dropdownMenuButton">
                         @foreach (var subCategory in ViewBag.categories)
                         {
                             <label class="dropdown-item" onclick="event.stopPropagation();">
-                                <input type="checkbox" class="mr-2" name="SelectedSubCategories" value="@subCategory.Id" /> @subCategory.Name
+                                <input type="checkbox" class="mr-2" name="SelectedSubCategories" value="@subCategory.Id" />
+                                @subCategory.Name
                             </label>
                         }
                     </div>
@@ -86,7 +113,8 @@
             </div>
             <div class="box-item">
                 <label asp-for="PackagingId" class="control-label"></label>
-                <button class="btn btn-info btn-sm" onclick="RedirectToAddPackaging()"><i class="fa-solid fa-plus"></i></button>
+                <button class="btn btn-info btn-sm" onclick="RedirectToAddPackaging()"><i
+                        class="fa-solid fa-plus"></i></button>
                 <select asp-for="PackagingId" class="form-control" asp-items="ViewBag.packagings"></select>
                 <span id="errorPackaging" class="text-danger"></span>
             </div>
@@ -110,10 +138,13 @@
                     <!-- Các sản phẩm được thêm sẽ hiển thị ở đây -->
                 </tbody>
             </table>
-            <div class="text-right font-weight-bold mt-3" onclick="copyTotalToClipboard()">
+            <div class="text-right font-weight-bold mt-3">
+                <button style="font-size: 10px;" onclick="copyTotalToClipboard()" class="btn btn-primary mb-2"><i
+                        class="fa-regular fa-copy"></i></button>
                 Tổng tiền: <span id="totalAmount">0</span> VND
             </div>
-           
+
+
 
 
         </div>
@@ -125,7 +156,21 @@
     </div>
     <div class="col-6">
 
-        <h3>Sản phẩm trong kho</h3>
+        <div style="display: flex;">
+            <h3>Sản phẩm trong kho</h3>
+            <div class="section-search">
+                <div class="inner-wrap">
+                    <div class="inner-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div class="inner-input">
+                        <input oninput="SearchProductItem(this.value)" type="text" placeholder="Nhập nội dung tìm kiếm">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <table class="table">
             <thead>
                 <tr>
@@ -147,10 +192,10 @@
 
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="product-table-body">
                 @foreach (var item in ProductsItem)
                 {
-                    <tr data-id="@item.Id">
+                    <tr data-id="@item.Id" id="product-row-@item.Id" class="product-row">
                         <td>
                             @(stt++)
                         </td>
@@ -174,10 +219,12 @@
 
                                 var firstImg = listImg[0];
                             }
-                            <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                            <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image"
+                                style="width: 70px; height: 70px; object-fit: cover;" />
                         </td>
                         <td>
-                            <button class="btn btn-info" onclick="AddProductItemToProduct(@item.Id, '@item.ImportPrice', @item.Quantity)">
+                            <button class="btn btn-info"
+                                onclick="AddProductItemToProduct(@item.Id, '@item.ImportPrice', @item.Quantity)">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </td>
@@ -250,29 +297,29 @@
                 totalAmount += totalPrice; // Cộng dồn vào tổng tiền
 
                 row.innerHTML = `
-                                                    <td>${index + 1}</td>
-                                                    <td>${product.name}</td>
-                                                    <td>${product.price}</td>
-                                                    <td>
-                                                        <input type="number"
-                                                               id="quantityInput-${product.id}"
-                                                               class="form-control form-control-sm"
-                                                               min="1"
-                                                               max="${product.maxQuantity}"
-                                                               value="${product.quantity}"
-                                                               onchange="updateQuantity(${product.id}, this.value)" />
-                                                        <span id="error-${product.id}" class="text-danger small"></span>
-                                                    </td>
-                                                    <td>${totalPrice.toLocaleString()} VND</td>
-                                                    <td>
-                                                        <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </td>
-                                                `;
+                                                                                                                                            <td>${index + 1}</td>
+                                                                                                                                            <td>${product.name}</td>
+                                                                                                                                            <td>${product.price}</td>
+                                                                                                                                            <td>
+                                                                                                                                                <input type="number"
+                                                                                                                                                       id="quantityInput-${product.id}"
+                                                                                                                                                       class="form-control form-control-sm"
+                                                                                                                                                       min="1"
+                                                                                                                                                       max="${product.maxQuantity}"
+                                                                                                                                                       value="${product.quantity}"
+                                                                                                                                                       onchange="updateQuantity(${product.id}, this.value)" />
+                                                                                                                                                <span id="error-${product.id}" class="text-danger small"></span>
+                                                                                                                                            </td>
+                                                                                                                                            <td>${totalPrice.toLocaleString()} VND</td>
+                                                                                                                                            <td>
+                                                                                                                                                <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                                                                                                                                            </td>
+                                                                                                                                            <td>
+                                                                                                                                                <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
+                                                                                                                                                    <i class="fa-solid fa-trash"></i>
+                                                                                                                                                </button>
+                                                                                                                                            </td>
+                                                                                                                                        `;
                 tableBody.appendChild(row);
             });
 
@@ -483,6 +530,21 @@
             const errorSpan = document.getElementById(`error${fieldId}`);
             errorSpan.innerText = '';
         };
+
+
+        const SearchProductItem = (noidung) => {
+            const searchTerm = noidung.toLowerCase();
+            const rows = document.querySelectorAll('#product-table-body .product-row');
+            rows.forEach(row => {
+                const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Lấy tên sản phẩm (cột 2)
+
+                if (productName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
 
     </script>
 }

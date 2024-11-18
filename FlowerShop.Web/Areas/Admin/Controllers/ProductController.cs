@@ -77,7 +77,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Create()
         {
             var productsItem = await _productItemService.GetProductsItemAsync();
-            var categories = await _categoryService.GetCategoriesWithoutSubCategories();
+            var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c=>c.IsCategorySell);
             var packagings=await _packagingService.GetAllPackagingAsync();
             if (productsItem == null|| categories==null)
             {
