@@ -63,6 +63,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			return View(saleInvoice);
 		}
 
+		[HttpGet("dang-chuan-bi")]
+		public async Task<IActionResult> OrderPrepared()
+		{
+			var saleInvoice = await _saleInvoiceService.LayCacDonHangDangChuanBi();
+			return View(saleInvoice);
+		}
+
 		// GET: Admin/SaleInvoice/Details/5
 		public async Task<IActionResult> Details(int? id)
 		{

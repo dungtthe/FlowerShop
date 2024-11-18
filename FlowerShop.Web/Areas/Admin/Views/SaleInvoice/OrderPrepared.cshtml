@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
 
 @{
-	ViewData["Title"] = "Chờ xác nhận";
+	ViewData["Title"] = "Đang chuẩn bị";
 }
 
-<h1>Danh sách đơn hàng chờ xác nhận</h1>
+<h1>Danh sách đơn hàng đang chuẩn bị</h1>
 
 <table class="table">
 	<thead>
@@ -42,21 +42,24 @@
 					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
 				</td>
 				<td>
-					<!-- Nút xác nhận -->
-					<button onclick="ConfirmInvoiceById(@item.Id)"
+					<!-- Nút đang giao hàng -->
+					<button id="btnGiaoHang-@item.Id"
 							class="btn btn-success btn-sm"
+							data-id="@item.Id"
 							data-toggle="tooltip"
-							style="width: 95px;"
-							title="Xác nhận đơn hàng">
-						<i class="fa-solid fa-check"></i> Xác nhận
+							style="width: 110px;"
+							title="Giao hàng"
+							onclick="OrderDeliveryById(@item.Id)">
+						<i class="fa-solid fa-motorcycle"></i> Giao hàng
 					</button>
+
 					<!-- Khoảng cách giữa các nút -->
 					<span style="margin: 0 5px;"></span>
-					<!-- Nút húy hóa đơn -->
+					<!-- Nút hủy hóa đơn -->
 					<button onclick="CancelInvoiceById(@item.Id)"
 							class="btn btn-danger btn-sm"
 							data-toggle="tooltip"
-							style="width: 95px;"
+							style="width: 110px;"
 							title="Hủy đơn hàng">
 						<i class="fa-solid fa-trash"></i> Hủy
 					</button>
@@ -67,12 +70,10 @@
 </table>
 
 <script>
-	// Hàm xác nhận hóa đơn
-	const ConfirmInvoiceById = (id) => {
-		showConfirm("Xác nhận chuyển đơn hàng sang trạng thái đã xác nhận?", () => {
+	const OrderDeliveryById = (id) => {
+		showConfirm("Xác nhận chuyển đơn hàng sang trạng thái chuẩn bị giao?", () => {
 			const reqData = { id: id };
-
-			fetchPost('/api/admin/quan-li-don-hang/cho-xac-nhan', reqData,
+			fetchPost('/api/admin/quan-li-don-hang/dang-chuan-bi', reqData,
 				(response) => {
 					if (response.success) {
 						// Xóa dòng trong bảng

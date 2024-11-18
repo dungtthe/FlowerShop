@@ -105,5 +105,29 @@ namespace FlowerShop.Service.ServiceImpl
 			}
 			return result.ToList();
 		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDangChuanBi()
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DANG_CHUAN_BI)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<PopupViewModel> DangChuanBi(int id)
+		{
+			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
+			if (order == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			order.Status = ConstStatusSaleInvoice.DANG_GIAO_HANG;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã sẵn sàng và chuyển sang trạng thái giao hàng.");
+		}
 	}
 }
