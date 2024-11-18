@@ -13,61 +13,85 @@ using System.Threading.Tasks;
 
 namespace FlowerShop.Service.ServiceImpl
 {
-    public class SaleInvoiceService : ISaleInvoiceService
-    {
-        private readonly ISaleInvoiceRepository _saleInvoiceRepository;
-        private readonly IUnitOfWork _unitOfWork;
+	public class SaleInvoiceService : ISaleInvoiceService
+	{
+		private readonly ISaleInvoiceRepository _saleInvoiceRepository;
+		private readonly IUnitOfWork _unitOfWork;
 
-        public SaleInvoiceService(ISaleInvoiceRepository saleInvoiceRepository, IUnitOfWork unitOfWork)
-        {
-            _saleInvoiceRepository = saleInvoiceRepository;
-            _unitOfWork = unitOfWork;
-        }
+		public SaleInvoiceService(ISaleInvoiceRepository saleInvoiceRepository, IUnitOfWork unitOfWork)
+		{
+			_saleInvoiceRepository = saleInvoiceRepository;
+			_unitOfWork = unitOfWork;
+		}
 
-        public async Task<ICollection<SaleInvoice>> GetSaleInvoiceWithIcludeAsync()
-        {
-            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
-            var result = new List<SaleInvoice>();
-            foreach (var item in tempresult)
-            {
-                if (item.Status == ConstStatusSaleInvoice.DANG_CHO)
-                    result.Add(item);
-            }
-            return result.ToList();
-        }
+		public async Task<ICollection<SaleInvoice>> GetSaleInvoiceWithIcludeAsync()
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DANG_CHO)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
 
-        public async Task<SaleInvoice> GetSingleById(int id)
-        {
-            if (id == -1)
-            {
-                return null;
-            }
-            var customer = await _saleInvoiceRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id);
-            return customer;
-        }
+		public async Task<SaleInvoice> GetSingleById(int id)
+		{
+			if (id == -1)
+			{
+				return null;
+			}
+			var order = await _saleInvoiceRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id);
+			return order;
+		}
 
-        public async Task<PopupViewModel> ChoXacNhan(int id)
-        {
-            var customer = await _saleInvoiceRepository.GetSingleByIdAsync(id);
-            if (customer == null)
-            {
-                return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
-            }
-            customer.Status = ConstStatusSaleInvoice.DA_XAC_NHAN;
-            await _unitOfWork.Commit();
-            return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã chuyển sang đã xác nhận");
-        }
+		public async Task<PopupViewModel> ChoXacNhan(int id)
+		{
+			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
+			if (order == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			order.Status = ConstStatusSaleInvoice.DA_XAC_NHAN;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã chuyển sang đã xác nhận");
+		}
 
-        public async Task<PopupViewModel> Huy(int id)
-        {
-            var customer = await _saleInvoiceRepository.GetSingleByIdAsync(id);
-            if (customer == null)
-            {
-                return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
-            }
-            customer.Status = ConstStatusSaleInvoice.DA_HUY;
-            await _unitOfWork.Commit();
-            return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã hủy");
-        }
-    }
+		public async Task<PopupViewModel> Huy(int id)
+		{
+			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
+			if (order == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			order.Status = ConstStatusSaleInvoice.DA_HUY;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã hủy");
+		}
+
+		public async Task<PopupViewModel> DaXacNhan(int id)
+		{
+			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
+			if (order == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			order.Status = ConstStatusSaleInvoice.DANG_CHUAN_BI;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã chuyển sang đang chuẩn bị");
+		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDaXacNhan()
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DA_XAC_NHAN)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+	}
 }

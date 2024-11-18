@@ -1,0 +1,124 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
+
+@{
+	ViewData["Title"] = "Đã xác nhận";
+}
+
+<h1>Danh sách đơn hàng đã xác nhận</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Mã hóa đơn
+			</th>
+			<th>
+				Tên khách hàng
+			</th>
+			<th>
+				Ngày tạo hóa đơn
+			</th>
+			<th>
+				Phương thức thanh toán
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr id="hoadon-row-@item.Id">
+				<td class="text-center" style="padding-right:60px">
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Customer.FullName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateDay)
+				</td>
+
+				<td>
+					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
+				</td>
+				<td>
+					<!-- Nút đang chuẩn bị giao hàng -->
+					<button onclick="PreparedOrderById(@item.Id)"
+							class="btn btn-info btn-sm"
+							data-toggle="tooltip"
+							style="width: 95px;"
+							title="Đang chuẩn bị giao hàng">
+						<i class="fa-solid fa-truck-loading"></i> Chuẩn bị
+					</button>
+
+					<!-- Khoảng cách giữa các nút -->
+					<span style="margin: 0 5px;"></span>
+					<!-- Nút húy hóa đơn -->
+					<button onclick="CancelInvoiceById(@item.Id)"
+							class="btn btn-danger btn-sm"
+							data-toggle="tooltip"
+							style="width: 95px;"
+							title="Hủy hóa đơn">
+						<i class="fa-solid fa-trash"></i> Hủy
+					</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<script>
+	// Hàm xác nhận hóa đơn
+	const PreparedOrderById = (id) => {
+		showConfirm("Xác nhận chuyển đơn hàng sang trạng thái chuẩn bị giao?", () => {
+			const reqData = { id: id };
+			fetchPost('/api/admin/quan-li-don-hang/da-xac-nhan', reqData,
+				(response) => {
+					if (response.success) {
+						// Xóa dòng trong bảng
+						const row = document.getElementById('hoadon-row-' + id);
+						if (row) {
+							row.remove();
+						}
+						setTimeout(() => {
+							showSuccess(response.message);
+						}, 500);
+					} else {
+						showError(response.message);
+					}
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+			);
+		});
+	};
+
+	// Hàm hủy hóa đơn
+	const CancelInvoiceById = (id) => {
+		showConfirm("Xác nhận hủy đơn hàng?", () => {
+			const reqData = { id: id };
+
+			fetchPost('/api/admin/quan-li-don-hang/huy', reqData,
+				(response) => {
+					if (response.success) {
+						// Xóa dòng trong bảng
+						const row = document.getElementById('hoadon-row-' + id);
+						if (row) {
+							row.remove();
+						}
+						setTimeout(() => {
+							showSuccess(response.message);
+						}, 500);
+					} else {
+						showError(response.message);
+					}
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+			);
+		});
+	};
+
+</script>

@@ -8,14 +8,18 @@ using System.Threading.Tasks;
 
 namespace FlowerShop.Service
 {
-    public interface ISaleInvoiceService
-    {
-        Task<ICollection<SaleInvoice>> GetSaleInvoiceWithIcludeAsync();
+	public interface ISaleInvoiceService
+	{
+		Task<ICollection<SaleInvoice>> GetSaleInvoiceWithIcludeAsync();
 
-        Task<SaleInvoice> GetSingleById(int id);
+		Task<ICollection<SaleInvoice>> LayCacDonHangDaXacNhan();
 
-        Task<PopupViewModel> ChoXacNhan(int id);
+		Task<SaleInvoice> GetSingleById(int id);
 
-        Task<PopupViewModel> Huy(int id);
-    }
+		Task<PopupViewModel> ChoXacNhan(int id);
+
+		Task<PopupViewModel> DaXacNhan(int id);
+
+		Task<PopupViewModel> Huy(int id);
+	}
 }

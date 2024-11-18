@@ -69,7 +69,7 @@
 <script>
     // Hàm xác nhận hóa đơn
     const ConfirmInvoiceById = (id) => {
-        showConfirm("Xác nhận chuyển hóa đơn sang trạng thái đã xác nhận?", () => {
+        showConfirm("Xác nhận chuyển đơn hàng sang trạng thái đã xác nhận?", () => {
             const reqData = { id: id };
 
             fetchPost('/api/admin/quan-li-don-hang/cho-xac-nhan', reqData,
@@ -96,7 +96,7 @@
 
     // Hàm hủy hóa đơn
     const CancelInvoiceById = (id) => {
-        showConfirm("Xác nhận hủy hóa đơn?", () => {
+        showConfirm("Xác nhận hủy đơn hàng?", () => {
             const reqData = { id: id };
 
             fetchPost('/api/admin/quan-li-don-hang/huy', reqData,
