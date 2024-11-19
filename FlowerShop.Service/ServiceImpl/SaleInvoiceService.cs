@@ -16,12 +16,14 @@ namespace FlowerShop.Service.ServiceImpl
 	public class SaleInvoiceService : ISaleInvoiceService
 	{
 		private readonly ISaleInvoiceRepository _saleInvoiceRepository;
+		private readonly ISaleInvoiceDetailRepository _saleInvoiceDetailRepository;
 		private readonly IUnitOfWork _unitOfWork;
 
-		public SaleInvoiceService(ISaleInvoiceRepository saleInvoiceRepository, IUnitOfWork unitOfWork)
+		public SaleInvoiceService(ISaleInvoiceRepository saleInvoiceRepository, IUnitOfWork unitOfWork, ISaleInvoiceDetailRepository saleInvoiceDetailRepository)
 		{
 			_saleInvoiceRepository = saleInvoiceRepository;
 			_unitOfWork = unitOfWork;
+			_saleInvoiceDetailRepository = saleInvoiceDetailRepository;
 		}
 
 		public async Task<SaleInvoice> GetSingleById(int id)
@@ -188,6 +190,17 @@ namespace FlowerShop.Service.ServiceImpl
 			order.Status = ConstStatusSaleInvoice.GIAO_HANG_THAT_BAI;
 			await _unitOfWork.Commit();
 			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng giao không thành công!");
+		}
+
+		public async Task<ICollection<SaleInvoiceDetail>> ChiTietDonHang(int id)
+		{
+			var danhSachchiTietDonHang = (await _saleInvoiceDetailRepository.GetAllWithIncludeAsync(c => c.SaleInvoice, p => p.Product));
+			var danhSachchiTietMotDonHang = danhSachchiTietDonHang.Where(d => d.SaleInvoiceId == id);
+			if (danhSachchiTietMotDonHang == null)
+			{
+				return null;
+			}
+			return danhSachchiTietMotDonHang.ToList();
 		}
 	}
 }

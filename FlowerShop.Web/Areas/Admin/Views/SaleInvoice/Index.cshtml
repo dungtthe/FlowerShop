@@ -29,7 +29,10 @@
 		{
 			<tr id="hoadon-row-@item.Id">
 				<td class="text-center" style="padding-right:60px">
-					@Html.DisplayFor(modelItem => item.Id)
+					<!-- Thêm sự kiện click vào mã đơn hàng -->
+					<a href="javascript:void(0);" onclick="ShowOrderDetails(@item.Id)">
+						@Html.DisplayFor(modelItem => item.Id)
+					</a>
 				</td>
 				<td>
 					@Html.DisplayFor(modelItem => item.Customer.FullName)
@@ -65,6 +68,28 @@
 		}
 	</tbody>
 </table>
+
+<!-- Modal Hiển Thị Chi Tiết Đơn Hàng -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">
+					Chi Tiết Đơn Hàng
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<!-- Nội dung chi tiết đơn hàng sẽ được chèn vào đây qua JavaScript -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <script>
 	// Hàm xác nhận hóa đơn
@@ -120,5 +145,41 @@
 			);
 		});
 	};
+
+	function ShowOrderDetails(orderId) {
+		if (!orderId) {
+			alert("Đơn hàng không hợp lệ.");
+			return;
+		}
+		try {
+			fetchGet(`/api/admin/quan-li-don-hang/chi-tiet-don-hang/${orderId}`,
+				(response) => {
+					if (response.length > 0) {
+						let modalContent = `<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Mã Sản Phẩm</th>
+									<th>Tên Sản Phẩm</th>
+									<th>Số Lượng</th>
+									<th>Giá</th>
+									<th>Thành Tiền</th>
+								</tr>
+							</thead>
+
+							</table>`;
+						document.querySelector('#orderDetailsModal .modal-body').innerHTML = modalContent;
+						$('#orderDetailsModal').modal('show');
+					}
+					else {
+						showError("Không tìm thấy chi tiết đơn hàng");
+					}
+				},
+				() => {
+					showError("Có lỗi khi kết nối đến server");
+				});
+		} catch (error) {
+			alert("Đã xảy ra lỗi khi lấy chi tiết đơn hàng.");
+		}
+	}
 
 </script>

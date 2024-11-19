@@ -128,5 +128,22 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
 			return Ok(new { success = true, message = "Đơn hàng đã hủy thành công!" });
 		}
+
+		[HttpGet("chi-tiet-don-hang/{id}")]
+		public async Task<IActionResult> ChiTietDonHang(int id)
+		{
+			if (id <= 0)
+			{
+				return BadRequest("Id không được để trống.");
+			}
+
+			var saleInvoiceDetail = await _saleInvoiceService.ChiTietDonHang(id);
+			if (saleInvoiceDetail == null || !saleInvoiceDetail.Any())
+			{
+				return NotFound("Không tìm thấy chi tiết đơn hàng.");
+			}
+
+			return Ok(saleInvoiceDetail.ToList());
+		}
 	}
 }
