@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FlowerShop.Common.Helpers;
 using FlowerShop.Common.MyConst;
 using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess;
@@ -32,9 +33,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            //return _context.PaymentMethods != null ? 
-            //            View(await _context.PaymentMethods.ToListAsync()) :
-            //            Problem("Entity set 'FlowerShopContext.PaymentMethods'  is null.");
 
             var result = await _userService.GetUsersAsync();
             if(result == null)
@@ -66,59 +64,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         }
 
 
-        //// POST: Admin/User/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Name,Birthday,Images,Username,Email")] AppUser appUser)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(appUser);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(appUser);
-        //}
-
-
-
-        // GET: Admin/User/Create
-        [HttpGet("create")]
-        public async Task<IActionResult> Create()
-        {       
-            return View();
-        }
-
-        // POST: Admin/Category/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost("create")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind(("FullName,BirthDay,Images,Email"))] AppUserViewModel appUserViewModel)
-        {
-            if (ModelState.IsValid)
-            {
-
-                //Category category = new Category();
-                //category.Name=categoryViewModel.Name;
-                //category.ParentCategoryId=(categoryViewModel.ParentCategoryId==0)?null:categoryViewModel.ParentCategoryId;
-
-
-                AppUser appUser = _mapper.Map<AppUser>(appUserViewModel);
-                var rs = await _userService.AddAsync(appUser);
-                if (rs != null)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    return Content(ConstValues.CoLoiXayRa);
-                }
-            }
-            return View(appUserViewModel);
-        }
-
-
+       
         // GET: Admin/User/Edit/5
         [HttpGet("edit")]
         public async Task<IActionResult> Edit(string? id)
@@ -177,7 +123,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 
 
-        [HttpGet("delete")]
+        [HttpPost("delete")]
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _userService.GetSingleById(id);
@@ -195,7 +141,45 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return (_context.AppUsers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        [HttpGet("uploadphoto")]
+        public async Task<IActionResult> UploadPhoto(string id)
+        {
+            var user = await _userService.FindOneWithIncludeByIdAsync(id ?? "-1");
+            if (user == null)
+            {
+                return Content(ConstValues.CoLoiXayRa);
+            }
+            ViewData["appuser"] = user;
+            return View(new UploadOneFile());
+        }
 
-        
+
+        [HttpPost("uploadphoto"), ActionName("UploadPhoto")]
+        public async Task<IActionResult> UploadPhotoAsync(string id, [Bind("FileUpload")] UploadOneFile f)
+        {
+            var user = await _userService.FindOneWithIncludeByIdAsync(id ?? "-1");
+            if (user == null)
+            {
+                return Content(ConstValues.CoLoiXayRa);
+            }
+            if (f != null && f.FileUpload != null)
+            {
+                // fileName random
+                var fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName())
+                     + Path.GetExtension(f.FileUpload.FileName);
+                var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products");
+                var filePath = Path.Combine(wwwRootPath, fileName);
+
+                using (var filestream = new FileStream(filePath, FileMode.Create))
+                {
+                    await f.FileUpload.CopyToAsync(filestream);
+                }
+                var imgs = Utils.AddPhotoForProduct(fileName, user.Images);
+                user.Images = imgs;
+                await _userService.UpdateAsync(user);
+            }
+            return RedirectToAction(nameof(Edit), new { id = id });
+        }
+
     }
 }

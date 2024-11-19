@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<FlowerShop.Web.ViewModels.AppUserViewModel>
+@using Newtonsoft.Json;
+@using FlowerShop.Common.Helpers;
 
 @{
     ViewData["Title"] = "Index";
@@ -16,11 +18,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.BirthDay)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Images)
-            </th>
+            
             <th>
                 @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Images)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsLock)
@@ -39,25 +42,44 @@
                     @Html.DisplayFor(modelItem => item.BirthDay)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Images)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IsLock)
+                    @{
+                        string[] listImg = item.Images != null
+                        ? JsonConvert.DeserializeObject<string[]>(item.Images)
+                        : new string[] { "no_img.png" };
+
+                        var firstImg = listImg[0];
+                    }
+                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                </td>
+                <td>
+                    @if (item.IsLock)
+                    {
+                        <i class="fa-solid fa-lock icon-lock" style="color: red"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-unlock icon-unlock" style="color: green;"></i>
+                    }
                 </td>
 
                 <td>
                     <a asp-action="Edit" asp-area="Admin" asp-controller="AppUser" asp-route-id="@item.Id">
                         <i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
                     </a>|
-                    <!-- Form cho nút xóa -->
-                    <form asp-action="Delete" asp-area="Admin" asp-controller="AppUser" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn khóa tài khoản của nhân viên này?');">
-                        <button type="submit" style="border: none; background: none; cursor: pointer;">
-                            <i class="fa-solid fa-lock" style="color:red; width: 20px; height: 30px"></i>
-                        </button>
-                    </form>
+                    <button onclick="LockCustomerById(@item.Id)" class="bg-transparent" style="border: none;">
+                        @if (item.IsLock)
+                        {
+                            <i class="fa-solid fa-lock" style="color:red;"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-unlock" style="color:green;"></i>
+                        }
+                    </button>
+                    
                 </td>
             </tr>
         }
@@ -65,8 +87,66 @@
 </table>
 @* căn trôn k + d *@
 
+<script>
+    //Lấy id nhân viên được chọn
+    const getIsLockValue = (id) => {
+        const button = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+        if (button) {
+            const tr = button.closest('tr');
+            if (tr) {
+                const isLockCell = tr.querySelector('.is-lock');
+                if (isLockCell) {
+                    const hasLockIcon = isLockCell.querySelector('.icon-lock') !== null;
+                    return hasLockIcon;
+                }
+            }
+        }
+        return null; // Trường hợp không tìm thấy
+    };
 
-@section Scripts {
+
+    // Hàm để khóa nhân viên
+    const LockCustomerById = (id) => {
+        const currentIsLock = getIsLockValue(id);
+        if (currentIsLock === true) {
+            showError("Tài khoản nhân viên đã bị khóa.");
+            return;
+        }
+        showConfirm("Bạn có muốn khóa nhân viên này không?", () => {
+            const reqData = { id: id };
+
+            fetchDelete('/api/admin/quan-li-khach-hang/delete', reqData,
+                (response) => {
+                    if (response.success) {
+                        showSuccess(response.message);
+                        // Cập nhật giá trị IsLock
+                        const iconCell = document.querySelector(`button[onclick="LockCustomerById(${id})"]`)
+                            .closest('tr')
+                            .querySelector('.is-lock');
+                        if (iconCell) {
+                            iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+                            iconCell.setAttribute('data-is-lock', 'true');
+                        }
+
+                        // Cập nhật icon của nút khóa
+                        const lockButton = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+                        if (lockButton) {
+                            lockButton.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+                        }
+                    } else {
+                        showError(response.message);
+                    }
+                },
+                () => {
+                    showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+                }
+            );
+        });
+    };
+</script>
+
+
+@* @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
@@ -85,4 +165,4 @@
             });
         });
     </script>
-}
+} *@

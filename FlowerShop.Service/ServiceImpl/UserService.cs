@@ -1,8 +1,10 @@
 ﻿using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +17,28 @@ namespace FlowerShop.Service.ServiceImpl
     {
         private readonly IAppUserRepository _appUserRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public UserService(IAppUserRepository appUserRepository, IUnitOfWork unitOfWork)
+        private readonly FlowerShopContext _context;
+        public UserService(IAppUserRepository appUserRepository, IUnitOfWork unitOfWork, FlowerShopContext context)
         {
             _unitOfWork = unitOfWork;
             _appUserRepository = appUserRepository;
+            _context = context;
         }
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
-            var result = (await _appUserRepository.GetAllAsync()).Where(u=>u.IsDelete==false);
-            return result;
+            var nhanvien = _context.UserRoles.Where(x => x.RoleId == "3").ToList();
+            var result = (await _appUserRepository.GetAllAsync()).ToList();
+            var appUserList = new List<AppUser>();
+            foreach (var appUser in result)
+            {
+                foreach (var appRole in nhanvien)
+                {
+                    if (appRole.UserId == appUser.Id)
+                        appUserList.Add(appUser);
+                }
+            }
+            return appUserList;
+
         }
 
         public async Task<AppUser> GetSingleById(string? id)
@@ -52,7 +67,7 @@ namespace FlowerShop.Service.ServiceImpl
             try
             {
                 appUser.IsLock = true;
-                appUser.IsDelete = true;
+                //appUser.IsDelete = true;
                 var rs = await UpdateAsync(appUser);
                 if (rs == null)
                 {
@@ -74,6 +89,17 @@ namespace FlowerShop.Service.ServiceImpl
                 await _unitOfWork?.Commit();
             }
             return rs;
+        }
+
+
+        public async Task<AppUser> FindOneWithIncludeByIdAsync(string id)
+        {
+            if (id == "-1")
+            {
+                return null;
+            }
+            var user = await _appUserRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id);
+            return user;
         }
     }
 }

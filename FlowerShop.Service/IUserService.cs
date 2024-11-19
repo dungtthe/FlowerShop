@@ -16,5 +16,7 @@ namespace FlowerShop.Service
         //Task DeleteAsync(string? id);
         Task<PopupViewModel> Delete(AppUser appUser);
         Task<AppUser> AddAsync(AppUser appUser);
+
+        Task<AppUser> FindOneWithIncludeByIdAsync(string id);
     }
 }
