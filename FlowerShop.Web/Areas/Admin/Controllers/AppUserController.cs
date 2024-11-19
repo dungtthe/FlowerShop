@@ -84,7 +84,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string? id, [Bind("Id,FullName,BirthDay,Images,Email")] AppUserViewModel appUserVM)
+        public async Task<IActionResult> Edit(string? id, [Bind("Id,FullName,BirthDay,Email")] AppUserViewModel appUserVM)
         {
             var appUser = await _userService.GetSingleById(id ?? "-1");
             if (appUser == null)
@@ -101,7 +101,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
                     appUser.FullName = appUserVM.FullName;
                     appUser.BirthDay = appUserVM.BirthDay;
-                    appUser.Images= appUserVM.Images;
+                   // appUser.Images= appUserVM.Images;
                     appUser.Email = appUserVM.Email;
                     appUser.IsLock= appUserVM.IsLock;
 
@@ -123,21 +123,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 
 
-        [HttpDelete("delete")]
-        public async Task<IActionResult> Delete([FromBody]RequestDeleteByAppUserIdViewModel? req)
-        {
-            if(req == null)
-            {
-				return Ok(new { success = false, message = "Không tìm thấy nhân viên để xóa" });
-			}
-            var user = await _userService.GetSingleById(req?.Id);
-            if (user == null)
-            {
-				return Ok(new { success = false, message = "Không tìm thấy nhân viên để xóa" });
-			}
-			PopupViewModel rsp = await _userService.Delete(user);
-			return Ok(new { success = (rsp.Type == PopupViewModel.SUCCESS)?true:false, message = rsp.Message });
-        }
+       
 
         private bool AppUserExists(string id)
         {

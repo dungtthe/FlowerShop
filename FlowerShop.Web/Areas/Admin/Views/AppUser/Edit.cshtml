@@ -216,7 +216,7 @@
 
                 const reqData = { fileName: imageName, id: @Model.Id};
 
-                fetchPut('/admin/quan-li-nhan-vien/set-default-img',
+                fetchPut('/api/admin/quan-li-nhan-vien/set-default-img',
                     reqData,
                     (result) => {
                         showSuccess('Ảnh đã được đặt làm mặc định thành công.');

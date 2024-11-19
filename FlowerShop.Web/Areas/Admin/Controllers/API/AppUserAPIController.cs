@@ -1,4 +1,5 @@
 ﻿using FlowerShop.Common.Helpers;
+using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
@@ -20,6 +21,22 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
         {
             _userService = userService;
            
+        }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete([FromBody] RequestDeleteByAppUserIdViewModel? req)
+        {
+            if (req == null)
+            {
+                return Ok(new { success = false, message = "Không tìm thấy nhân viên để xóa" });
+            }
+            var user = await _userService.GetSingleById(req?.Id);
+            if (user == null)
+            {
+                return Ok(new { success = false, message = "Không tìm thấy nhân viên để xóa" });
+            }
+            PopupViewModel rsp = await _userService.Delete(user);
+            return Ok(new { success = (rsp.Type == PopupViewModel.SUCCESS) ? true : false, message = rsp.Message });
         }
 
         [HttpDelete("deleteimage")]

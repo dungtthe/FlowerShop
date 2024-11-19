@@ -52,7 +52,7 @@
 
                         var firstImg = listImg[0];
                     }
-                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                    <img src="@Url.Content("~/images/users/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
                 </td>
                 <td class="is-lock" data-is-lock="@item.IsLock">
                     @if (item.IsLock)
@@ -115,7 +115,7 @@
         showConfirm("Bạn có muốn khóa nhân viên này không?", () => {
             const reqData = { Id: id +""};
 
-            fetchDelete('/admin/quan-li-nhan-vien/delete', reqData,
+            fetchDelete('/api/admin/quan-li-nhan-vien/delete', reqData,
                 (response) => {
                     if (response.success) {
                         showSuccess(response.message);
