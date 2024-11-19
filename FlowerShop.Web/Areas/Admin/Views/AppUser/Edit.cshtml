@@ -104,7 +104,7 @@
                         <div class="p-2 position-relative image-container">
                             @if (im != "no_img.png")
                             {
-                                <img src="~/images/products/@im" alt="User Image"
+                                <img src="~/images/users/@im" alt="User Image"
                                      class="img-thumbnail rounded shadow-sm img-fluid user-image"
                                      style="width: 100px; height: 100px; object-fit: cover;" />
                                 <div class="overlay">
@@ -114,12 +114,17 @@
                             }
                             else
                             {
-                                <img src="~/images/products/@im" alt="User Image"
+                                <img src="~/images/users/@im" alt="User Image"
                                      class="img-thumbnail rounded shadow-sm user-fluid"
                                      style="width: 100px; height: 100px; object-fit: cover;" />
                             }
                         </div>
                     }
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsLock" /> Khóa tài khoản
+                    </label>
                 </div>
 
                 <br />
@@ -211,7 +216,7 @@
 
                 const reqData = { fileName: imageName, id: @Model.Id};
 
-                fetchPut('/api/admin/quan-li-nhan-vien/set-default-img',
+                fetchPut('/admin/quan-li-nhan-vien/set-default-img',
                     reqData,
                     (result) => {
                         showSuccess('Ảnh đã được đặt làm mặc định thành công.');

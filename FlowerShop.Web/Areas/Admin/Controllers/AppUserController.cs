@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
-    [Area("ADMIN")]
+    [Area("Admin")]
     [Route("admin/quan-li-nhan-vien")]
     public class AppUserController : Controller
     {
@@ -103,7 +103,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                     appUser.BirthDay = appUserVM.BirthDay;
                     appUser.Images= appUserVM.Images;
                     appUser.Email = appUserVM.Email;
-
+                    appUser.IsLock= appUserVM.IsLock;
 
 
                     var result = await _userService.UpdateAsync(appUser);
@@ -123,17 +123,20 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 
 
-        [HttpPost("delete")]
-        public async Task<IActionResult> Delete(string id)
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete([FromBody]RequestDeleteByAppUserIdViewModel? req)
         {
-            var user = await _userService.GetSingleById(id);
+            if(req == null)
+            {
+				return Ok(new { success = false, message = "Không tìm thấy nhân viên để xóa" });
+			}
+            var user = await _userService.GetSingleById(req?.Id);
             if (user == null)
             {
-                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy nhân viên để xóa"));
-            }
-            PopupViewModel rsp = await _userService.Delete(user);
-            TempData["PopupViewModel"] = JsonConvert.SerializeObject(rsp);
-            return RedirectToAction("Index");
+				return Ok(new { success = false, message = "Không tìm thấy nhân viên để xóa" });
+			}
+			PopupViewModel rsp = await _userService.Delete(user);
+			return Ok(new { success = (rsp.Type == PopupViewModel.SUCCESS)?true:false, message = rsp.Message });
         }
 
         private bool AppUserExists(string id)
@@ -167,7 +170,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 // fileName random
                 var fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName())
                      + Path.GetExtension(f.FileUpload.FileName);
-                var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products");
+                var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "users");
                 var filePath = Path.Combine(wwwRootPath, fileName);
 
                 using (var filestream = new FileStream(filePath, FileMode.Create))

@@ -47,7 +47,7 @@ namespace FlowerShop.Service.ServiceImpl
             {
                 return null;
             }
-            var appUser = await _appUserRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id);
+            var appUser = await _appUserRepository.FindByIdAsync(id);
             return appUser;
         }
 

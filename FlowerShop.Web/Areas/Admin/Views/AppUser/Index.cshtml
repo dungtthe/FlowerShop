@@ -54,7 +54,7 @@
                     }
                     <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
                 </td>
-                <td>
+                <td class="is-lock" data-is-lock="@item.IsLock">
                     @if (item.IsLock)
                     {
                         <i class="fa-solid fa-lock icon-lock" style="color: red"></i>
@@ -113,9 +113,9 @@
             return;
         }
         showConfirm("Bạn có muốn khóa nhân viên này không?", () => {
-            const reqData = { id: id };
+            const reqData = { Id: id +""};
 
-            fetchDelete('/api/admin/quan-li-khach-hang/delete', reqData,
+            fetchDelete('/admin/quan-li-nhan-vien/delete', reqData,
                 (response) => {
                     if (response.success) {
                         showSuccess(response.message);

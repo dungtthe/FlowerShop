@@ -18,5 +18,6 @@ namespace FlowerShop.Service
         Task<AppUser> AddAsync(AppUser appUser);
 
         Task<AppUser> FindOneWithIncludeByIdAsync(string id);
+        
     }
 }
