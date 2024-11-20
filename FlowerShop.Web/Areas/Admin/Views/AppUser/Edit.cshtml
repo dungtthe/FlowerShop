@@ -1,16 +1,83 @@
-﻿@model FlowerShop.Web.ViewModels.AppUserViewModel;
-
+﻿@model FlowerShop.Web.ViewModels.AppUserViewModel
+@using Newtonsoft.Json;
 @{
-    ViewData["Title"] = "Edit";
+
+    ViewData["Title"] = "Sửa thông tin nhân viên";
+    string[] listImg = Model.Images != null
+    ? JsonConvert.DeserializeObject<string[]>(Model.Images)
+    : new string[] { "no_img.png" };
 }
 
-<h1>Edit</h1>
 
-<h4>PaymentMethod</h4>
+@section CustomStyles {
+    <style>
+        .image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-image {
+            transition: 0.3s;
+        }
+
+        .image-container .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 0.25rem;
+        }
+
+        .image-container .overlay-top,
+        .image-container .overlay-bottom {
+            width: 100%;
+            height: 50%;
+            /* Mỗi phần chiếm 50% chiều cao */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .image-container .overlay-top {
+            background: rgba(0, 128, 0, 0.8);
+            color: white;
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+        }
+
+        .image-container .overlay-bottom {
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border-bottom-left-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .image-container:hover .user-image {
+            filter: brightness(0.7);
+        }
+
+        .image-container:hover .overlay {
+            opacity: 1;
+        }
+    </style>
+}
+
+<h1>@ViewData["Title"]</h1>
 <hr />
+
+
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form method="post" asp-action="Edit" asp-area="Admin" asp-controller="AppUser" asp-route-id="@Model.Id">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -21,31 +88,151 @@
             <div class="form-group">
                 <label asp-for="BirthDay" class="control-label"></label>
                 <input asp-for="BirthDay" class="form-control" />
-                <span asp-validation-for="BirthDay" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Images" class="control-label"></label>
-                <input asp-for="Images" class="form-control" />
-                <span asp-validation-for="Images" class="text-danger"></span>
+                @* <span asp-validation-for="BirthDay" class="text-danger"></span> *@
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>            
+                <input asp-for="Email" class="form-control" readonly />
+                @* <span asp-validation-for="Quantity" class="text-danger"></span>  *@
+            </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="Images" class="control-label"></label>
+                <br />
+                <div class="d-flex flex-wrap">
+                    @foreach (var im in listImg)
+                    {
+                        <div class="p-2 position-relative image-container">
+                            @if (im != "no_img.png")
+                            {
+                                <img src="~/images/users/@im" alt="User Image"
+                                     class="img-thumbnail rounded shadow-sm img-fluid user-image"
+                                     style="width: 100px; height: 100px; object-fit: cover;" />
+                                <div class="overlay">
+                                    <div class="overlay-top" onclick="setDefaultImage('@im')">Đặt làm mặc định</div>
+                                    <div class="overlay-bottom" onclick="deleteImage('@im')">Xóa</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/images/users/@im" alt="User Image"
+                                     class="img-thumbnail rounded shadow-sm user-fluid"
+                                     style="width: 100px; height: 100px; object-fit: cover;" />
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsLock" /> Khóa tài khoản
+                    </label>
+                </div>
+
+                <br />
+                <a asp-area="Admin" asp-controller="AppUser" asp-action="UploadPhoto" asp-route-id="@Model.Id"
+                   class="btn" style="background: green !important; color: white !important;">Upload ảnh</a>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
+
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+
+        const deleteImage = async (imageName) => {
+            showConfirm("Bạn có chắc chắn muốn xóa ảnh này không?", async () => {
+                try {
+                    const response = await fetch('/api/admin/quan-li-nhan-vien/deleteimage', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ fileName: imageName, id: @Model.Id }),
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        showError('Có lỗi xảy ra');
+                        return;
+                    }
+
+                    const result = await response.json();
+                    showSuccess('Đã xóa ảnh thành công.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } catch (error) {
+                    showError('Có lỗi xảy ra');
+                }
+            });
+        };
+
+
+
+        // const setDefaultImage = async (imageName) => {
+        //     showConfirm("Bạn có muốn đặt ảnh này làm mặc định không?", async () => {
+        //         try {
+        //             const response = await fetch('/api/admin/quan-li-nhan-vien/set-default-img', {
+        //                 method: 'PUT',
+        //                 headers: {
+        //                     'Content-Type': 'application/json',
+        //                 },
+        //                 body: JSON.stringify({ fileName: imageName, id: @Model.Id }),
+        //             });
+
+        //             if (!response.ok) {
+        //                 const errorText = await response.text();
+        //                 showError('Có lỗi xảy ra');
+        //                 return;
+        //             }
+
+        //             const result = await response.json();
+        //             showSuccess('Ảnh đã được đặt làm mặc định thành công.');
+        //             setTimeout(() => {
+        //                 location.reload();
+        //             }, 2000);
+        //         } catch (error) {
+        //             showError('Có lỗi xảy ra');
+        //         }
+        //     });
+        // };
+
+
+        const setDefaultImage = (imageName) => {
+
+            showConfirm("Bạn có muốn đặt ảnh này làm mặc định không?", () => {
+
+                const reqData = { fileName: imageName, id: @Model.Id};
+
+                fetchPut('/api/admin/quan-li-nhan-vien/set-default-img',
+                    reqData,
+                    (result) => {
+                        showSuccess('Ảnh đã được đặt làm mặc định thành công.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    },
+                    (errorText) => {
+                        showError('Có lỗi xảy ra');
+                    }
+                );
+            });
+        };
+
+
+
+
+    </script>
 }
