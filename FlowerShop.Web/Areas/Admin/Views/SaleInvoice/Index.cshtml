@@ -74,7 +74,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">
+				<h5 class="modal-title w-100 text-center">
 					Chi Tiết Đơn Hàng
 				</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
@@ -148,29 +148,77 @@
 
 	function ShowOrderDetails(orderId) {
 		if (!orderId) {
-			alert("Đơn hàng không hợp lệ.");
+			showError("Không tìm thấy đơn hàng");
 			return;
 		}
 		try {
+			// Lấy thông tin từ row được chọn
+			const row = document.querySelector(`#hoadon-row-${orderId}`);
+			const customerName = row.querySelector('td:nth-child(2)').innerText; // Tên khách hàng
+			const createDate = row.querySelector('td:nth-child(3)').innerText;  // Ngày tạo hóa đơn
+
 			fetchGet(`/api/admin/quan-li-don-hang/chi-tiet-don-hang/${orderId}`,
 				(response) => {
-					if (response.length > 0) {
-						let modalContent = `<table class="table table-bordered">
-							<thead>
-								<tr>
-									<th>Mã Sản Phẩm</th>
-									<th>Tên Sản Phẩm</th>
-									<th>Số Lượng</th>
-									<th>Giá</th>
-									<th>Thành Tiền</th>
-								</tr>
-							</thead>
+					console.log(response);
 
-							</table>`;
+					if (response.length > 0) {
+						// Hiển thị tên khách hàng và ngày tạo hóa đơn
+						let modalContent = `
+										<p><strong>Tên khách hàng:</strong> ${customerName}</p>
+										<p><strong>Ngày tạo hóa đơn:</strong> ${createDate}</p>
+										<hr>
+										<p style="font-size: 20px; text-align: center; font-weight: bold;">
+											Danh sách các sản phẩm</p>
+											<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>Mã Sản Phẩm</th>
+													<th>Tên Sản Phẩm</th>
+													<th>Số Lượng</th>
+													<th>Giá</th>
+													<th>Thành Tiền</th>
+												</tr>
+											</thead>
+											<tbody>
+									`;
+
+						// Tính tổng tiền cho tất cả sản phẩm
+						let total = 0;
+
+						// Lặp qua từng sản phẩm để tạo nội dung bảng
+						response.forEach(item => {
+							let thanhTien = item.unitPrice * item.quantity; // Thành tiền cho từng sản phẩm
+							total += thanhTien; // Cộng dồn tổng tiền
+
+							modalContent += `
+											<tr>
+												<td>${item.productId}</td>
+												<td>${item.product.title}</td>
+												<td>${item.quantity}</td>
+												<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+												<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+											</tr>
+										`;
+						});
+
+						// Thêm hàng tổng cộng vào bảng
+						modalContent += `
+											</tbody>
+											<tfoot>
+												<tr>
+													<th colspan="4" class="text-right">Tổng Cộng:</th>
+													<th>${total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</th>
+												</tr>
+											</tfoot>
+										</table>
+									`;
+
+						// Đặt nội dung vào modal
 						document.querySelector('#orderDetailsModal .modal-body').innerHTML = modalContent;
+
+						// Hiển thị modal
 						$('#orderDetailsModal').modal('show');
-					}
-					else {
+					} else {
 						showError("Không tìm thấy chi tiết đơn hàng");
 					}
 				},
@@ -178,6 +226,7 @@
 					showError("Có lỗi khi kết nối đến server");
 				});
 		} catch (error) {
+			console.error(error);
 			alert("Đã xảy ra lỗi khi lấy chi tiết đơn hàng.");
 		}
 	}
