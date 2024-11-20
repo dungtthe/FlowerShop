@@ -1,0 +1,104 @@
+﻿@model IEnumerable<FlowerShop.Web.ViewModels.PackagingViewModel>
+@using FlowerShop.Common.Helpers;
+@{
+    ViewData["Title"] = "Danh sách cách đóng gói";
+    int stt = 1;
+}
+
+<h1>Danh sách cách đóng gói</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th style="width: 40px">STT</th>
+            <th style="width: 300px">Tên cách đóng gói</th>
+            <th>Mô tả</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(stt++)</td>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>
+                    <a asp-action="Edit" asp-area="Admin" asp-controller="Packaging" asp-route-id="@item.Id">
+                        <i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
+                    </a>|
+                    <button onclick="LockCustomerById(@item.Id)" class="bg-transparent" style="border: none;">
+                        @if (item.IsDelete)
+                        {
+                            <i class="fa-solid fa-lock" style="color:red;"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-trash" style="color:red;"></i>
+                        }
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    // Hàm cập nhật lại STT sau khi xóa một dòng
+    const updateSTT = () => {
+        const rows = document.querySelectorAll("table tbody tr");
+        let stt = 1; // Bắt đầu từ 1
+        rows.forEach(row => {
+            const sttCell = row.querySelector("td:first-child");
+            if (sttCell) {
+                sttCell.textContent = stt++;
+            }
+        });
+    };
+
+    // Lấy giá trị IsDelete của cách đóng gói được chọn
+    const getIsDeleteValue = (id) => {
+        const button = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+        if (button) {
+            const tr = button.closest('tr');
+            if (tr) {
+                // Kiểm tra xem thẻ nút có chứa biểu tượng khóa hay không
+                const hasLockIcon = button.querySelector('.fa-lock') !== null;
+                return hasLockIcon;
+            }
+        }
+        return null; // Trường hợp không tìm thấy
+    };
+
+    // Hàm để khóa hoặc xóa cách đóng gói
+    const LockCustomerById = (id) => {
+        const currentIsDelete = getIsDeleteValue(id);
+        if (currentIsDelete === true) {
+            showError("Cách đóng gói đã bị xóa.");
+            return;
+        }
+
+        showConfirm("Bạn có muốn xóa cách đóng gói này không?", () => {
+            const reqData = { Id: id + "" };
+
+            fetchDelete('/api/admin/quan-li-cach-dong-goi/delete', reqData,
+                (response) => {
+                    if (response.success) {
+                        showSuccess(response.message);
+                        // Xóa dòng khỏi bảng
+                        const rowToDelete = document.querySelector(`button[onclick="LockCustomerById(${id})"]`).closest('tr');
+                        if (rowToDelete) {
+                            rowToDelete.remove(); // Xóa dòng
+                            updateSTT(); // Cập nhật lại STT
+                        }
+                    } else {
+                        showError(response.message);
+                    }
+                },
+                () => {
+                    showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+                }
+            );
+        });
+    };
+</script>
