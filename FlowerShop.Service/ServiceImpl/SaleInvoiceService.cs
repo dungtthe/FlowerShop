@@ -140,6 +140,7 @@ namespace FlowerShop.Service.ServiceImpl
 				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
 			}
 			order.Status = ConstStatusSaleInvoice.DA_HUY;
+			await XuLyDonHangSauKhiHuy(id);
 			await _unitOfWork.Commit();
 			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã hủy");
 		}
@@ -201,6 +202,16 @@ namespace FlowerShop.Service.ServiceImpl
 				return null;
 			}
 			return danhSachchiTietMotDonHang.ToList();
+		}
+
+		public async Task XuLyDonHangSauKhiHuy(int id)
+		{
+			var chiTietDonHangList = await ChiTietDonHang(id);
+			foreach (var item in chiTietDonHangList)
+			{
+				item.Product.Quantity += item.Quantity;
+				item.IsDelete = true;
+			}
 		}
 	}
 }
