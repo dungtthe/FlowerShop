@@ -153,14 +153,14 @@
 							total += thanhTien; // Cộng dồn tổng tiền
 
 							tableBody += `
-												<tr>
-													<td>${item.productId}</td>
-													<td>${item.product.title}</td>
-													<td>${item.quantity}</td>
-													<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-													<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-												</tr>
-											`;
+														<tr>
+															<td>${item.productId}</td>
+															<td>${item.product.title}</td>
+															<td>${item.quantity}</td>
+															<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+															<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+														</tr>
+													`;
 						});
 
 						// Cập nhật nội dung bảng và tổng cộng

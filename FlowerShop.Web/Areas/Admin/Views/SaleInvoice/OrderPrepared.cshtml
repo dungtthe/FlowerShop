@@ -29,7 +29,10 @@
 		{
 			<tr id="hoadon-row-@item.Id">
 				<td class="text-center" style="padding-right:60px">
-					@Html.DisplayFor(modelItem => item.Id)
+					<!-- Thêm sự kiện click vào mã đơn hàng -->
+					<a href="javascript:void(0);" onclick="ShowOrderDetails(@item.Id)">
+						@Html.DisplayFor(modelItem => item.Id)
+					</a>
 				</td>
 				<td>
 					@Html.DisplayFor(modelItem => item.Customer.FullName)
@@ -68,6 +71,7 @@
 		}
 	</tbody>
 </table>
+@await Html.PartialAsync("_OrderDetailsModal")
 
 <script>
 	const OrderDeliveryById = (id) => {
@@ -122,4 +126,60 @@
 		});
 	};
 
+	function ShowOrderDetails(orderId) {
+		if (!orderId) {
+			showError("Không tìm thấy đơn hàng");
+			return;
+		}
+		try {
+			// Lấy thông tin từ row được chọn
+			const row = document.querySelector(`#hoadon-row-${orderId}`);
+			const customerName = row.querySelector('td:nth-child(2)').innerText; // Tên khách hàng
+			const createDate = row.querySelector('td:nth-child(3)').innerText;  // Ngày tạo hóa đơn
+
+			// Đặt thông tin khách hàng và ngày tạo hóa đơn vào modal
+			document.getElementById("customerName").innerText = customerName;
+			document.getElementById("createDate").innerText = createDate;
+
+			fetchGet(`/api/admin/quan-li-don-hang/chi-tiet-don-hang/${orderId}`,
+				(response) => {
+					console.log(response);
+
+					if (response.length > 0) {
+						let tableBody = "";
+						let total = 0;
+
+						response.forEach(item => {
+							let thanhTien = item.unitPrice * item.quantity; // Thành tiền cho từng sản phẩm
+							total += thanhTien; // Cộng dồn tổng tiền
+
+							tableBody += `
+															<tr>
+																<td>${item.productId}</td>
+																<td>${item.product.title}</td>
+																<td>${item.quantity}</td>
+																<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+																<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+															</tr>
+														`;
+						});
+
+						// Cập nhật nội dung bảng và tổng cộng
+						document.querySelector("#orderDetailsTable tbody").innerHTML = tableBody;
+						document.getElementById("orderTotal").innerText = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+						// Hiển thị modal
+						$('#orderDetailsModal').modal('show');
+					} else {
+						showError("Không tìm thấy chi tiết đơn hàng");
+					}
+				},
+				() => {
+					showError("Có lỗi khi kết nối đến server");
+				});
+		} catch (error) {
+			console.error(error);
+			showError("Đã xảy ra lỗi khi lấy chi tiết đơn hàng.");
+		}
+	}
 </script>
