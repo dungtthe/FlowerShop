@@ -67,8 +67,38 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
 
 
+        //[HttpDelete("delete")]
+        //public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
+        //{
+
+        //    if (reqData == null)
+        //    {
+        //        return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
+        //    }
+
+
+        //    int? id = reqData.Id;
+
+
+        //    var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
+        //    if (product == null)
+        //    {
+        //        return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
+        //    }
+
+        //    var checkExist = await _productProductItemService.CheckExistPrductItem(product.Id);
+        //    if (checkExist)
+        //    {
+        //        return Ok(new { success = false, message = "Sản phẩm này đang được bán nên không thể xóa" });
+        //    }
+        //    await _productItemService.DeleteAsync(id ?? -1);
+
+        //    return Ok(new { success = true, message = "Xóa sản phẩm thành công" });
+        //}
+
+
         [HttpDelete("delete")]
-        public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
+        public async Task<IActionResult> Delete([FromBody][Bind("Id")] ProductItemViewModel reqData)
         {
 
             if (reqData == null)
@@ -95,7 +125,5 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
             return Ok(new { success = true, message = "Xóa sản phẩm thành công" });
         }
-
-
     }
 }

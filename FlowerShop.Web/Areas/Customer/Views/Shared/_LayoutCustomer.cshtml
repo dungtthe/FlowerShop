@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var categories = ViewBag.Categories as IEnumerable<FlowerShop.DataAccess.Models.Category>;
+}
+
+
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -35,7 +41,7 @@
 <body>
 
 
-    
+
 
     <!-- Spinner Start -->
     <div id="spinner"
@@ -49,8 +55,10 @@
             <div class="d-flex justify-content-between">
                 <div class="top-info ps-2">
                     <small class="me-3">
-                        <i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#"
-                                                                                     class="text-white">Thủ Đức, TP.Hồ Chí Minh</a>
+                        <i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" class="text-white">
+                            Thủ
+                            Đức, TP.Hồ Chí Minh
+                        </a>
                     </small>
                     <small class="me-3">
                         <i class="fas fa-envelope me-2 text-secondary"></i><a href="#"
@@ -79,109 +87,17 @@
                 <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
                     <div class="navbar-nav mx-auto">
 
-                        <!-- Chủ đề -->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">CHỦ ĐỀ</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Hoa Sinh Nhật</a>
-                                <div class="dropdown-submenu">
-                                    <a href="#" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown">
-                                        Hoa Khai
-                                        Trương1
-                                    </a>
-                                    <div class="dropdown-menu bg-secondary rounded-0">
-                                        <a href="#" class="dropdown-item">Lẵng Hoa</a>
-                                        <div class="dropdown-submenu">
-                                            <a href="#" class="dropdown-item dropdown-toggle"
-                                               data-bs-toggle="dropdown">Hoa Đặc Biệt</a>
-                                            <div class="dropdown-menu bg-secondary rounded-0">
-                                                <a href="#" class="dropdown-item">Hoa Hồng</a>
-                                                <a href="#" class="dropdown-item">Hoa Lan</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-submenu">
-                                    <a href="#" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown">
-                                        Hoa Khai
-                                        Trương2
-                                    </a>
-                                    <div class="dropdown-menu bg-secondary rounded-0">
-                                        <a href="#" class="dropdown-item">Lẵng Hoa</a>
-                                        <div class="dropdown-submenu">
-                                            <a href="#" class="dropdown-item dropdown-toggle"
-                                               data-bs-toggle="dropdown">Hoa Đặc Biệt</a>
-                                            <div class="dropdown-menu bg-secondary rounded-0">
-                                                <a href="#" class="dropdown-item">Hoa Hồng</a>
-                                                <a href="#" class="dropdown-item">Hoa Lan</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+                        @* render categories *@
+                        @if (categories != null)
+                        {
+                            foreach (var category in categories)
+                            {
+                                @await Html.PartialAsync("_CategoryItem", category)
+                            }
+                        }
 
 
-
-                        <!-- Đối tượng -->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">ĐỐI TƯỢNG</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Hoa Tặng Người Yêu</a>
-                                <a href="#" class="dropdown-item">Hoa Tặng Bạn Bè</a>
-                            </div>
-                        </div>
-
-                        <!-- Kiểu dáng -->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">KIỂU DÁNG</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Bó Hoa Tươi</a>
-                                <a href="#" class="dropdown-item">Giỏ Hoa Tươi</a>
-                            </div>
-                        </div>
-
-
-                        <!-- Hoa Tươi-->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">HOA TƯƠI</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Only Rose</a>
-                                <a href="#" class="dropdown-item">Hoa Hồng</a>
-                            </div>
-                        </div>
-
-                        <!-- Màu Sắc-->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">MÀU SẮC</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Màu Trắng</a>
-                                <a href="#" class="dropdown-item">Màu Đỏ</a>
-                            </div>
-                        </div>
-
-                        <!-- Bộ Sưu Tập-->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">BỘ SƯU TẬP</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Hoa Cao Cấp</a>
-                                <a href="#" class="dropdown-item">Hoa Sinh Viên</a>
-                            </div>
-                        </div>
-
-                        <!-- Hoa Cưới-->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">HOA CƯỚI</a>
-                        </div>
-
-                        <!-- Quà Tặng Kèm-->
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">QUÀ TẶNG KÈM</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Trái Cây</a>
-                                <a href="#" class="dropdown-item">Gấu Bông</a>
-                            </div>
-                        </div>
 
                     </div>
                     <div class="d-flex m-3 me-0">
@@ -243,12 +159,13 @@
                     <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                         <div class="carousel-inner" role="listbox">
                             <div class="carousel-item active rounded">
-                                <img src="~/customer/img/hero-img-1.png" class="img-fluid w-100 h-100 bg-secondary rounded"
-                                     alt="First slide">
+                                <img src="~/customer/img/hero-img-1.png"
+                                     class="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide">
                                 <a href="#" class="btn px-4 py-2 text-white rounded">Hoa sinh nhật</a>
                             </div>
                             <div class="carousel-item rounded">
-                                <img src="~/customer/img/hero-img-2.jpg" class="img-fluid w-100 h-100 rounded" alt="Second slide">
+                                <img src="~/customer/img/hero-img-2.jpg" class="img-fluid w-100 h-100 rounded"
+                                     alt="Second slide">
                                 <a href="#" class="btn px-4 py-2 text-white rounded">Hoa cưới</a>
                             </div>
                         </div>

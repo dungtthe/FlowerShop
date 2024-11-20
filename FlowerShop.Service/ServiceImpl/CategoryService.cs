@@ -29,31 +29,31 @@ namespace FlowerShop.Service.ServiceImpl
             _productCategoryRepository = productCategoryRepository;
         }
 
+
         public async Task<IEnumerable<Category>> GetAllCategoriesWithHierarchy()
         {
-            var allCategories = await _categoryRepository.GetAllAsync();
-            var rootCategories = allCategories.Where(c => c.ParentCategoryId == null).ToList();
-            var categoriesHierarchy = new List<Category>();
-            foreach (var rootCategory in rootCategories)
+            var allCategories = (await _categoryRepository.GetAllAsync()).ToList();
+
+            var categoryDict = allCategories.ToDictionary(c => c.Id);
+
+            // Xây dựng cây phân cấp
+            foreach (var category in allCategories)
             {
-                TraverseCategories(rootCategory, categoriesHierarchy);
-            }
-            return categoriesHierarchy;
-        }
-
-
-        private void TraverseCategories(Category category, List<Category> categories)
-        {
-            categories.Add(category);
-
-            if (category.SubCategories != null)
-            {
-                foreach (var subCategory in category.SubCategories)
+                if (category.ParentCategoryId.HasValue && categoryDict.ContainsKey(category.ParentCategoryId.Value))
                 {
-                    TraverseCategories(subCategory, categories);
+                    // Gắn danh mục vào danh mục cha của nó
+                    var parentCategory = categoryDict[category.ParentCategoryId.Value];
+                    if (parentCategory.SubCategories == null)
+                        parentCategory.SubCategories = new List<Category>();
+                    parentCategory.SubCategories.Add(category);
                 }
             }
+            // Trả về danh sách root categories
+            return allCategories.Where(c => c.ParentCategoryId == null).ToList();
         }
+
+
+
 
 
         public async Task<Category?> FindOneWithIncludeByIdAsync(int id)
