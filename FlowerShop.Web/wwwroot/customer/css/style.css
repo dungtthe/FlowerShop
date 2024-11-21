@@ -585,3 +585,30 @@
 .dropdown-submenu.open > .dropdown-menu {
     display: block !important;
 }
+
+
+/*phần bổ trợ nút xem thêm ở trang chủ*/
+
+.button-view-more-products {
+    background-color: transparent;
+    color: #681c1c;
+    font-size: 16px;
+    font-weight: 500;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 30px;
+}
+
+    .button-view-more-products:hover {
+        background-color: #681c1c;
+        color: #fff;
+        border-color: #681c1c;
+    }
+
+    .button-view-more-products:focus {
+        outline: none;
+    }
