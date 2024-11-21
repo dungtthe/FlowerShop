@@ -98,14 +98,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
 
         [HttpDelete("delete")]
-        public async Task<IActionResult> Delete([FromBody][Bind("Id")] ProductItemViewModel reqData)
+        public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
         {
 
             if (reqData == null)
             {
-                return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
+                return BadRequest(new { message = "Không tìm thấy sản phẩm để xóa" });
             }
-
 
             int? id = reqData.Id;
 
@@ -113,17 +112,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
             var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (product == null)
             {
-                return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
+                return BadRequest(new { message = "Không tìm thấy sản phẩm để xóa" });
             }
 
             var checkExist = await _productProductItemService.CheckExistPrductItem(product.Id);
             if (checkExist)
             {
-                return Ok(new { success = false, message = "Sản phẩm này đang được bán nên không thể xóa" });
+                return BadRequest(new { message = "Sản phẩm này đang được bán nên không thể xóa" });
             }
             await _productItemService.DeleteAsync(id ?? -1);
 
-            return Ok(new { success = true, message = "Xóa sản phẩm thành công" });
+            return Ok(new { message = "Xóa sản phẩm thành công" });
         }
     }
 }

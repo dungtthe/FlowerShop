@@ -9,7 +9,7 @@ namespace FlowerShop.Web.ViewModels
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage ="Tiêu đề không được để trống")]
+        [Required(ErrorMessage = "Tiêu đề không được để trống")]
         [MaxLength(100)]
         [DisplayName("Tiêu đề")]
         public string? Title { get; set; }
@@ -23,7 +23,7 @@ namespace FlowerShop.Web.ViewModels
         [DisplayName("Hình ảnh")]
         public string? Images { get; set; }
 
-        [Required(ErrorMessage ="Cách đóng gói không được để trống")]
+        [Required(ErrorMessage = "Cách đóng gói không được để trống")]
         [DisplayName("Cách đóng gói")]
         public int PackagingId { get; set; }
 
@@ -45,8 +45,8 @@ namespace FlowerShop.Web.ViewModels
         public class ProductItemViewModel
         {
             public int Id { get; set; }
-            
-            public int Quantity {  get; set; }
+
+            public int Quantity { get; set; }
         }
 
         [DisplayName("Tiêu đề")]
@@ -66,7 +66,52 @@ namespace FlowerShop.Web.ViewModels
         [DisplayName("Danh mục thuộc về")]
 
         public List<int>? CategoriesId { get; set; }
-        public List<ProductItemViewModel> ?ProductItems { get; set; }
-      
+        public List<ProductItemViewModel>? ProductItems { get; set; }
+
+    }
+
+    public class EditProductViewModel
+    {
+        public class ProductItemViewModel
+        {
+            public int Id { get; set; }
+
+            public int Price;
+            public int Quantity { get; set; }
+            public string? Images { get; set; }
+        }
+
+        public class ProductPriceViewModel
+        {
+            public int Id { get; set; }
+
+            public decimal Price { get; set; }
+
+            public byte Priority { get; set; }
+
+            public DateTime? StartDate { get; set; }
+
+            public DateTime? EndDate { get; set; }
+
+        }
+        [DisplayName("Tiêu đề")]
+        public string? Title { get; set; }
+
+        [DisplayName("Mô tả")]
+        public string? Description { get; set; }
+
+        [DisplayName("Số lượng")]
+        public int Quantity { get; set; }
+
+        [DisplayName("Cách đóng gói")]
+        public int PackagingId { get; set; }
+        [DisplayName("Danh mục thuộc về")]
+        public List<int>? CategoiesId { get; set; }
+
+        public List<ProductItemViewModel>? ProductItems { get; set; }
+        public List<ProductPriceViewModel>? ProductPrices { get; set; } 
+
+        [DisplayName("Hình ảnh")]
+        public string? Images { get; set; }
     }
 }
