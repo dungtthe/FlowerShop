@@ -21,6 +21,9 @@ namespace FlowerShop.Web.Mappings
 
             CreateMap<AppUser, AppUserViewModel>();
             CreateMap<AppUserViewModel, AppUser>();
-        }
+
+			CreateMap<Packaging, PackagingViewModel>();
+			CreateMap<PackagingViewModel, Packaging>();
+		}
     }
 }
