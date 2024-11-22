@@ -132,30 +132,24 @@
 
             fetchDelete('/api/admin/quan-li-kho/delete', reqData,
                 (responeData) => {
-                    if (responeData.success) {
-                        showSuccess(responeData.message);
 
-                        // Xóa dòng trong bảng
-                        const row = document.getElementById('product-row-' + id);
-                        if (row) {
-                            row.remove();
-                        }
-                        updateRowNumbers();
-                        // Thông báo xóa thành công
-                        setTimeout(() => {
-                            showSuccess('Sản phẩm đã được xóa');
-                        }, 500);
+                    // Xóa dòng trong bảng
+                    const row = document.getElementById('product-row-' + id);
+                    if (row) {
+                        row.remove();
                     }
-                    else {
-                        showError(responeData.message);
-                    }
+                    updateRowNumbers();
+                    setTimeout(() => {
+                        showSuccess(responeData.message);
+                    }, 500);
+
+                }, (responeData) => {
+                    showError(responeData.message);
                 }, () => {
                     showError("Có lỗi xảy ra");
                 });
         });
     }
-
-
 
 
     // Cập nhật lại số thứ tự (STT) cho tất cả các sản phẩm còn lại
