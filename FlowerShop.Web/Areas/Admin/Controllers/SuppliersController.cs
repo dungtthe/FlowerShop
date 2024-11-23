@@ -166,17 +166,16 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 		// GET: Admin/Suppliers/Delete/5
 
-		[HttpPost("delete/{id:int}")]
+		[HttpPost("delete")]
 		public async Task<IActionResult> Delete(int id)
 		{
 			var supplier = await _supplierService.GetSingleById(id);
-			if (supplier == null)
-			{
-				TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy nhà cung cấp để xóa"));
-			}
-			PopupViewModel rsp = await _supplierService.Delete(id);
-			TempData["PopupViewModel"] = JsonConvert.SerializeObject(rsp);
-			return RedirectToAction("Index", "Suppliers", new { area = "ADMIN" });
+            if (supplier == null)
+            {
+                return Content(ConstValues.CoLoiXayRa);
+            }
+            await _supplierService.Delete(id);
+            return RedirectToAction(nameof(Index));
 		}
 
 		private bool SupplierExists(int id)
