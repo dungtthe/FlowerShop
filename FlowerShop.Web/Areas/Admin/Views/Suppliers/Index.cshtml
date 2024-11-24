@@ -84,23 +84,24 @@
 			showError("Nhà cung cấp đã tạm ngưng rồi");
 			return;
 		}
-		showConfirm("Bạn có muốn đánh dấu nhà cung cấp này là ngừng cung cấp không?", () => {
+		showConfirm("Bạn có muốn tạm ngưng nhận hàng từ nhà cung cấp này không?", () => {
 			const reqData = { id: id };
 
 			fetchDelete('/api/admin/quan-li-nha-cung-cap/delete', reqData,
 				(response) => {
-					if (response.success) {
-						showSuccess(response.message);
-						// Cập nhật biểu tượng IsDelete
-						const iconCell = document.querySelector(`button[onclick="DeleteSupplierById(${id})"]`)
-							.closest('tr')
-							.querySelector('.is-delete-icon');
-						if (iconCell) {
-							iconCell.innerHTML = `<i class="fa-solid fa-times" style="color: red; font-size:28px;"></i>`;
-						}
-					} else {
-						showError(response.message);
+					// Cập nhật biểu tượng IsDelete
+					const iconCell = document.querySelector(`button[onclick="DeleteSupplierById(${id})"]`)
+						.closest('tr')
+						.querySelector('.is-delete-icon');
+					if (iconCell) {
+						iconCell.innerHTML = `<i class="fa-solid fa-times" style="color: red; font-size:28px;"></i>`;
 					}
+					setTimeout(() => {
+						showSuccess(response.message);
+					}, 500);
+				},
+				(respone) => {
+					showError(respone.message);
 				},
 				() => {
 					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");

@@ -26,17 +26,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.ChoXacNhan(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã xác nhận thành công!" });
+			return Ok(new { message = "Đơn hàng đã xác nhận thành công!" });
 		}
 
 		[HttpPost("da-xac-nhan")]
@@ -44,17 +44,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.DaXacNhan(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã qua giai đoạn chuẩn bị!" });
+			return Ok(new { message = "Đơn hàng đã qua giai đoạn chuẩn bị!" });
 		}
 
 		[HttpPost("dang-chuan-bi")]
@@ -62,17 +62,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.DangChuanBi(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã qua giai đoạn giao hàng!" });
+			return Ok(new { message = "Đơn hàng đã qua giai đoạn giao hàng!" });
 		}
 
 		[HttpPost("giao-thanh-cong")]
@@ -80,17 +80,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.GiaoThanhCong(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã giao thành công!" });
+			return Ok(new { message = "Đơn hàng đã giao thành công!" });
 		}
 
 		[HttpPost("giao-that-bai")]
@@ -98,17 +98,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.GiaoThatBai(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng giao không thành công!" });
+			return Ok(new { message = "Đơn hàng giao không thành công!" });
 		}
 
 		[HttpPost("huy")]
@@ -116,17 +116,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var product = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (product == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.Huy(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã hủy thành công!" });
+			return Ok(new { message = "Đơn hàng đã hủy thành công!" });
 		}
 
 		[HttpGet("chi-tiet-don-hang/{id}")]
@@ -134,13 +134,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (id <= 0)
 			{
-				return BadRequest("Id không được để trống.");
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 
 			var saleInvoiceDetail = await _saleInvoiceService.ChiTietDonHang(id);
 			if (saleInvoiceDetail == null || !saleInvoiceDetail.Any())
 			{
-				return NotFound("Không tìm thấy chi tiết đơn hàng.");
+				return NotFound(new { message = "Không tìm thấy đơn hàng" });
 			}
 
 			return Ok(saleInvoiceDetail.ToList());
