@@ -17,5 +17,7 @@ namespace FlowerShop.Service
 		Task<Supplier> GetSingleById(int id);
 
 		Task<PopupViewModel> Delete(int id);
+
+		Task<ICollection<Supplier>> ChiTietNhaCungCap(int id);
 	}
 }

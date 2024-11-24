@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<FlowerShop.DataAccess.Models.Supplier>
 @using FlowerShop.Common.Helpers;
+@using Newtonsoft.Json;
 
 @{
 	ViewData["Title"] = "Danh sách nhà cung cấp";
@@ -38,7 +39,7 @@
 	<tbody>
 		@foreach (var item in Model)
 		{
-			<tr>
+			<tr ondblclick="openModal(@item.Id)">
 				<td>
 					@(stt++)
 				</td>
@@ -76,6 +77,48 @@
 		}
 	</tbody>
 </table>
+
+<style>
+	tbody tr {
+		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
+	}
+
+		tbody tr:hover {
+			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
+		}
+</style>
+
+<!-- Modal -->
+<div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Tiêu đề modal -->
+			<div class="modal-header">
+				<h5 class="modal-title" id="supplierModalLabel">Thông tin nhà cung cấp</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<!-- Nội dung modal -->
+			<div class="modal-body">
+				<div id="modalSupplierImageWrapper" style="text-align: center;">
+					<img id="modalSupplierImage" src="" alt="Supplier Image" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;" />
+				</div>
+				<p><strong>Nhà cung cấp:</strong> <span id="modalSupplierName"></span></p>
+				<p><strong>TaxCode:</strong> <span id="modalTaxCode"></span></p>
+				<p><strong>Email:</strong> <span id="modalEmail"></span></p>
+				<p><strong>Số điện thoại:</strong> <span id="modalSupplierPhone"></span></p>
+				<p><strong>Địa chỉ:</strong> <span id="modalAddress"></span></p>
+				<p><strong>Tình trạng cung cấp:</strong> <span id="modalStatus"></span></p>
+				<p><strong>Mô tả:</strong> <span id="modalSupplierDescription"></span></p>
+			</div>
+			<!-- Footer modal -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <script>
 	const DeleteSupplierById = (id) => {
@@ -128,6 +171,7 @@
 		return null; // Trường hợp không tìm thấy
 	};
 
+	//Tìm kiếm nhà cung cấp
 	const searchOrders = () => {
 		const query = document.getElementById("searchBox").value.toLowerCase(); // Lấy giá trị tìm kiếm và chuyển thành chữ thường
 		const rows = document.querySelectorAll("tbody tr"); // Lấy tất cả các dòng trong bảng
@@ -144,5 +188,78 @@
 			}
 		});
 	};
+
+	//Mở viewModal
+	const openModal = (id) => {
+		const row = document.querySelector(`tr[ondblclick="openModal(${id})"]`);
+		if (row) {
+			row.style.backgroundColor = "#f0f8ff"; // Màu nhạt báo hiệu
+			setTimeout(() => {
+				row.style.backgroundColor = ""; // Khôi phục màu ban đầu
+			}, 2000);
+		}
+		fetchGet(`/api/admin/quan-li-nha-cung-cap/chi-tiet-nha-cung-cap/${id}`,
+			(data) => {
+				console.log(data);
+				showModalWithData(data);
+			},
+			(error) => {
+				showError(error.message);
+			},
+			() => {
+				showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+			}
+		);
+	};
+
+	const showModalWithData = (data) => {
+		// Kiểm tra nếu data là mảng thì lấy phần tử đầu tiên
+		const supplier = Array.isArray(data) ? data[0] : data;
+
+		// Xử lý giá trị images
+		let images;
+		try {
+			if (supplier.images && supplier.images.startsWith("[")) {
+				// Nếu là JSON hợp lệ (mảng), giải mã
+				images = JSON.parse(supplier.images);
+			} else {
+				// Nếu không, coi chuỗi là tên ảnh
+				images = [supplier.images];
+			}
+		} catch (error) {
+			console.error("Error parsing images JSON:", error);
+			images = ["default-supplier.png"]; // Sử dụng ảnh mặc định nếu lỗi
+		}
+		console.log("Images array:", images);
+
+		// Lấy hình ảnh đầu tiên
+		const firstImage = images[0] || "default-supplier.png";
+		console.log("First image:", firstImage);
+
+		// Cập nhật hình ảnh trong modal
+		const supplierImage = document.getElementById("modalSupplierImage");
+		supplierImage.src = `/images/suppliers/${firstImage}`;
+		supplierImage.alt = supplier.companyName;
+		console.log("Image URL:", supplierImage.src);
+
+		// Hiển thị dữ liệu trong modal
+		document.getElementById('modalSupplierName').innerText = supplier.companyName;
+		document.getElementById('modalTaxCode').innerText = supplier.taxCode;
+		document.getElementById('modalEmail').innerText = supplier.email;
+		document.getElementById('modalSupplierPhone').innerText = supplier.phone;
+		document.getElementById('modalAddress').innerText = supplier.address;
+		document.getElementById('modalStatus').innerText = supplier.isDelete ? "Ngừng cung cấp" : "Đang cung cấp";
+		document.getElementById('modalSupplierDescription').innerText = supplier.description;
+
+		//Hiển thị modalview
+		$('#supplierModal').modal('show');
+	};
+
+	// Ngăn chặn sự kiện double-click trên các nút và liên kết trong dòng
+	document.querySelectorAll('table tr td button, table tr td a').forEach(element => {
+		element.addEventListener('dblclick', (event) => {
+			event.stopPropagation();
+		});
+	});
 
 </script>
