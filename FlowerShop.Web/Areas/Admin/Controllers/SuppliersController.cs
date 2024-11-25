@@ -51,28 +51,10 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			return View(supplierList);
 		}
 
-		// GET: Admin/Suppliers/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null || _context.Suppliers == null)
-			{
-				return NotFound();
-			}
-
-			var supplier = await _context.Suppliers
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (supplier == null)
-			{
-				return NotFound();
-			}
-
-			return View(supplier);
-		}
-
-		// GET: Admin/Suppliers/Create
+		[HttpGet("create")]
 		public IActionResult Create()
 		{
-			return View();
+			return View(new SupplierViewModel());
 		}
 
 		// POST: Admin/Suppliers/Create
@@ -170,12 +152,12 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		public async Task<IActionResult> Delete(int id)
 		{
 			var supplier = await _supplierService.GetSingleById(id);
-            if (supplier == null)
-            {
-                return Content(ConstValues.CoLoiXayRa);
-            }
-            await _supplierService.Delete(id);
-            return RedirectToAction(nameof(Index));
+			if (supplier == null)
+			{
+				return Content(ConstValues.CoLoiXayRa);
+			}
+			await _supplierService.Delete(id);
+			return RedirectToAction(nameof(Index));
 		}
 
 		private bool SupplierExists(int id)

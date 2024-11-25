@@ -17,11 +17,15 @@ namespace FlowerShop.Web.ViewModels
 		public string? Email { get; set; }
 
 		[Required(ErrorMessage = "Số điện thoại không được để trống")]
-		[RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải chứa đúng 10 chữ số")]
+		[RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải chứa 10 số")]
 		public string? Phone { get; set; }
 
 		[Required(ErrorMessage = "Mô tả không được để trống")]
 		public string? Description { get; set; }
+
+		[Required(ErrorMessage = "Địa chỉ không được để trống")]
+		[MaxLength(500)]
+		public string? Address { get; set; }
 
 		#endregion Hiển thị lên view danh sách
 
@@ -34,10 +38,6 @@ namespace FlowerShop.Web.ViewModels
 		[Required]
 		[MaxLength(300)]
 		public string? Industry { get; set; }
-
-		[Required]
-		[MaxLength(500)]
-		public string? Address { get; set; }
 
 		[MaxLength(1500)]
 		public string? Images { get; set; }
