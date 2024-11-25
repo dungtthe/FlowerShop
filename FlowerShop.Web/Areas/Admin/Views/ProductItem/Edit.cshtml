@@ -179,36 +179,6 @@
         };
 
 
-
-        // const setDefaultImage = async (imageName) => {
-        //     showConfirm("Bạn có muốn đặt ảnh này làm mặc định không?", async () => {
-        //         try {
-        //             const response = await fetch('/api/admin/quan-li-kho/set-default-img', {
-        //                 method: 'PUT',
-        //                 headers: {
-        //                     'Content-Type': 'application/json',
-        //                 },
-        //                 body: JSON.stringify({ fileName: imageName, id: @Model.Id }),
-        //             });
-
-        //             if (!response.ok) {
-        //                 const errorText = await response.text();
-        //                 showError('Có lỗi xảy ra');
-        //                 return;
-        //             }
-
-        //             const result = await response.json();
-        //             showSuccess('Ảnh đã được đặt làm mặc định thành công.');
-        //             setTimeout(() => {
-        //                 location.reload();
-        //             }, 2000);
-        //         } catch (error) {
-        //             showError('Có lỗi xảy ra');
-        //         }
-        //     });
-        // };
-
-
         const setDefaultImage = (imageName) => {
 
             showConfirm("Bạn có muốn đặt ảnh này làm mặc định không?", () => {

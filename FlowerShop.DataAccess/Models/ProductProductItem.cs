@@ -16,9 +16,11 @@ namespace FlowerShop.DataAccess.Models
         [ForeignKey(nameof(ProductId))]
         public Product ?Product { get; set; }
 
-
         public int ProductItemId { get; set; }
         [ForeignKey(nameof(ProductItemId))]
         public ProductItem ?ProductItem { get; set; }
+
+        [Required]
+        public int Quantity {  get; set; }
     }
 }

@@ -103,7 +103,7 @@ namespace FlowerShop.Service.ServiceImpl
             //add ProductProductItem
             foreach (var productItem in productsItem)
             {
-                var rsFindProductItem =  await _productItemRepository.GetSingleByIdAsync(productItem.Item1);
+                var rsFindProductItem = await _productItemRepository.GetSingleByIdAsync(productItem.Item1);
                 if (rsFindProductItem == null || rsFindProductItem.IsDelete)
                 {
                     return new ResponeMessage(ResponeMessage.ERROR, $"Không tìm thấy sản phẩm trong kho");
@@ -116,15 +116,16 @@ namespace FlowerShop.Service.ServiceImpl
                 }
 
                 //cập nhật lại số lượng trong kho
-                rsFindProductItem.Quantity=rsFindProductItem.Quantity-productItem.Item2*quantity;
+                rsFindProductItem.Quantity = rsFindProductItem.Quantity - productItem.Item2 * quantity;
 
-                 _productItemRepository.Update(rsFindProductItem);
+                _productItemRepository.Update(rsFindProductItem);
 
 
                 var rsAddProductProductItem = await _productProductItemRepository.AddAsync(new ProductProductItem()
                 {
                     Product = product,
                     ProductItemId = productItem.Item1,
+                    Quantity = productItem.Item2
                 });
 
                 if (rsAddProductProductItem == null)
@@ -140,11 +141,57 @@ namespace FlowerShop.Service.ServiceImpl
 
         }
 
+        public async Task<Product?> FindOneByIdAsync(int id)
+        {
+            if (id == -1) return null;
+            var rs = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id,
+                p => p.Packaging,
+                p => p.ProductPrices,
+                p => p.ProductProductItems,
+                p => p.ProductCategories
+                );
+
+            if (rs == null || rs.ProductProductItems == null || rs.ProductCategories == null)
+            {
+                return null;
+            }
+            foreach (var item in rs.ProductProductItems)
+            {
+                item.ProductItem = await _productItemRepository.GetSingleByIdAsync(item.ProductItemId);
+                if (item.ProductItem == null)
+                {
+                    return null;
+                }
+            }
+
+            foreach (var item in rs.ProductCategories)
+            {
+                item.Category = await _categoryRepository.GetSingleByIdAsync(item.CategoryId);
+                if (item.Category == null)
+                {
+                    return null;
+                }
+            }
+            return rs;
+        }
 
         public async Task<IEnumerable<Product>> GetProductsForIndexAsync()
         {
             var products = (await _productRepository.GetAllWithIncludeAsync(p => p.Packaging)).Where(p => p.IsDelete == false);
             return products;
+        }
+
+        public async Task<Product> UpdateImageAsync(Product product)
+        {
+            var rsFindProduct = await _productRepository.GetSingleByIdAsync(product.Id);
+            if (rsFindProduct == null)
+            {
+                return null;
+            }
+            rsFindProduct.Images= product.Images;
+            _productRepository.Update(rsFindProduct);
+            await _unitOfWork.Commit();
+            return rsFindProduct;
         }
     }
 }

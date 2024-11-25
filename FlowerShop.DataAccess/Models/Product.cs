@@ -40,9 +40,9 @@ namespace FlowerShop.DataAccess.Models
         [Required]
         public bool IsDelete { get; set; }
 
-        ICollection<ProductPrice> ?ProductPrices { get; set; }
-        ICollection<ProductProductItem> ? ProductProductItems { get; set; }
-        ICollection<ProductCategory> ? ProductCategories { get; set; }
+        public ICollection<ProductPrice> ?ProductPrices { get; set; }
+        public ICollection<ProductProductItem> ? ProductProductItems { get; set; }
+        public ICollection<ProductCategory> ? ProductCategories { get; set; }
     
     }
 }

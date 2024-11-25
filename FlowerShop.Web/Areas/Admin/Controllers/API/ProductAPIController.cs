@@ -1,6 +1,8 @@
-﻿using FlowerShop.Common.Template;
+﻿using FlowerShop.Common.Helpers;
+using FlowerShop.Common.Template;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
+using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -83,5 +85,49 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
             }
         }
 
+
+
+
+        [HttpDelete("deleteimage")]
+        public async Task<IActionResult> DeleteImage([FromBody] RequestImage request)
+        {
+            var product = await _productService.FindOneByIdAsync(request.Id);
+            if (product == null)
+            {
+                return BadRequest(new {message="Không tìm thấy sản phẩm"});
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", request.FileName);
+
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            var imgs = Utils.RemovePhotoForProduct(request.FileName, product.Images);
+            product.Images = imgs;
+            await _productService.UpdateImageAsync(product);
+
+            return Ok(new { message = "Ảnh đã được xóa thành công." });
+        }
+
+
+
+
+
+        [HttpPut("set-default-img")]
+        public async Task<IActionResult> SetDefaultImg([FromBody] RequestImage request)
+        {
+            var product = await _productService.FindOneByIdAsync(request.Id);
+            if (product == null)
+            {
+                return BadRequest(new { message = "Không tìm thấy sản phẩm" });
+            }
+            var imgs = Utils.SetDefaultProductImage(request.FileName, product.Images);
+            product.Images = imgs;
+            await _productService.UpdateImageAsync(product);
+
+            return Ok(new { message = "Thành công." });
+        }
     }
 }
