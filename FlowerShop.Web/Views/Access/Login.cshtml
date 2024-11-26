@@ -11,25 +11,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
     <link rel="stylesheet" href="~/login-register/assets/css/style.css">
+    <style>
+        /* Ngăn cuộn */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
 
+        /* Đảm bảo phần tử chiếm toàn bộ màn hình */
+        .ftco-section {
+            display: flex;
+            height: 100vh; /* Chiều cao bằng toàn màn hình */
+            align-items: center;
+            justify-content: center;
+            margin: 0; /* Loại bỏ margin */
+            padding: 0; /* Loại bỏ padding */
+            position: relative; /* Đảm bảo phần tử ở vị trí chính xác */
+            top: 0; /* Căn sát cạnh trên */
+        }
+
+        .container-fluid {
+            height: 100%;
+            padding: 0;
+        }
+
+        .row.no-gutters {
+            margin: 0; /* Loại bỏ margin */
+        }
+
+        .bg-image {
+            background-image: url('/login-register/assets/images/bg.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100%;
+        }
+
+        .login-wrap {
+            max-width: 400px;
+            width: 100%;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+            border-radius: 20px;
+            background-color: #f0f0f0; /* Thêm màu nền cho input */
+            color: #000 !important; /* Màu chữ trong input */
+            border: 1px solid #ccc; /* Màu biên giới mặc định */
+            transition: all 0.3s ease; /* Thêm hiệu ứng chuyển tiếp cho border */
+        }
+
+
+        /* Định dạng placeholder */
+        input::placeholder {
+            color: white !important; /* Màu placeholder đen nhạt */
+            
+        }
+
+        /* Màu viền khi hover */
+        .form-control:focus {
+            border-color: #f45d48; /* Màu viền khi focus (hover) */
+            outline: none;
+        }
+
+        .form-control:hover {
+            border-color: #f45d48; /* Thay đổi màu border khi hover vào input */
+        }
+
+        .btn-primary {
+            background-color: #f45d48;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .btn-primary:hover {
+                background-color: #d94336;
+            }
+
+        .social a {
+            display: inline-block;
+            margin: 0 5px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .social a:hover {
+                background: #ADD8E6 !important;
+            }
+
+        .checkbox-wrap input[type="checkbox"] {
+            -webkit-appearance: none; /* Loại bỏ kiểu mặc định trên Chrome, Safari */
+            -moz-appearance: none; /* Loại bỏ kiểu mặc định trên Firefox */
+            appearance: none; /* Loại bỏ kiểu mặc định trên trình duyệt hỗ trợ */
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border: 2px solid #ccc; /* Thêm viền mặc định */
+            border-radius: 3px; /* Bo góc */
+            background-color: white; /* Màu nền mặc định */
+            cursor: pointer; /* Thêm con trỏ chuột */
+            transition: all 0.3s ease;
+            
+        }
+   
+
+    </style>
 </head>
 
-<body class="img js-fullheight" style="background-image: url(/login-register/assets/images/bg.jpeg);">
-    <section class="ftco-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6 text-center mb-5">
-                    <h2 class="heading-section"></h2>
+<body>
+    <section class="ftco-section" style="height: 100vh;">
+        <div class="container-fluid h-100">
+            <div class="row no-gutters h-100">
+                <!-- Cột trái: Ảnh -->
+                <div class="col-md-6 d-flex align-items-center justify-content-center bg-image"
+                     style="background-image: url('/login-register/assets/images/bg.jpeg'); background-size: cover; background-position: center; height: 100vh; margin: 0; padding: 0; left: 0; position: relative;">
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-4">
-                    <div class="login-wrap p-0">
-                        <h3 class="mb-4 text-center">Đăng nhập</h3>
+
+                <!-- Cột phải: Form đăng nhập -->
+                <div class="col-md-6 d-flex align-items-center justify-content-center"
+                     style="background-color: #fcebec; height: 100vh;">
+                    <div class="login-wrap p-4">
+                        <h3 class="mb-4 text-center" style="color: black;">Đăng nhập</h3>
                         <form method="post" asp-action="Login" asp-controller="Access" class="signin-form">
                             <div class="form-group">
                                 <input asp-for="UserName" type="text" class="form-control" placeholder="Tên tài khoản" required>
@@ -38,11 +150,8 @@
                                 <input asp-for="Password" type="password" class="form-control" placeholder="Mật khẩu" required>
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="form-control btn btn-primary submit px-3">
-                                    Đăng
-                                    nhập
-                                </button>
-                                <a id="link-register" href="#" style="color: #fff">Chưa có tài khoản?</a>
+                                <button type="submit" class="form-control btn btn-primary submit px-3">Đăng nhập</button>
+                                <a id="link-register" href="#" class="d-block mt-2 text-center">Chưa có tài khoản?</a>
                             </div>
                             <div class="form-group d-md-flex">
                                 <div class="w-50">
@@ -52,22 +161,18 @@
                                         <span class="checkmark"></span>
                                     </label>
                                 </div>
-
                                 <div class="w-50 text-md-right">
-                                    <a href="#" style="color: #fff">Quên mật khẩu</a>
+                                    <a href="#" class="text-decoration-none">Quên mật khẩu</a>
                                 </div>
                             </div>
                         </form>
-                        <p class="w-100 text-center">&mdash; Hoặc đăng nhập với &mdash;</p>
+                        <p style="color: black;" class="w-100 text-center">&mdash; Hoặc đăng nhập với &mdash;</p>
                         <div class="social d-flex text-center">
-                            <a href="#" class="px-2 py-2 mr-md-1 rounded">
-                                <span class="ion-logo-facebook mr-2"></span>
-                                Facebook
-                            </a>
+
                             <a href="#" class="px-2 py-2 ml-md-1 rounded">
-                                <span class="ion-logo-twitter mr-2"></span>
-                                Google
+                                <i class="fa fa-google mr-2"></i>Google
                             </a>
+
                         </div>
                     </div>
                 </div>
