@@ -1,0 +1,141 @@
+﻿@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Đăng ký</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/login-register/assets/css/style.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .ftco-section {
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container-fluid {
+            height: 100%;
+            padding: 0;
+        }
+
+        .row.no-gutters {
+            margin: 0;
+        }
+
+        .bg-image {
+            background-image: url('/login-register/assets/images/bg.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100%;
+        }
+
+        .login-wrap {
+            max-width: 400px;
+            width: 100%;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #f45d48;
+            outline: none;
+        }
+
+        .form-control:hover {
+            border-color: #f45d48;
+        }
+
+        .btn-primary {
+            background-color: #f45d48;
+            border: none;
+            border-radius: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #d94336;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: #007bff;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="ftco-section">
+        <div class="container-fluid h-100">
+            <div class="row no-gutters h-100">
+                <div class="col-md-6 d-flex align-items-center justify-content-center bg-image"></div>
+
+                <div class="col-md-6 d-flex align-items-center justify-content-center"
+                     style="background-color: #fcebec; height: 100vh;">
+                    <div class="login-wrap p-4">
+                        <a href="/login" class="back-btn">
+                            <i class="fa fa-arrow-left mr-2"></i>Quay lại
+                        </a>
+                        <h3 class="mb-4 text-center" style="color: black;">Đăng ký</h3>
+                        <form method="post" action="/register" class="signin-form">
+                            <div class="form-group">
+                                <input type="email" class="form-control" placeholder="Nhập email của bạn" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Nhập username của bạn" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Nhập mật khẩu" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Xác nhận mật khẩu" name="confirm_password" required>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="form-control btn btn-primary submit px-3">Đăng ký</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

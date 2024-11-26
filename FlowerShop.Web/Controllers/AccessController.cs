@@ -44,5 +44,20 @@ namespace FlowerShop.Web.Controllers
 
             return RedirectToAction("Login", "Access");
         }
+
+
+        [HttpGet("/forgetpassword")]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+
+
+        [HttpGet("/register")]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
     }
 }
