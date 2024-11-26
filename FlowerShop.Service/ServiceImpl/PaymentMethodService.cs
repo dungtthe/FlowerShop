@@ -2,6 +2,7 @@
 using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
+using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,17 @@ namespace FlowerShop.Service.ServiceImpl
             _paymentMethodRepository = paymentMethodRepositor;
         }
 
-        public async Task<bool> DeleteAsync(int? id)
+		public async Task<PaymentMethod> AddAsync(PaymentMethod paymentMethod)
+		{
+			var rs = await _paymentMethodRepository.AddAsync(paymentMethod);
+			if (rs != null)
+			{
+				await _unitOfWork?.Commit();
+			}
+			return rs;
+		}
+
+		public async Task<bool> DeleteAsync(int? id)
         {
             if (id == null)
             {

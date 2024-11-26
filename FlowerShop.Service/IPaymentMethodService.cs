@@ -12,6 +12,6 @@ namespace FlowerShop.Service
         Task<IEnumerable<PaymentMethod>> GetPaymentMethodsAsync();
         Task<PaymentMethod> UpdateAsync(PaymentMethod paymentMethod);
         Task<bool> DeleteAsync(int? id);
-
-    }
+		Task<PaymentMethod> AddAsync(PaymentMethod paymentMethod);
+	}
 }
