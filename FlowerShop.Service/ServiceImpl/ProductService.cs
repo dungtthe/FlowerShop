@@ -70,11 +70,7 @@ namespace FlowerShop.Service.ServiceImpl
             };
 
             var rsAddProductPrice = await _productPriceRepository.AddAsync(productPrice);
-            if (rsAddProductPrice == null)
-            {
-                return new ResponeMessage(ResponeMessage.ERROR, $"Có lỗi xảy ra");
-            }
-
+          
 
 
             //add ProductCategory
@@ -141,38 +137,47 @@ namespace FlowerShop.Service.ServiceImpl
 
         }
 
-        public async Task<Product?> FindOneByIdAsync(int id)
+        public async Task<Product?> FindOneByIdAsync(int id,bool include=true)
         {
             if (id == -1) return null;
-            var rs = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id,
-                p => p.Packaging,
-                p => p.ProductPrices,
-                p => p.ProductProductItems,
-                p => p.ProductCategories
-                );
 
-            if (rs == null || rs.ProductProductItems == null || rs.ProductCategories == null)
+            if (include)
             {
-                return null;
-            }
-            foreach (var item in rs.ProductProductItems)
-            {
-                item.ProductItem = await _productItemRepository.GetSingleByIdAsync(item.ProductItemId);
-                if (item.ProductItem == null)
+
+                var rs = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id,
+                    p => p.Packaging,
+                    p => p.ProductPrices,
+                    p => p.ProductProductItems,
+                    p => p.ProductCategories
+                    );
+
+                if (rs == null || rs.ProductProductItems == null || rs.ProductCategories == null)
                 {
                     return null;
                 }
-            }
-
-            foreach (var item in rs.ProductCategories)
-            {
-                item.Category = await _categoryRepository.GetSingleByIdAsync(item.CategoryId);
-                if (item.Category == null)
+                foreach (var item in rs.ProductProductItems)
                 {
-                    return null;
+                    item.ProductItem = await _productItemRepository.GetSingleByIdAsync(item.ProductItemId);
+                    if (item.ProductItem == null)
+                    {
+                        return null;
+                    }
                 }
+
+                foreach (var item in rs.ProductCategories)
+                {
+                    item.Category = await _categoryRepository.GetSingleByIdAsync(item.CategoryId);
+                    if (item.Category == null)
+                    {
+                        return null;
+                    }
+                }
+                return rs;
             }
-            return rs;
+            else
+            {
+                return await _productRepository.GetSingleByIdAsync(id);
+            }
         }
 
         public async Task<IEnumerable<Product>> GetProductsForIndexAsync()
@@ -193,5 +198,138 @@ namespace FlowerShop.Service.ServiceImpl
             await _unitOfWork.Commit();
             return rsFindProduct;
         }
+
+
+        public async Task<ResponeMessage> UpdateProductAsync(Product productOld,int quantityNew, List<ProductPrice> productPrices, List<int> categoriesId, List<Tuple<int, int>> productsItem)
+        {
+            var rsProductPricesOld = (await _productPriceRepository.GetAllAsync())?.Where(pp=>pp.ProductId==productOld.Id);
+            var rsProductCategoriesOld = (await _productCategoryRepository.GetAllAsync())?.Where(pc=>pc.ProductId==productOld.Id);
+            var rsProductProductItemsOld = (await _productProductItemRepository.GetAllAsync())?.Where(pi => pi.ProductId == productOld.Id && !pi.IsDelete);
+            var rsProductItems = (await _productItemRepository.GetAllAsync())?.Where(p => !p.IsDelete);
+            if (rsProductPricesOld == null|| rsProductCategoriesOld==null || rsProductCategoriesOld==null || rsProductItems==null || rsProductProductItemsOld==null)
+            {
+                return new ResponeMessage(ResponeMessage.ERROR, ResponeMessage.CO_LOI_XAY_RA);
+            }
+
+
+            //cập nhật giá bán
+            //chuyển toàn bộ giá bán ban đầu về trạng thái đã xóa
+            foreach(var item in rsProductPricesOld)
+            {
+                item.IsDelete = true;
+            }
+            foreach(var item in productPrices)
+            {
+                var productPriceOld = rsProductPricesOld.FirstOrDefault(p=>p.Price==item.Price);
+                //chưa có thì tạo mới
+                if (productPriceOld == null)
+                {
+                    ProductPrice productPrice = new ProductPrice()
+                    {
+                        Product = productOld,
+                        Priority = item.Priority,
+                        Price = item.Price,
+                        StartDate=item.StartDate,
+                        EndDate=item.EndDate
+                    };
+                    await _productPriceRepository.AddAsync(productPrice);
+                }
+                else//có rồi thì update
+                {
+                    productPriceOld.IsDelete = false;
+                    productPriceOld.Price = item.Price;
+                    productPriceOld.Priority = item.Priority;
+                    productPriceOld.StartDate = item.StartDate;
+                    productPriceOld.EndDate = item.EndDate;
+
+                   _productPriceRepository.Update(productPriceOld);
+                }
+            }
+
+
+            //cập nhật danh mục thuộc về
+            foreach(var item in rsProductCategoriesOld)
+            {
+                item.IsDelete = true;
+            }
+            foreach(var item in categoriesId)
+            {
+                var categoryOld = rsProductCategoriesOld.FirstOrDefault(c => c.CategoryId == item);
+                //chưa có thì thêm mới
+                if (categoryOld == null)
+                {
+                    await _productCategoryRepository.AddAsync(new ProductCategory()
+                    {
+                        ProductId=productOld.Id,
+                        CategoryId=item
+                    });
+                }
+                else//có rồi thì update
+                {
+                    categoryOld.IsDelete = true;
+                    _productCategoryRepository.Update(categoryOld);
+                }
+            }
+
+
+
+            //cập nhật sản phẩm bao gồm
+            //ném hết sản phẩm bao gồm đang có vào kho
+            foreach(var item in rsProductProductItemsOld)
+            {
+                item.Quantity = 0;
+                var productItem = rsProductItems.FirstOrDefault(p=>p.Id==item.ProductItemId);
+                if (productItem == null)
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, ResponeMessage.CO_LOI_XAY_RA);
+                }
+                item.IsDelete = true;
+                productItem.Quantity += item.Quantity * productOld.Quantity;
+                _productItemRepository.Update(productItem);
+                _productProductItemRepository.Update(item);
+            }
+            //thêm lại sản phẩm bao gồm
+            foreach(var item in productsItem)
+            {
+                var productItem = rsProductItems.FirstOrDefault(p => p.Id == item.Item1);
+                if (productItem == null)
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, ResponeMessage.CO_LOI_XAY_RA);
+                }
+                if ((productItem.Quantity - item.Item2 * quantityNew) < 0)
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR,$"{productItem.Name} không đủ số lượng");
+                }
+                productItem.Quantity = productItem.Quantity - item.Item2 * quantityNew;
+                _productItemRepository.Update(productItem);
+
+                //xem đã có productproductitem chưa
+             //   var ppi = rsProductProductItemsOld.FirstOrDefault(p=>p.ProductItemId==item.Item1);
+                var ppi = (await _productProductItemRepository.FindAsync(p=>p.ProductItemId==item.Item1)).FirstOrDefault();
+                //chưa thì thêm mới
+                if (ppi == null)
+                {
+                    await _productProductItemRepository.AddAsync(new ProductProductItem()
+                    {
+                        ProductId=productOld.Id,
+                        ProductItemId=item.Item1,
+                        Quantity=item.Item2,
+                        IsDelete=false
+                    });
+                }
+                else
+                {
+                    ppi.Quantity = item.Item2;
+                    ppi.IsDelete = false;
+                    _productProductItemRepository.Update(ppi);
+                }
+            }
+            productOld.Quantity=quantityNew;
+            _productRepository.Update(productOld);
+            await _unitOfWork.Commit();
+
+            return new ResponeMessage(ResponeMessage.SUCCESS, "Sửa thông tin sản phẩm thành công");
+        }
+
     }
 }

@@ -22,5 +22,8 @@ namespace FlowerShop.DataAccess.Models
 
         [Required]
         public int Quantity {  get; set; }
+
+        [Required]
+        public bool IsDelete { get; set; }
     }
 }

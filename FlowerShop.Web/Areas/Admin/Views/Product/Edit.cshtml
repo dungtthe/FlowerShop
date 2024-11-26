@@ -6,9 +6,23 @@
     ViewData["Title"] = "Chỉnh sửa sản phẩm";
     var sttProductItemInStock = 1;
     var sttProductItemInProduct = 1;
+    var sttPrice = 1;
     string[] listImgInProduct = Model.Images != null
-         ? JsonConvert.DeserializeObject<string[]>(Model.Images)
-         : new string[] { "no_img.png" };
+    ? JsonConvert.DeserializeObject<string[]>(Model.Images)
+    : new string[] { "no_img.png" };
+}
+@functions {
+    public int GetMaxQuantityInStock(int productItemId)
+    {
+        foreach (var item in Model.ProductsItemInStock)
+        {
+            if (item.Id == productItemId)
+            {
+                return item.Quantity;
+            }
+        }
+        return 0;
+    }
 }
 
 <style>
@@ -49,20 +63,20 @@
         padding-left: 10px;
     }
 
-        .section-search .inner-wrap {
-            display: flex;
-            align-items: center;
-        }
+    .section-search .inner-wrap {
+        display: flex;
+        align-items: center;
+    }
 
-        .section-search .inner-icon {
-            margin-right: 10px;
-        }
+    .section-search .inner-icon {
+        margin-right: 10px;
+    }
 
-        .section-search input {
-            border: none;
-            background-color: #C1CDC1;
-            outline: none;
-        }
+    .section-search input {
+        border: none;
+        background-color: #C1CDC1;
+        outline: none;
+    }
 
     .image-container {
         position: relative;
@@ -121,6 +135,24 @@
     .image-container:hover .overlay {
         opacity: 1;
     }
+
+    table.table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table.table th,
+    table.table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    table.table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
 </style>
 
 <h1>@ViewData["Title"]</h1>
@@ -140,50 +172,10 @@
                 @* <span asp-validation-for="Description" class="text-danger"></span> *@
                 <span id="errorDescription" class="text-danger"></span>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Images" class="control-label"></label>
-                <br />
-                <div class="d-flex flex-wrap">
-                    @foreach (var im in listImgInProduct)
-                    {
-                        <div class="p-2 position-relative image-container">
-                            @if (im != "no_img.png")
-                            {
-                                <img src="~/images/products/@im" alt="Product Image"
-                                     class="img-thumbnail rounded shadow-sm img-fluid product-image"
-                                     style="width: 100px; height: 100px; object-fit: cover;" />
-                                <div class="overlay">
-                                    <div class="overlay-top" onclick="setDefaultImage('@im')">Đặt làm mặc định</div>
-                                    <div class="overlay-bottom" onclick="deleteImage('@im')">Xóa</div>
-                                </div>
-                            }
-                            else
-                            {
-                                <img src="~/images/products/@im" alt="Product Image"
-                                     class="img-thumbnail rounded shadow-sm img-fluid"
-                                     style="width: 100px; height: 100px; object-fit: cover;" />
-                            }
-                        </div>
-                    }
-                </div>
-
-                <br />
-                <a asp-area="Admin" asp-controller="Product" asp-action="UploadPhoto" asp-route-id="@Model.Id"
-                   class="btn" style="background: green !important; color: white !important;">Upload ảnh</a>
-            </div>
-
-
-            <div class="box-item">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                @*   <span asp-validation-for="Quantity" class="text-danger"></span> *@
-                <span id="errorQuantity" class="text-danger"></span>
-            </div>
             <div class="box-item mb-2 mt-1">
                 <div class="dropdown">
                     <button style="height:50px;" class="btn dropdown-toggle btn-secondary" type="button"
-                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <label class="control-label">Danh mục sản phẩm thuộc về</label>
                     </button>
                     <div class="dropdown-menu dropdown-checkbox" aria-labelledby="dropdownMenuButton">
@@ -208,16 +200,111 @@
             </div>
             <div class="box-item">
                 <label asp-for="PackagingId" class="control-label"></label>
-                @*   <button class="btn btn-info btn-sm" onclick="RedirectToAddPackaging()">
-                <i class="fa-solid fa-plus"></i>
-                </button> *@
                 <select asp-for="PackagingId" class="form-control" asp-items="ViewBag.packagings"></select>
                 <span id="errorPackaging" class="text-danger"></span>
             </div>
+            <div class="box-item">
+                <label asp-for="Images" class="control-label"></label>
+                <br />
+                <div class="d-flex flex-wrap">
+                    @foreach (var im in listImgInProduct)
+                    {
+                        <div class="p-2 position-relative image-container">
+                            @if (im != "no_img.png")
+                            {
+                                <img src="~/images/products/@im" alt="Product Image"
+                                    class="img-thumbnail rounded shadow-sm img-fluid product-image"
+                                    style="width: 100px; height: 100px; object-fit: cover;" />
+                                <div class="overlay">
+                                    <div class="overlay-top" onclick="setDefaultImage('@im')">Đặt làm mặc định</div>
+                                    <div class="overlay-bottom" onclick="deleteImage('@im')">Xóa</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/images/products/@im" alt="Product Image"
+                                    class="img-thumbnail rounded shadow-sm img-fluid"
+                                    style="width: 100px; height: 100px; object-fit: cover;" />
+                            }
+                        </div>
+                    }
+                </div>
+
+                <br />
+                <a asp-area="Admin" asp-controller="Product" asp-action="UploadPhoto" asp-route-id="@Model.Id"
+                    class="btn" style="background: green !important; color: white !important;">Upload ảnh</a>
+            </div>
+
+
+            <div class="box-prices" style="margin-top: 20px;">
+                <label class="control-label">Giá bán</label>
+                <button class="btn btn-info" onclick="AddNewProductPrice()" style="
+                                                    width: 30px; 
+                                                    height: 30px; 
+                                                    display: inline-flex; 
+                                                    justify-content: center; 
+                                                    align-items: center; 
+                ">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <table class="table" style="margin-top: 5px;">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Giá</th>
+                            <th>Ngày áp dụng</th>
+                            <th>Ngày kết thúc</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productPrices">
+                        @foreach (var item in Model.ProductPrices)
+                        {
+                            <tr >
+                                <td class="priority">@(sttPrice++)</td>
+                                <td>
+                                    <input type="text" class="form-control price-input"
+                                        value="@Converter.ConvertToVietnameseDong(item.Price)" onfocus="formatToRaw(this)"
+                                        onblur="formatToCurrency(this)" />
+                                </td>
+                                <td>
+                                    <input type="date" class="form-control start-date"
+                                        value="@(item.StartDate.HasValue ? item.StartDate.Value.ToString("yyyy-MM-dd") : "")" />
+                                </td>
+                                <td>
+                                    <input type="date" class="form-control end-date"
+                                        value="@(item.EndDate.HasValue ? item.EndDate.Value.ToString("yyyy-MM-dd") : "")" />
+                                </td>
+                                <td>
+                                    <button onclick="RemoveProductPrice(this)" class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                    <button onclick="UptopProductPrice(this)" class="btn btn-success btn-sm"><i
+                                            class="fa-solid fa-arrow-up"></i></button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+
+
+
+                </table>
+                <span id="errorProductPrices" class="text-danger"></span>
+
+            </div>
+
+            <div class="box-item" style="margin-top: 20px;">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                @*   <span asp-validation-for="Quantity" class="text-danger"></span> *@
+                <span id="errorQuantity" class="text-danger"></span>
+            </div>
+
         </div>
 
-        <div class="box-productsitem">
-
+        <div class="box-productsitem" style="margin-top: 20px;">
+            <label class="control-label">Sản phẩm bao gồm</label>
             <table class="table">
                 <thead>
                     <tr>
@@ -227,13 +314,18 @@
                         <th>Số lượng</th>
                         <th>Thành tiền</th>
                         <th>Hình ảnh</th>
-                        <th>Xóa</th>
                     </tr>
                 </thead>
                 <tbody id="selectedProductsTable">
-                    <!-- Các sản phẩm được thêm sẽ hiển thị ở đây -->
                     @foreach (var item in Model.ProductsItemInProduct)
                     {
+                        var formattedPrice = Converter.ConvertToVietnameseDong(item.Price);
+
+                        // Lấy ảnh đầu tiên từ chuỗi JSON
+                        string[] listImg = !string.IsNullOrEmpty(item.Images)
+                        ? JsonConvert.DeserializeObject<string[]>(item.Images)
+                        : new string[] { "no_img.png" };
+                        var firstImg = listImg[0];
                         <tr data-id="@item.Id" id="product-row-@item.Id" class="product-row">
                             <td>
                                 @(sttProductItemInProduct++)
@@ -242,54 +334,41 @@
                                 @item.Name
                             </td>
                             <td>
-                                @Converter.ConvertToVietnameseDong(item.Price)
+                                @formattedPrice
                             </td>
                             <td>
-                                @item.Quantity
+                                <input type="number" id="quantityInput-@item.Id" class="form-control form-control-sm"
+                                    min="1" max="@GetMaxQuantityInStock(@item.Id)" value="@item.Quantity"
+                                    onchange="updateQuantity(@item.Id, this.value)" />
+                                <span id="error-@item.Id" class="text-danger small"></span>
                             </td>
                             <td>
-                                @{
-                                    // Lấy ảnh đầu tiên từ chuỗi JSON nếu có
-                                    string[] listImg = !string.IsNullOrEmpty(item.Images)
-                                    ? JsonConvert.DeserializeObject<string[]>(item.Images)
-                                    : new string[] { "no_img.png" };
-
-                                    var firstImg = listImg[0];
-                                }
+                                @((item.Price * item.Quantity).ToString("N0")) VND
+                            </td>
+                            <td>
                                 <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image"
-                                     style="width: 70px; height: 70px; object-fit: cover;" />
+                                    style="width: 70px; height: 70px; object-fit: cover;" />
                             </td>
                             <td>
-                                <button class="btn btn-info"
-                                        onclick="AddProductItemToProduct(@item.Id, '@item.Price', @item.Quantity)">
-                                    <i class="fa-solid fa-plus"></i>
+                                <button class="btn btn-danger btn-sm" onclick="removeProduct(@item.Id)">
+                                    <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
                     }
-
                 </tbody>
             </table>
-            <div class="text-right font-weight-bold mt-3
-
-
-
-
-                <button style="font-size: 10px;" onclick="copyTotalToClipboard()" class="btn btn-primary mb-2">
-                    <i class="fa-regular fa-copy"></i>
+            <div class="text-right font-weight-bold mt-3" <button style=" font-size: 10px;"
+                onclick="copyTotalToClipboard()" class="btn btn-primary mb-2">
+                <i class="fa-regular fa-copy"></i>
                 </button>
                 Tổng tiền: <span id="totalAmount">0</span> VND
             </div>
-
-
-
-
         </div>
         <div>
             <span id="errorProductsItem" class="text-danger"></span>
         </div>
         <button class="btn btn-success" onclick="CreateProduct()">Đồng ý</button>
-
     </div>
     <div class="col-6">
 
@@ -357,11 +436,11 @@
                                 var firstImg = listImg[0];
                             }
                             <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image"
-                                 style="width: 70px; height: 70px; object-fit: cover;" />
+                                style="width: 70px; height: 70px; object-fit: cover;" />
                         </td>
                         <td>
                             <button class="btn btn-info"
-                                    onclick="AddProductItemToProduct(@item.Id, '@item.Price', @item.Quantity)">
+                                onclick="AddProductItemToProduct(@item.Id, '@item.Price', @item.Quantity)">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </td>
@@ -383,15 +462,30 @@
 
     <script>
 
-
-        //phần thêm cách đóng gói
-        const RedirectToAddPackaging = () => {
-            alert("hi");
+        //phần add ProductItem vào Product
+        let selectedProducts = []; // Lưu danh sách sản phẩm đã chọn
+        window.onload = () => {
+        @foreach (var item in Model.ProductsItemInProduct)
+        {
+            string[] listImg = !string.IsNullOrEmpty(item.Images)
+            ? JsonConvert.DeserializeObject<string[]>(item.Images)
+            : new string[] { "no_img.png" };
+            var firstImg = listImg[0];
+            <text>
+                        selectedProducts.push({
+                            id: @item.Id,
+                        price: @item.Price,
+                        quantity: @item.Quantity,
+                        maxQuantity: @GetMaxQuantityInStock(item.Id),
+                        name: "@item.Name",
+                        image: "@Url.Content("~/images/products/" + firstImg)"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        });
+            </text>
+        }
+                renderSelectedProducts();
         };
 
 
-        //phần add ProductItem vào Product
-        let selectedProducts = []; // Lưu danh sách sản phẩm đã chọn
 
         // Thêm sản phẩm từ kho vào danh sách sản phẩm để bán
         const AddProductItemToProduct = (id, price, quantityInStock) => {
@@ -433,30 +527,33 @@
                 const totalPrice = product.price * product.quantity; // Tính thành tiền cho từng sản phẩm
                 totalAmount += totalPrice; // Cộng dồn vào tổng tiền
 
+                // Định dạng giá tiền bằng JavaScript
+                const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price);
+
                 row.innerHTML = `
-                                                <td>${index + 1}</td>
-                                                <td>${product.name}</td>
-                                                <td>${product.price}</td>
-                                                <td>
-                                                    <input type="number"
-                                                            id="quantityInput-${product.id}"
-                                                            class="form-control form-control-sm"
-                                                            min="1"
-                                                            max="${product.maxQuantity}"
-                                                            value="${product.quantity}"
-                                                            onchange="updateQuantity(${product.id}, this.value)" />
-                                                    <span id="error-${product.id}" class="text-danger small"></span>
-                                                </td>
-                                                <td>${totalPrice.toLocaleString()} VND</td>
-                                                <td>
-                                                    <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            `;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>${index + 1}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>${product.name}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>${formattedPrice}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <input type="number"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               id="quantityInput-${product.id}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               class="form-control form-control-sm"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               min="1"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               max="${product.maxQuantity}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               value="${product.quantity}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               onchange="updateQuantity(${product.id}, this.value)" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span id="error-${product.id}" class="text-danger small"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>${totalPrice.toLocaleString()} VND</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="fa-solid fa-trash"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                `;
                 tableBody.appendChild(row);
             });
 
@@ -542,19 +639,66 @@
 
         var flagValidationCreateProduct = true;
         const CreateProduct = () => {
+            clearErrorForCreateProduct('ProductsItem');
             flagValidationCreateProduct = true;
 
 
             let getTitle = document.querySelector('[name="Title"]').value;
             let getDescription = document.querySelector('[name="Description"]').value;
-            let getPriceDefault = document.querySelector('[name="PriceDefault"]').value;
-            let getQuantity = document.querySelector('[name="Quantity"]').value;
+            let getCategoriesId = [...document.querySelectorAll('[name="SelectedSubCategories"]:checked')].map(input => input.value);//lấy checkbox được chọn
             let getPackagingId = document.querySelector('[name="PackagingId"]').value;
-            let getCategoriesId = [...document.querySelectorAll('[name="SelectedSubCategories"]:checked')].map(input => input.value);
+            let getProductPrices = [];
+            const rows = document.querySelectorAll("#productPrices tr");
+
+
+
+
+
+            let flagBreak = false;
+            for (const row of rows) {
+                let priority = row.querySelector(".priority").textContent;
+                let price = row.querySelector(".price-input")?.value || null;
+                let startDate = row.querySelector(".start-date")?.value || null;
+                let endDate = row.querySelector(".end-date")?.value || null;
+
+                if (price === null) {
+                    showErrorForCreateProduct('ProductPrices', 'Giá bán không được để trống!');
+                    flagBreak = true;
+                    break;
+                }
+
+                getProductPrices.push({
+                    priority: parseInt(priority),
+                    price: parseInt(price.replace(/\D/g, ""), 10), // Chuyển về số nguyên
+                    startDate: startDate || null,
+                    endDate: endDate || null,
+                });
+            }
+
+            //  console.log(getProductPrices);
+
+            if (flagBreak) {
+                return;
+            }
+
+            for (let i = 0; i < getProductPrices.length - 1; i++) {
+                for (let j = i + 1; j < getProductPrices.length; j++) {
+                    if (getProductPrices[i].price === getProductPrices[j].price) {
+                        showErrorForCreateProduct('ProductPrices', 'Không được phép có 2 giá bán giống nhau!');
+                        return;
+                    }
+                }
+            }
+
+
+
+            let getQuantity = document.querySelector('[name="Quantity"]').value;
             let getProductItems = selectedProducts.map(product => ({
                 id: product.id,
                 quantity: product.quantity
             }));
+
+
 
 
             //validation phía client
@@ -571,19 +715,6 @@
                 clearErrorForCreateProduct('Description');
             }
 
-            if (parseInt(getPriceDefault) <= 0) {
-                showErrorForCreateProduct('PriceDefault', 'Giá bán phải > 0');
-            } else {
-                clearErrorForCreateProduct('PriceDefault');
-            }
-
-            if (!getPriceDefault.trim()) {
-                showErrorForCreateProduct('PriceDefault', 'Giá bán không được để trống');
-            }
-            else {
-                clearErrorForCreateProduct('PriceDefault');
-            }
-
             if (parseInt(getQuantity) <= 0) {
                 showErrorForCreateProduct('Quantity', 'Số lượng phải > 0');
             } else {
@@ -596,10 +727,6 @@
             else {
                 clearErrorForCreateProduct('Quantity');
             }
-
-
-
-
             if (getCategoriesId.length < 1) {
                 showErrorForCreateProduct('CategoriesId', 'Phải thuộc về ít nhất một danh mục');
             } else {
@@ -610,48 +737,79 @@
             } else {
                 clearErrorForCreateProduct('ProductsItem');
             }
+            if (getProductPrices.length < 1) {
+                showErrorForCreateProduct('ProductPrices', 'Phải có ít nhất 1 giá bán!');
+                return;
+            } else {
+                clearErrorForCreateProduct('ProductPrices');
+            }
+
+
+            let count = 0;
+
+            getProductPrices.map((value) => {
+                if (value.startDate === null && value.endDate === null) {
+                    count++;
+                }
+            })
+            if (count === 0) {
+                showErrorForCreateProduct('ProductPrices', 'Phải có giá bán mặc định!');
+            }
+            else if (count > 1) {
+                showErrorForCreateProduct('ProductPrices', 'Chỉ được phép có 1 giá bán mặc định!');
+            }
+            else {
+                clearErrorForCreateProduct('ProductPrices');
+            }
+
+
+
+            for (const pp of getProductPrices) {
+                if (pp.startDate === null && pp.endDate !== null) {
+                    showErrorForCreateProduct('ProductPrices', 'Có ngày kết thúc thì phải có ngày bắt đầu!');
+                    break;
+                }
+                else if (pp.startDate !== null && pp.endDate === null) {
+                    showErrorForCreateProduct('ProductPrices', 'Có ngày bắt đầu thì phải có ngày kết thúc!');
+                    break;
+                }
+            }
+
+
             if (flagValidationCreateProduct === false) {
                 return;
             }
 
 
-            showConfirm("Bạn muốn tạo sản phẩm để bán này chứ?", async () => {
-                try {
-                    const productData = {
-                        title: getTitle,
-                        description: getDescription,
-                        priceDefault: getPriceDefault,
-                        quantity: getQuantity,
-                        packagingId: getPackagingId,
-                        categoriesId: getCategoriesId,
-                        productItems: getProductItems
-                    };
-                    const response = await fetch('/api/admin/quan-li-sp/create', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(productData),
-                    });
+            showConfirm("Bạn muốn sửa chứ?", async () => {
+                const productData = {
+                    id:@Model.Id,
+                    title: getTitle,
+                    description: getDescription,
+                    categoriesId: getCategoriesId,
+                    packagingId: getPackagingId,
+                    productPrices: getProductPrices,
+                    quantity: getQuantity,
+                    productsItemInProduct: getProductItems
+                };
 
-                    if (!response.ok) {
-                        //const errorText = await response.text();
-                        showError(`Có lỗi xảy ra`);
-                        return;
-                    }
 
-                    const result = await response.json();
-                    if (result.success) {
-                        showSuccess('Thêm sản phẩm thành công.');
+
+                fetchPost('/api/admin/quan-li-sp/edit', productData,
+                    (rs) => {
+                        showSuccess(rs.message);
                         setTimeout(() => {
                             location.reload();
                         }, 2000);
-                    } else {
-                        showErrorHTML(result.message);
-                    }
-                } catch (error) {
-                    showError('Có lỗi xảy ra khi tạo sản phẩm.');
-                }
+                    }, (rs) => {
+                        showErrorHTML(rs.message);
+                    },
+                    () => {
+                        showError('Có lỗi xảy ra');
+                    });
+
+
+
             });
         };
 
@@ -731,5 +889,123 @@
             });
         };
 
+
+        // Chuyển về định dạng số gốc khi focus vào ô input
+        const formatToRaw = (input) => {
+            const value = input.value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
+            input.value = value;
+        }
+
+        // Định dạng lại theo kiểu tiền tệ khi mất focus
+        const formatToCurrency = (input) => {
+            const value = parseInt(input.value.replace(/\D/g, ''), 10); // Chuyển chuỗi thành số nguyên
+            if (isNaN(value)) {
+                input.value = ''; // Xóa giá trị nếu không hợp lệ
+            } else {
+                input.value = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+            }
+
+            if (input.value === null || input.value === '') {
+                showErrorForCreateProduct('ProductPrices', 'Giá bán không được để trống!');
+            } else {
+                clearErrorForCreateProduct('ProductPrices');
+            }
+        }
+
+        const RemoveProductPrice = (button) => {
+            const row = button.closest("tr"); // Tìm thẻ <tr> chứa nút button
+            let rows = document.querySelectorAll('#productPrices tr');
+
+            console.log(rows.length);
+            if (rows.length == 1) {
+                showErrorForCreateProduct('ProductPrices', 'Phải có ít nhất 1 giá bán!');
+                return;
+            } else {
+                clearErrorForCreateProduct('ProductPrices');
+            }
+            let price = row.querySelector(".price-input")?.value || null;
+            let startDate = row.querySelector(".start-date")?.value || null;
+            let endDate = row.querySelector(".end-date")?.value || null;
+
+
+            let count = 0;
+
+            for (const r of rows) {
+                let p = r.querySelector(".price-input")?.value || null;
+                let s = r.querySelector(".start-date")?.value || null;
+                let e = r.querySelector(".end-date")?.value || null;
+                if (s === null && e === null) {
+                    count++;
+                }
+            }
+
+
+            if (startDate === null && endDate === null && count === 1) {
+                showErrorForCreateProduct('ProductPrices', 'Phải có giá bán mặc định!');
+                return;
+            } else {
+                clearErrorForCreateProduct('ProductPrices');
+            }
+            row.remove();
+
+            // Cập nhật lại số thứ tự
+            rows = document.querySelectorAll("#productPrices tr");
+            rows.forEach((row, index) => {
+                const sttCell = row.querySelector("td:first-child");
+                if (sttCell) {
+                    sttCell.textContent = index + 1;
+                }
+            });
+        };
+
+        //thêm 1 hàng mới cho productPrices
+        const AddNewProductPrice = () => {
+            clearErrorForCreateProduct('ProductPrices');
+            const tableBody = document.getElementById("productPrices");
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="priority">${document.querySelectorAll("#productPrices tr").length + 1}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <input type="text" 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           class="form-control price-input" 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           placeholder="Nhập giá" 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           onfocus="formatToRaw(this)" 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           onblur="formatToCurrency(this)" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <input type="date" class="form-control start-date" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <input type="date" class="form-control end-date" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <button onclick="RemoveProductPrice(this)" class="btn btn-danger btn-sm">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="fa-solid fa-trash"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <button onclick="UptopProductPrice(this)" class="btn btn-success btn-sm"><i class="fa-solid fa-arrow-up"></i></button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            `;
+            tableBody.appendChild(newRow);
+        };
+
+
+        //đưa giá sản phẩm chọn lên độ ưu tiên cao nhất
+        const UptopProductPrice = (button) => {
+            const row = button.closest("tr"); // Tìm thẻ <tr> chứa nút button
+            const tbody = row.closest("tbody"); // Tìm <tbody> của bảng
+            const firstRow = tbody.querySelector("tr"); // Dòng đầu tiên trong bảng
+            if (row !== firstRow) {
+                tbody.prepend(row); // Di chuyển row lên đầu bảng
+
+                //cập nhật lại số thứ tự
+                const rows = tbody.querySelectorAll("tr");
+                rows.forEach((row, index) => {
+                    const sttCell = row.querySelector("td:first-child");
+                    if (sttCell) {
+                        sttCell.textContent = index + 1;
+                    }
+                });
+            }
+        }; 
     </script>
 }

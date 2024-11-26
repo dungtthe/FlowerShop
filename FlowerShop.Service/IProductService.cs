@@ -13,7 +13,11 @@ namespace FlowerShop.Service
     {
         Task<IEnumerable<Product>> GetProductsForIndexAsync();
         Task<ResponeMessage> AddNewProductAsync(string title,string desc,decimal price,int quantity,int packId,List<int>categoriesId,List<Tuple<int,int>>productsItem);
-        Task<Product?> FindOneByIdAsync(int id);
+        Task<Product?> FindOneByIdAsync(int id, bool include = true);
         Task<Product> UpdateImageAsync(Product product);
+        Task<ResponeMessage> UpdateProductAsync(Product product,int quantityNew,List<ProductPrice> productPrices,List<int> categoriesId, List<Tuple<int, int>> productsItem);
     }
 }
+
+
+

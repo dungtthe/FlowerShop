@@ -10,21 +10,21 @@ namespace FlowerShop.Web.Mappings
         public static EditProductViewModel MapToEditProductViewModel(Product product, IEnumerable<ProductItem> productsItem, IEnumerable<Category> categories)
         {
             EditProductViewModel editProductViewModel = new EditProductViewModel();
-            editProductViewModel.Id= product.Id;
+            editProductViewModel.Id = product.Id;
             editProductViewModel.Title = product.Title;
             editProductViewModel.Description = product.Description;
             editProductViewModel.Quantity = product.Quantity;
             editProductViewModel.PackagingId = product.PackagingId;
-           
+
 
             //danh sách sản phẩm con có trong sản phẩm này
             editProductViewModel.ProductsItemInProduct = new List<EditProductViewModel.ProductItemViewModel>();
-            foreach(var item in product.ProductProductItems)
+            foreach (var item in product.ProductProductItems)
             {
                 editProductViewModel.ProductsItemInProduct.Add(new EditProductViewModel.ProductItemViewModel()
                 {
-                    Id=item.ProductItemId,
-                    Name=item.ProductItem.Name,
+                    Id = item.ProductItemId,
+                    Name = item.ProductItem.Name,
                     Quantity = item.Quantity,
                     Price = item.ProductItem.ImportPrice,
                     Images = item.ProductItem.Images,
@@ -33,15 +33,14 @@ namespace FlowerShop.Web.Mappings
 
             //danh sách giá bán
             editProductViewModel.ProductPrices = new List<EditProductViewModel.ProductPriceViewModel>();
-            foreach(var item in product.ProductPrices)
+            foreach (var item in product.ProductPrices.OrderBy(item => item.Priority))
             {
                 editProductViewModel.ProductPrices.Add(new EditProductViewModel.ProductPriceViewModel()
                 {
-                    Id=item.Id,
-                    Price=item.Price,
-                    Priority=item.Priority,
-                    StartDate=item.StartDate,
-                    EndDate=item.EndDate,
+                    Price = item.Price,
+                    Priority = item.Priority,
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate,
                 });
             }
 
@@ -95,10 +94,10 @@ namespace FlowerShop.Web.Mappings
                 }
             }
 
-            editProductViewModel.Images= product.Images;
+            editProductViewModel.Images = product.Images;
 
             return editProductViewModel;
-            
+
         }
     }
 
