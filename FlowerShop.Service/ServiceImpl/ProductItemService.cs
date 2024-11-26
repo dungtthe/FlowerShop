@@ -18,7 +18,7 @@ namespace FlowerShop.Service.ServiceImpl
         private readonly ICategoryRepository _categoryRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ProductItemService(IProductItemRepository productItemRepository, ICategoryRepository categoryRepository,IUnitOfWork unitOfWork)
+        public ProductItemService(IProductItemRepository productItemRepository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
         {
             _productItemRepository = productItemRepository;
             _categoryRepository = categoryRepository;
@@ -36,10 +36,9 @@ namespace FlowerShop.Service.ServiceImpl
             await _unitOfWork.Commit();
         }
 
-
         public async Task<IEnumerable<ProductItem>> GetProductsItemAsync()
         {
-            var productItems = (await _productItemRepository.GetAllWithIncludeAsync(p => p.Category)).Where(p=>p.IsDelete==false);
+            var productItems = (await _productItemRepository.GetAllWithIncludeAsync(p => p.Category)).Where(p => p.IsDelete == false);
             return productItems;
         }
 
@@ -49,24 +48,20 @@ namespace FlowerShop.Service.ServiceImpl
             {
                 return null;
             }
-            var productItem = await _productItemRepository.SingleOrDefaultWithIncludeAsync(p=>p.Id==id , p=>p.Category);
+            var productItem = await _productItemRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id&&!p.IsDelete, p => p.Category);
             return productItem;
         }
 
         public async Task<ProductItem> UpdateAsync(ProductItem productItem)
         {
-            var result = _productItemRepository.Update(productItem);
-            if(result != null)
-            {
-                await _unitOfWork.Commit();
-            }
-            return result;
+            await _unitOfWork.Commit();
+            return productItem;
         }
 
         public async Task<ProductItem> FindOneWithoutIncludeByIdAsync(int id)
         {
             var rs = await _productItemRepository.GetSingleByIdAsync(id);
-            if(rs != null)
+            if (rs != null)
             {
                 if (rs.IsDelete)
                 {
