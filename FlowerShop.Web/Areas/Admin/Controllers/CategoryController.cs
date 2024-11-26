@@ -31,7 +31,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             _mapper = mapper;
         }
 
-        // GET: Admin/Category
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -39,8 +38,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(categoriesHierarchy);
         }
 
-
-        // GET: Admin/Category/Create
         [HttpGet("create")]
         public async Task<IActionResult> Create()
         {
@@ -56,21 +53,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Category/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,ParentCategoryId,IsCategorySell")] CategoryViewModel categoryViewModel)
         {
             if (ModelState.IsValid)
             {
-
-                //Category category = new Category();
-                //category.Name=categoryViewModel.Name;
-                //category.ParentCategoryId=(categoryViewModel.ParentCategoryId==0)?null:categoryViewModel.ParentCategoryId;
-
-
                 Category category= _mapper.Map<Category>(categoryViewModel);
                 var rs= await _categoryService.AddAsync(category);
                 if (rs != null)
@@ -96,7 +85,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(categoryViewModel);
         }
 
-        // GET: Admin/Category/Edit/5
         [HttpGet("edit")]
         public async Task<IActionResult> Edit(int? id)
         {

@@ -32,7 +32,7 @@ namespace FlowerShop.Service.ServiceImpl
 
         public async Task<IEnumerable<Category>> GetAllCategoriesWithHierarchy()
         {
-            var allCategories = (await _categoryRepository.GetAllAsync()).ToList();
+            var allCategories = (await _categoryRepository.GetAllAsync()).ToList().Where(c=>!c.IsDelete);
 
             var categoryDict = allCategories.ToDictionary(c => c.Id);
 
