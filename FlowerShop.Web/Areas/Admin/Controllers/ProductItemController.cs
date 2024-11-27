@@ -12,6 +12,8 @@ using FlowerShop.Web.ViewModels;
 using FlowerShop.Common.Helpers;
 using FlowerShop.Common.MyConst;
 using AutoMapper;
+using FlowerShop.Common.ViewModels;
+using Newtonsoft.Json;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -73,15 +75,16 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             var productItem = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (productItem == null)
             {
-                return Content(ConstValues.CoLoiXayRa);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy sản phẩm!"));
+                return RedirectToAction("Index");
             }
             var productItemVM = _mapper.Map<ProductItemViewModel>(productItem);
-
-            var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c=>c.IsCategorySell==false);
-
-            ViewData["Categories"] = new SelectList(categories, "Id", "Name", productItemVM.CategoryId);
+            var categories = (await _categoryService.GetCategoriesWithoutSubCategories());
+            ViewBag.Categories = new SelectList(categories, "Id", "Name", productItemVM.CategoryId);
             return View(productItemVM);
         }
+
+
         [HttpPost("edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [Bind("Name,CategoryId,Description")] ProductItemViewModel productItemVM)
@@ -89,37 +92,20 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             var productItem = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (productItem == null)
             {
-                return Content(ConstValues.CoLoiXayRa);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy sản phẩm!"));
+                return RedirectToAction("Index");
             }
-
-
-
             if (ModelState.IsValid)
             {
-                try
-                {
-
-                    productItem.Name = productItemVM.Name;
-                    productItem.CategoryId = productItemVM.CategoryId;
-                    //productItem.Images= productItemVM.Images;
-                    productItem.Description = productItemVM.Description;
-
-
-
-                    var result = await _productItemService.UpdateAsync(productItem);
-                    if (result == null)
-                    {
-                        return Content(ConstValues.CoLoiXayRa);
-                    }
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                   
-                }
-                return RedirectToAction(nameof(Index));
+                productItem.Name = productItemVM.Name;
+                productItem.CategoryId = productItemVM.CategoryId;
+                productItem.Description = productItemVM.Description;
+                await _productItemService.UpdateAsync(productItem);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Sửa thông tin sản phẩm thành công!"));
             }
-            var categories = await _categoryService.GetAllCategoriesNotWithHierarchy();
-            ViewData["Categories"] = new SelectList(categories, "Id", "Name", productItemVM.CategoryId);
+            productItemVM = _mapper.Map<ProductItemViewModel>(productItem);
+            var categories = (await _categoryService.GetCategoriesWithoutSubCategories());
+            ViewBag.Categories = new SelectList(categories, "Id", "Name", productItemVM.CategoryId);
             return View(productItemVM);
         }
 
@@ -130,7 +116,8 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (product == null)
             {
-                return Content(ConstValues.CoLoiXayRa);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy sản phẩm!"));
+                return RedirectToAction(nameof(Edit), new { id = id });
             }
             ViewData["product"] = product;
             return View(new UploadOneFile());
@@ -143,7 +130,8 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (product == null)
             {
-                return Content(ConstValues.CoLoiXayRa);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy sản phẩm!"));
+                return RedirectToAction(nameof(Edit), new { id = id });
             }
             if (f != null && f.FileUpload != null)
             {

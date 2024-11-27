@@ -19,5 +19,6 @@ namespace FlowerShop.Common.Template
 
         public static readonly int ERROR = 0;
         public static readonly int SUCCESS = 1;
+        public static readonly string CO_LOI_XAY_RA = "Có lỗi xảy ra";
     }
 }

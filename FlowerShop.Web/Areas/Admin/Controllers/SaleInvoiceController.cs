@@ -10,7 +10,6 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
-using FlowerShop.Common.MyConst;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -49,48 +48,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			return View(saleInvoice);
 		}
 
-		[HttpGet("da-xac-nhan")]
-		public async Task<IActionResult> OrderConfirmed()
-		{
-			var saleInvoice = await _saleInvoiceService.LayCacDonHangDaXacNhan();
-			return View(saleInvoice);
-		}
-
-		[HttpGet("da-huy")]
-		public async Task<IActionResult> OrderCancelled()
-		{
-			var saleInvoice = await _saleInvoiceService.LayCacDonHangDaHuy();
-			return View(saleInvoice);
-		}
-
-		[HttpGet("dang-chuan-bi")]
-		public async Task<IActionResult> OrderPrepared()
-		{
-			var saleInvoice = await _saleInvoiceService.LayCacDonHangDangChuanBi();
-			return View(saleInvoice);
-		}
-
-		[HttpGet("dang-giao-hang")]
-		public async Task<IActionResult> OrderDelivery()
-		{
-			var saleInvoice = await _saleInvoiceService.LayCacDonHangDangGiao();
-			return View(saleInvoice);
-		}
-
-		[HttpGet("don-hang-giao-thanh-cong")]
-		public async Task<IActionResult> SuccessDeliveryOrder()
-		{
-			var saleInvoice = await _saleInvoiceService.LayCacDonHangGiaoThanhCong();
-			return View(saleInvoice);
-		}
-
-		[HttpGet("don-hang-giao-khong-thanh-cong")]
-		public async Task<IActionResult> FailDeliveryOrder()
-		{
-			var saleInvoice = await _saleInvoiceService.LayCacDonHangGiaoThatBai();
-			return View(saleInvoice);
-		}
-
 		// GET: Admin/SaleInvoice/Details/5
 		public async Task<IActionResult> Details(int? id)
 		{
@@ -109,6 +66,100 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			}
 
 			return View(saleInvoice);
+		}
+
+		// GET: Admin/SaleInvoice/Edit/5
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if (id == null || _context.SaleInvoices == null)
+			{
+				return NotFound();
+			}
+
+			var saleInvoice = await _context.SaleInvoices.FindAsync(id);
+			if (saleInvoice == null)
+			{
+				return NotFound();
+			}
+			ViewData["CustomerId"] = new SelectList(_context.AppUsers, "Id", "Id", saleInvoice.CustomerId);
+			ViewData["PaymentMethodId"] = new SelectList(_context.PaymentMethods, "Id", "Name", saleInvoice.PaymentMethodId);
+			return View(saleInvoice);
+		}
+
+		// POST: Admin/SaleInvoice/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,CreateDay,CustomerId,PaymentMethodId,Status,IsDelete")] SaleInvoice saleInvoice)
+		{
+			if (id != saleInvoice.Id)
+			{
+				return NotFound();
+			}
+
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					_context.Update(saleInvoice);
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!SaleInvoiceExists(saleInvoice.Id))
+					{
+						return NotFound();
+					}
+					else
+					{
+						throw;
+					}
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			ViewData["CustomerId"] = new SelectList(_context.AppUsers, "Id", "Id", saleInvoice.CustomerId);
+			ViewData["PaymentMethodId"] = new SelectList(_context.PaymentMethods, "Id", "Name", saleInvoice.PaymentMethodId);
+			return View(saleInvoice);
+		}
+
+		// GET: Admin/SaleInvoice/Delete/5
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null || _context.SaleInvoices == null)
+			{
+				return NotFound();
+			}
+
+			var saleInvoice = await _context.SaleInvoices
+				.Include(s => s.Customer)
+				.Include(s => s.PaymentMethod)
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (saleInvoice == null)
+			{
+				return NotFound();
+			}
+
+			return View(saleInvoice);
+		}
+
+		// POST: Admin/SaleInvoice/Delete/5
+		[HttpPost, ActionName("DeleteAsync")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			if (_context.SaleInvoices == null)
+			{
+				return Problem("Entity set 'FlowerShopContext.SaleInvoices'  is null.");
+			}
+			var saleInvoice = await _context.SaleInvoices.FindAsync(id);
+			if (saleInvoice != null)
+			{
+				_context.SaleInvoices.Remove(saleInvoice);
+			}
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
 		}
 
 		private bool SaleInvoiceExists(int id)

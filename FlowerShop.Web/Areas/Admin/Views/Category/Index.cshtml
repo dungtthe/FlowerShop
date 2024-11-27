@@ -26,24 +26,39 @@
                 <td>@category.Name</td>
                 <td>@(category.IsCategorySell ? "Để bán" : "Trong kho")</td>
                 <td>
-                    <a href="@Url.Action("Edit", "Category", new { id = category.Id })" class="btn btn-link">
-                        <i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
-                    </a>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="@Url.Action("Edit", "Category", new { id = category.Id })" class="btn btn-link btn-sm d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-pencil" style="color: #FFCC99;"></i>
+                        </a>
+                        <button onclick="RemoveCategory(@category.Id)" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
                 </td>
             </tr>
 
             <!-- Hiển thị danh mục con -->
-            @foreach (var subCategory in category.SubCategories)
+            @if (category.SubCategories != null)
             {
-                <tr class="sub-category" data-status="@subCategory.IsCategorySell" data-parent="@category.Id" style="display: none;">
-                    <td style="padding-left: 30px;">↳ @subCategory.Name</td>
-                    <td>@(subCategory.IsCategorySell ? "Để bán" : "Trong kho")</td>
-                    <td>
-                        <a href="@Url.Action("Edit", "Category", new { id = subCategory.Id })" class="btn btn-link">
-                            <i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
-                        </a>
-                    </td>
-                </tr>
+                @foreach (var subCategory in category.SubCategories)
+                {
+                    <tr class="sub-category" data-status="@subCategory.IsCategorySell" data-parent="@category.Id" style="display: none;">
+                        <td style="padding-left: 30px;">↳ @subCategory.Name</td>
+                        <td>@(subCategory.IsCategorySell ? "Để bán" : "Trong kho")</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="@Url.Action("Edit", "Category", new { id = subCategory.Id })" class="btn btn-link btn-sm d-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-pencil" style="color: #FFCC99;"></i>
+                                </a>
+                                <button onclick="RemoveCategory(@subCategory.Id)" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
             }
         }
     </tbody>
@@ -89,6 +104,27 @@
             });
         }
     }
+
+
+    const RemoveCategory = (id) => {
+        showConfirm("Bạn có muốn xóa danh mục này không?", () => {
+            const reqData = { id: id };
+            fetchDelete('/api/admin/quan-li-dm/delete', reqData,
+                (responeData) => {
+                    showSuccess(responeData.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+
+                }, (responeData) => {
+                    showError(responeData.message);
+                }, () => {
+                    showError("Có lỗi xảy ra");
+                });
+        });
+    }
+
+
 
     // Khởi tạo: đặt giá trị filter mặc định và áp dụng lọc
     window.onload = () => {

@@ -150,88 +150,55 @@
 
     <script>
 
-        const deleteImage = async (imageName) => {
-            showConfirm("Bạn có chắc chắn muốn xóa ảnh này không?", async () => {
-                try {
-                    const response = await fetch('/api/admin/quan-li-kho/deleteimage', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ fileName: imageName, id: @Model.Id }),
-                    });
+        const deleteImage = (imageName) => {
 
-                    if (!response.ok) {
-                        const errorText = await response.text();
+            showConfirm("Bạn có chắc chắn muốn xóa ảnh này không?", () => {
+
+                const reqData = { fileName: imageName, id: @Model.Id};
+
+                fetchDelete(
+                    '/api/admin/quan-li-kho/deleteimage',
+                    reqData,
+                    (rs) => {
+                        showSuccess(rs.message);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    },
+                    (rs) => {
+                        showError(rs.message);
+                    },
+                    () => {
                         showError('Có lỗi xảy ra');
-                        return;
                     }
 
-                    const result = await response.json();
-                    showSuccess('Đã xóa ảnh thành công.');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
-                } catch (error) {
-                    showError('Có lỗi xảy ra');
-                }
+                );
             });
         };
-
-
-
-        // const setDefaultImage = async (imageName) => {
-        //     showConfirm("Bạn có muốn đặt ảnh này làm mặc định không?", async () => {
-        //         try {
-        //             const response = await fetch('/api/admin/quan-li-kho/set-default-img', {
-        //                 method: 'PUT',
-        //                 headers: {
-        //                     'Content-Type': 'application/json',
-        //                 },
-        //                 body: JSON.stringify({ fileName: imageName, id: @Model.Id }),
-        //             });
-
-        //             if (!response.ok) {
-        //                 const errorText = await response.text();
-        //                 showError('Có lỗi xảy ra');
-        //                 return;
-        //             }
-
-        //             const result = await response.json();
-        //             showSuccess('Ảnh đã được đặt làm mặc định thành công.');
-        //             setTimeout(() => {
-        //                 location.reload();
-        //             }, 2000);
-        //         } catch (error) {
-        //             showError('Có lỗi xảy ra');
-        //         }
-        //     });
-        // };
-
-
         const setDefaultImage = (imageName) => {
 
             showConfirm("Bạn có muốn đặt ảnh này làm mặc định không?", () => {
 
                 const reqData = { fileName: imageName, id: @Model.Id};
 
-                fetchPut('/api/admin/quan-li-kho/set-default-img',
+                fetchPut(
+                    '/api/admin/quan-li-kho/set-default-img', 
                     reqData,
-                    (result) => {
-                        showSuccess('Ảnh đã được đặt làm mặc định thành công.');
+                    (rs)=>{
+                        showSuccess(rs.message);
                         setTimeout(() => {
                             location.reload();
                         }, 2000);
                     },
-                    (errorText) => {
+                    (rs)=>{
+                        showError(rs.message);
+                    },
+                    ()=>{
                         showError('Có lỗi xảy ra');
                     }
+                
                 );
             });
         };
-
-
-
-
     </script>
 }

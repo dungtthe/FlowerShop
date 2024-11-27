@@ -20,5 +20,8 @@ namespace FlowerShop.DataAccess.Models
         public int ProductId { get; set; }
         [ForeignKey(nameof(ProductId))]
         public Product? Product { get; set; }
+
+        [Required]
+        public bool IsDelete { get; set; }
     }
 }

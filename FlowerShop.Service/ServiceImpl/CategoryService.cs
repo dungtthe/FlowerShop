@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace FlowerShop.Service.ServiceImpl
 {
@@ -32,24 +33,40 @@ namespace FlowerShop.Service.ServiceImpl
 
         public async Task<IEnumerable<Category>> GetAllCategoriesWithHierarchy()
         {
-            var allCategories = (await _categoryRepository.GetAllAsync()).ToList();
+            var allCategories = (await _categoryRepository.GetAllAsync()).Where(c => c.IsDelete == false).ToList();
+
+
 
             var categoryDict = allCategories.ToDictionary(c => c.Id);
 
             // Xây dựng cây phân cấp
             foreach (var category in allCategories)
             {
+
                 if (category.ParentCategoryId.HasValue && categoryDict.ContainsKey(category.ParentCategoryId.Value))
                 {
                     // Gắn danh mục vào danh mục cha của nó
                     var parentCategory = categoryDict[category.ParentCategoryId.Value];
                     if (parentCategory.SubCategories == null)
+                    {
                         parentCategory.SubCategories = new List<Category>();
+                    }
+                  
                     parentCategory.SubCategories.Add(category);
                 }
             }
             // Trả về danh sách root categories
-            return allCategories.Where(c => c.ParentCategoryId == null).ToList();
+            var roots = allCategories.Where(c => c.ParentCategoryId == null).ToList();
+
+            foreach(var root in roots)
+            {
+                if(root.SubCategories!=null && root.SubCategories.Any())
+                {
+                    root.SubCategories = root.SubCategories.Where(s => !s.IsDelete).ToList();
+                }
+            }
+
+            return roots;
         }
 
 
@@ -67,27 +84,27 @@ namespace FlowerShop.Service.ServiceImpl
                                                                                    c => c.SubCategories,
                                                                                    c => c.ParentCategory
                                                                                    );
+
+            if (result!=null && result.IsDelete)
+            {
+                result = null;
+            }
             return result;
         }
 
         public async Task<IEnumerable<Category>> GetAllCategoriesNotWithHierarchy()
         {
-            var allCategories = (await _categoryRepository.GetAllAsync()).Where(c=>c.IsDelete==false);
+            var allCategories = (await _categoryRepository.GetAllAsync()).Where(c => c.IsDelete == false);
             return allCategories;
         }
 
 
 
-
-
         public async Task<Category> AddAsync(Category category)
         {
-            var rs = await _categoryRepository.AddAsync(category);
-            if (rs != null)
-            {
-                await _unitOfWork?.Commit();
-            }
-            return rs;
+            await _categoryRepository.AddAsync(category);
+            await _unitOfWork?.Commit();
+            return category;
         }
 
         public async Task Update(Category category, List<int> selectedSubCategories)
@@ -112,28 +129,36 @@ namespace FlowerShop.Service.ServiceImpl
             await _unitOfWork.Commit();
         }
 
-        public async Task<PopupViewModel> Delete(int id)
+        public async Task<ResponeMessage> DeleteAsync(int id)
         {
             var category = await _categoryRepository.GetSingleByIdAsync(id);
             if (category == null)
             {
-                return new PopupViewModel(PopupViewModel.ERROR,"Lỗi", ConstValues.CoLoiXayRa);
+                return new ResponeMessage(ResponeMessage.ERROR, "Không tìm thấy danh mục");
             }
 
             var cannotDelete = (await _productItemRepository.GetAllAsync()).Where(p => p.IsDelete == false && p.CategoryId == id).Any();
             if (!cannotDelete)
             {
-                cannotDelete= (await _productCategoryRepository.GetAllAsync()).Where(p=>p.CategoryId == id).Any();
+                cannotDelete = (await _productCategoryRepository.GetAllAsync()).Where(p => p.CategoryId == id && !p.IsDelete).Any();
             }
 
             if (cannotDelete)
             {
-                return new PopupViewModel(PopupViewModel.ERROR,"Lỗi","Không thể xóa do đang có ít nhất 1 sản phẩm thuộc danh mục này");
+                return new ResponeMessage(ResponeMessage.ERROR, "Không thể xóa do đang có ít nhất 1 sản phẩm thuộc danh mục này");
             }
-
+            var categories = (await _categoryRepository.GetAllAsync()).Where(c=>c.Id!=id);
+            foreach(var item in categories)
+            {
+                if (item.ParentCategoryId == id)
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, "Không thể xóa do danh mục này có danh mục con");
+                }
+            }
             category.IsDelete = true;
             await _unitOfWork.Commit();
-            return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Xóa sản phẩm thành công");
+            return new ResponeMessage(ResponeMessage.SUCCESS, "Xóa danh mục thành công");
+
         }
 
 
@@ -141,9 +166,9 @@ namespace FlowerShop.Service.ServiceImpl
         //bổ trợ phần thêm product, chỉ cho phép product thuộc danh mục cuối cùng trong hệ phân cấp tương ứng
         public async Task<IEnumerable<Category>> GetCategoriesWithoutSubCategories()
         {
-            var allCategories = (await _categoryRepository.GetAllAsync()).Where(c=>c.IsDelete==false);
+            var allCategories = (await _categoryRepository.GetAllAsync()).Where(c => c.IsDelete == false);
             var categoriesWithoutSubCategories = allCategories
-                .Where(c => c.SubCategories == null || !c.SubCategories.Any())  
+                .Where(c => c.SubCategories == null || !c.SubCategories.Any())
                 .ToList();
 
             return categoriesWithoutSubCategories;
@@ -178,7 +203,7 @@ namespace FlowerShop.Service.ServiceImpl
 
                 childCategory = await _categoryRepository.GetSingleByIdAsync(childCategory.ParentCategoryId ?? 0);
             }
-            return false; 
+            return false;
         }
     }
 

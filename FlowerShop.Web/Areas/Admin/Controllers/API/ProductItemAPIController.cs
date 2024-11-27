@@ -29,7 +29,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
             var product = await _productItemService.FindOneWithIncludeByIdAsync(request.Id);
             if (product == null)
             {
-                return NotFound();
+                return BadRequest(new { message = "Không tìm thấy sản phẩm chứa ảnh tương ứng" });
             }
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", request.FileName);
@@ -56,7 +56,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
             var product = await _productItemService.FindOneWithIncludeByIdAsync(request.Id);
             if (product == null)
             {
-                return NotFound();
+                return BadRequest(new {message="Không tìm thấy sản phẩm chứa ảnh tương ứng"});
             }
             var imgs = Utils.SetDefaultProductImage(request.FileName, product.Images);
             product.Images = imgs;
@@ -64,37 +64,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
             return Ok(new { message = "Thành công." });
         }
-
-
-
-        //[HttpDelete("delete")]
-        //public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
-        //{
-
-        //    if (reqData == null)
-        //    {
-        //        return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
-        //    }
-
-
-        //    int? id = reqData.Id;
-
-
-        //    var product = await _productItemService.FindOneWithIncludeByIdAsync(id ?? -1);
-        //    if (product == null)
-        //    {
-        //        return Ok(new { success = false, message = "Không tìm thấy sản phẩm để xóa" });
-        //    }
-
-        //    var checkExist = await _productProductItemService.CheckExistPrductItem(product.Id);
-        //    if (checkExist)
-        //    {
-        //        return Ok(new { success = false, message = "Sản phẩm này đang được bán nên không thể xóa" });
-        //    }
-        //    await _productItemService.DeleteAsync(id ?? -1);
-
-        //    return Ok(new { success = true, message = "Xóa sản phẩm thành công" });
-        //}
 
 
         [HttpDelete("delete")]

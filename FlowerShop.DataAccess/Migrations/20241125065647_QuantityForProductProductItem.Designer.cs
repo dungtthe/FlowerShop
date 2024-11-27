@@ -4,6 +4,7 @@ using FlowerShop.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerShop.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    partial class FlowerShopContextModelSnapshot : ModelSnapshot
+    [Migration("20241125065647_QuantityForProductProductItem")]
+    partial class QuantityForProductProductItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -437,9 +439,6 @@ namespace FlowerShop.DataAccess.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
                     b.HasKey("CategoryId", "ProductId");
 
                     b.HasIndex("ProductId");
@@ -528,9 +527,6 @@ namespace FlowerShop.DataAccess.Migrations
 
                     b.Property<int>("ProductItemId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -685,20 +681,12 @@ namespace FlowerShop.DataAccess.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<byte>("Status")
-                        .HasColumnType("tinyint");
-
                     b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SupplierInvoiceTokenId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SupplierId");
-
-                    b.HasIndex("SupplierInvoiceTokenId");
 
                     b.ToTable("SupplierInvoices");
                 });
@@ -722,37 +710,6 @@ namespace FlowerShop.DataAccess.Migrations
                     b.HasIndex("ProductItemId");
 
                     b.ToTable("SupplierInvoiceDetails");
-                });
-
-            modelBuilder.Entity("FlowerShop.DataAccess.Models.SupplierInvoiceToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SupplierInvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TokenAccept")
-                        .IsRequired()
-                        .HasMaxLength(1006)
-                        .HasColumnType("nvarchar(1006)");
-
-                    b.Property<string>("TokenEmail")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SupplierInvoiceId");
-
-                    b.ToTable("SupplierInvoiceTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1103,13 +1060,7 @@ namespace FlowerShop.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FlowerShop.DataAccess.Models.SupplierInvoiceToken", "SupplierInvoiceToken")
-                        .WithMany()
-                        .HasForeignKey("SupplierInvoiceTokenId");
-
                     b.Navigation("Supplier");
-
-                    b.Navigation("SupplierInvoiceToken");
                 });
 
             modelBuilder.Entity("FlowerShop.DataAccess.Models.SupplierInvoiceDetail", b =>
@@ -1127,17 +1078,6 @@ namespace FlowerShop.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductItem");
-
-                    b.Navigation("SupplierInvoice");
-                });
-
-            modelBuilder.Entity("FlowerShop.DataAccess.Models.SupplierInvoiceToken", b =>
-                {
-                    b.HasOne("FlowerShop.DataAccess.Models.SupplierInvoice", "SupplierInvoice")
-                        .WithMany()
-                        .HasForeignKey("SupplierInvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("SupplierInvoice");
                 });

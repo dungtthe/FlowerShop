@@ -297,29 +297,29 @@
                 totalAmount += totalPrice; // Cộng dồn vào tổng tiền
 
                 row.innerHTML = `
-                                                                                                                                            <td>${index + 1}</td>
-                                                                                                                                            <td>${product.name}</td>
-                                                                                                                                            <td>${product.price}</td>
-                                                                                                                                            <td>
-                                                                                                                                                <input type="number"
-                                                                                                                                                       id="quantityInput-${product.id}"
-                                                                                                                                                       class="form-control form-control-sm"
-                                                                                                                                                       min="1"
-                                                                                                                                                       max="${product.maxQuantity}"
-                                                                                                                                                       value="${product.quantity}"
-                                                                                                                                                       onchange="updateQuantity(${product.id}, this.value)" />
-                                                                                                                                                <span id="error-${product.id}" class="text-danger small"></span>
-                                                                                                                                            </td>
-                                                                                                                                            <td>${totalPrice.toLocaleString()} VND</td>
-                                                                                                                                            <td>
-                                                                                                                                                <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
-                                                                                                                                            </td>
-                                                                                                                                            <td>
-                                                                                                                                                <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
-                                                                                                                                                    <i class="fa-solid fa-trash"></i>
-                                                                                                                                                </button>
-                                                                                                                                            </td>
-                                                                                                                                        `;
+                                                                                                                                                                            <td>${index + 1}</td>
+                                                                                                                                                                            <td>${product.name}</td>
+                                                                                                                                                                            <td>${product.price}</td>
+                                                                                                                                                                            <td>
+                                                                                                                                                                                <input type="number"
+                                                                                                                                                                                       id="quantityInput-${product.id}"
+                                                                                                                                                                                       class="form-control form-control-sm"
+                                                                                                                                                                                       min="1"
+                                                                                                                                                                                       max="${product.maxQuantity}"
+                                                                                                                                                                                       value="${product.quantity}"
+                                                                                                                                                                                       onchange="updateQuantity(${product.id}, this.value)" />
+                                                                                                                                                                                <span id="error-${product.id}" class="text-danger small"></span>
+                                                                                                                                                                            </td>
+                                                                                                                                                                            <td>${totalPrice.toLocaleString()} VND</td>
+                                                                                                                                                                            <td>
+                                                                                                                                                                                <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                                                                                                                                                                            </td>
+                                                                                                                                                                            <td>
+                                                                                                                                                                                <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
+                                                                                                                                                                                    <i class="fa-solid fa-trash"></i>
+                                                                                                                                                                                </button>
+                                                                                                                                                                            </td>
+                                                                                                                                                                        `;
                 tableBody.appendChild(row);
             });
 
@@ -478,43 +478,29 @@
             }
 
 
-            showConfirm("Bạn muốn tạo sản phẩm để bán này chứ?", async () => {
-                try {
-                    const productData = {
-                        title: getTitle,
-                        description: getDescription,
-                        priceDefault: getPriceDefault,
-                        quantity: getQuantity,
-                        packagingId: getPackagingId,
-                        categoriesId: getCategoriesId,
-                        productItems: getProductItems
-                    };
-                    const response = await fetch('/api/admin/quan-li-sp/create', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(productData),
+            showConfirm("Bạn muốn tạo sản phẩm để bán này chứ?", () => {
+                const productData = {
+                    title: getTitle,
+                    description: getDescription,
+                    priceDefault: getPriceDefault,
+                    quantity: getQuantity,
+                    packagingId: getPackagingId,
+                    categoriesId: getCategoriesId,
+                    productItems: getProductItems
+                };
+
+
+                fetchPost('/api/admin/quan-li-sp/create', productData,
+                    (rs) => {
+                        showSuccess(rs.message);
+                    },
+                    (rs) => {
+                        showErrorHTML(rs.message);
+                    }, () => {
+                        showError('Có lỗi xảy ra khi tạo sản phẩm.');
                     });
 
-                    if (!response.ok) {
-                        //const errorText = await response.text();
-                        showError(`Có lỗi xảy ra`);
-                        return;
-                    }
 
-                    const result = await response.json();
-                    if (result.success) {
-                        showSuccess('Thêm sản phẩm thành công.');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                    } else {
-                        showErrorHTML(result.message);
-                    }
-                } catch (error) {
-                    showError('Có lỗi xảy ra khi tạo sản phẩm.');
-                }
             });
         };
 

@@ -16,7 +16,7 @@ namespace FlowerShop.Service
         Task<Category?> FindOneWithIncludeByIdAsync(int id);
         Task Update(Category category, List<int> selectedSubCategories);
         Task<Category>AddAsync(Category category);
-        Task<PopupViewModel> Delete(int id);
+        Task<ResponeMessage> DeleteAsync(int id);
         Task<IEnumerable<Category>> GetCategoriesWithoutSubCategories();
         Task<Category?> FindOneWithoutIncludeByIdAsync(int id);
         Task<bool> IsDescendantAsync(int childCategoryId, int parentCategoryId);

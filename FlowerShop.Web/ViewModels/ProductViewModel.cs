@@ -75,15 +75,15 @@ namespace FlowerShop.Web.ViewModels
         public class ProductItemViewModel
         {
             public int Id { get; set; }
+            public string? Name { get; set; }
 
-            public int Price;
+            public int Price { get; set; }
             public int Quantity { get; set; }
             public string? Images { get; set; }
         }
 
         public class ProductPriceViewModel
         {
-            public int Id { get; set; }
 
             public decimal Price { get; set; }
 
@@ -94,6 +94,16 @@ namespace FlowerShop.Web.ViewModels
             public DateTime? EndDate { get; set; }
 
         }
+        public class CategoryViewModel
+        {
+            public int Id { get; set; }
+            public string? Name { get; set; }
+            public bool IsSelect { get; set; }
+        }
+
+
+        public int Id { set; get; }
+
         [DisplayName("Tiêu đề")]
         public string? Title { get; set; }
 
@@ -106,10 +116,12 @@ namespace FlowerShop.Web.ViewModels
         [DisplayName("Cách đóng gói")]
         public int PackagingId { get; set; }
         [DisplayName("Danh mục thuộc về")]
-        public List<int>? CategoiesId { get; set; }
+        public List<CategoryViewModel>? Categories { get; set; }
+        public List<int>? CategoriesId {  get; set; }
 
-        public List<ProductItemViewModel>? ProductItems { get; set; }
-        public List<ProductPriceViewModel>? ProductPrices { get; set; } 
+        public List<ProductItemViewModel>? ProductsItemInProduct { get; set; }
+        public List<ProductItemViewModel>? ProductsItemInStock { get; set; }
+        public List<ProductPriceViewModel>? ProductPrices { get; set; }
 
         [DisplayName("Hình ảnh")]
         public string? Images { get; set; }

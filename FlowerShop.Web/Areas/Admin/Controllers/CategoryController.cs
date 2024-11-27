@@ -13,6 +13,7 @@ using FlowerShop.Common.MyConst;
 using AutoMapper;
 using FlowerShop.Common.ViewModels;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -20,27 +21,33 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
     [Route("admin/quan-ly-danh-muc")]
     public class CategoryController : Controller
     {
-        private readonly FlowerShopContext _context;
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
 
-        public CategoryController(FlowerShopContext context,ICategoryService categoryService,IMapper mapper)
+        public CategoryController(ICategoryService categoryService,IMapper mapper)
         {
-            _context = context;
             _categoryService = categoryService;
             _mapper = mapper;
         }
 
-        // GET: Admin/Category
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var categoriesHierarchy = await _categoryService.GetAllCategoriesWithHierarchy();
+
+
+            //foreach(var item in categoriesHierarchy)
+            //{
+            //    if (item.Id != 3) continue;
+            //    foreach(var sub in item.SubCategories)
+            //    {
+            //        Debug.WriteLine(sub.Name);
+            //    }
+            //}
+
             return View(categoriesHierarchy);
         }
 
-
-        // GET: Admin/Category/Create
         [HttpGet("create")]
         public async Task<IActionResult> Create()
         {
@@ -56,33 +63,18 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Category/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,ParentCategoryId,IsCategorySell")] CategoryViewModel categoryViewModel)
         {
             if (ModelState.IsValid)
             {
-
-                //Category category = new Category();
-                //category.Name=categoryViewModel.Name;
-                //category.ParentCategoryId=(categoryViewModel.ParentCategoryId==0)?null:categoryViewModel.ParentCategoryId;
-
-
                 Category category= _mapper.Map<Category>(categoryViewModel);
-                var rs= await _categoryService.AddAsync(category);
-                if (rs != null)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    return Content(ConstValues.CoLoiXayRa);
-                }
+                await _categoryService.AddAsync(category);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Thêm danh mục thành công!"));
+                return RedirectToAction(nameof(Index));
             }
-
 
             var categories = new List<Category>();
             categories.Add(new Category()
@@ -96,14 +88,14 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(categoryViewModel);
         }
 
-        // GET: Admin/Category/Edit/5
         [HttpGet("edit")]
         public async Task<IActionResult> Edit(int? id)
         {
             var rs = await _categoryService.FindOneWithIncludeByIdAsync(id ?? -1);
             if (rs == null)
             {
-                return Content(ConstValues.CoLoiXayRa);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy danh mục!"));
+                return RedirectToAction("Index");
             }
             var categoryVM=_mapper.Map<CategoryViewModel>(rs);
             var temp = (await _categoryService.GetAllCategoriesNotWithHierarchy()).Where(c=>c.Id!=id);
@@ -128,17 +120,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(categoryVM);
         }
 
-
-        // POST: Admin/Category/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+ 
         [HttpPost("edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CategoryViewModel categoryVM)
         {
             if (!ModelState.IsValid)
             {
-                // Nếu model không hợp lệ, trả về view cùng với dữ liệu ViewBag
                 var categories = new List<Category>
                 {
                     new Category { Id = 0, Name = "Không có" }
@@ -151,47 +139,24 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
                 return View(categoryVM);
             }
-
-            // Xử lý cập nhật danh mục như bình thường
             var category = await _categoryService.FindOneWithIncludeByIdAsync(id);
             if (category == null)
             {
-                return Content(ConstValues.CoLoiXayRa);
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy danh mục!"));
+                return RedirectToAction("Index");
             }
 
             category.Name = categoryVM.Name;
             category.ParentCategoryId = (categoryVM.ParentCategoryId == 0) ? null : categoryVM.ParentCategoryId;
             category.IsCategorySell = categoryVM.IsCategorySell;
 
-            //categoryVM.Id=category.Id;
-            //category=_mapper.Map<Category>(categoryVM);
-
             await _categoryService.Update(category, categoryVM.SelectedSubCategories);
-
+            TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Sửa thông tin danh mục thành công!"));
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var category = await _categoryService.FindOneWithIncludeByIdAsync(id);
-            if (category == null)
-            {
-                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR,"Lỗi","Không tìm thấy danh mục để xóa"));
-                return RedirectToAction("Index");
-            }
+      
 
-            // Thực hiện xóa danh mục
-            PopupViewModel rsp =  await _categoryService.Delete(id);
-            //TempData[nameof(PopupViewModel)] = JsonConvert.SerializeObject(rsp);
-            TempData["PopupViewModel"] = JsonConvert.SerializeObject(rsp);
-            return RedirectToAction("Index"); 
-        }
-
-
-        private bool CategoryExists(int id)
-        {
-          return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+     
     }
 }

@@ -1,0 +1,28 @@
+﻿@model FlowerShop.Web.ViewModels.UploadMultipleFiles
+@{
+    var productName = ViewData["productName"] as string;
+    var idProduct = Convert.ToInt32(ViewData["idProduct"]);
+}
+
+
+<h1 class="text-center">Upload ảnh cho: <span class="text-primary">@productName</span></h1>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <form method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light shadow-sm">
+                <div class="form-group">
+                    <label asp-for="@Model.Files" class="form-label font-weight-bold">Chọn các file upload</label>
+                    <input asp-for="@Model.Files" class="form-control-file" multiple />
+                    <span asp-validation-for="@Model.Files" class="text-danger"></span>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-primary" asp-area="Admin" asp-controller="Product" asp-action="UploadPhoto" asp-route-id="@idProduct">Upload</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
