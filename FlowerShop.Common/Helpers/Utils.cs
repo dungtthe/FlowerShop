@@ -82,5 +82,41 @@ namespace FlowerShop.Common.Helpers
             }
             return JsonConvert.SerializeObject(images);
         }
+
+
+
+        public static string GenerateRandomString(int length)
+        {
+            const string validChars = "abcdefghijklmnopqrstuvwxyz123456789";
+            Random random = new Random();
+            char[] randomString = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                randomString[i] = validChars[random.Next(validChars.Length)];
+            }
+
+            return new string(randomString);
+        }
+
+        public static string GenerateRandomToken(List<string> tokensOld,int lenght)
+        {
+            bool flag = true;
+            var tokenTemp = "";
+            while (flag)
+            {
+                flag=false;
+                 tokenTemp = GenerateRandomString(lenght);
+                foreach (string token in tokensOld)
+                {
+                    if(token == tokenTemp)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+            return tokenTemp;
+        }
     }
 }

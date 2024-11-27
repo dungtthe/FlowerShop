@@ -30,5 +30,12 @@ namespace FlowerShop.DataAccess.Models
         public ICollection<SupplierInvoiceDetail> ?SupplierInvoiceDetails {  get; set; }
         [MaxLength(2000)]
         public string? Note { get; set; }
+
+        [Required]
+        public byte Status {  get; set; }//0 chờ xác nhận,1 Hoàn tất, 2 đã từ chối
+
+        public int ?SupplierInvoiceTokenId { get; set; }
+        [ForeignKey(nameof(SupplierInvoiceTokenId))]
+        public SupplierInvoiceToken? SupplierInvoiceToken { get; set; }
     }
 }
