@@ -19,9 +19,7 @@ namespace FlowerShop.Service
 
 		Task<PopupViewModel> Delete(int id);
 
-		Task<ResponeMessage> AddNewSupplier(string companyName, string taxCode,
-				string email, string phone, int type, string images, string description,
-				string industry, string address, bool isDelete);
+		Task<ResponeMessage> AddNewSupplier(Supplier supplier);
 
 		Task<ICollection<Supplier>> ChiTietNhaCungCap(int id);
 	}

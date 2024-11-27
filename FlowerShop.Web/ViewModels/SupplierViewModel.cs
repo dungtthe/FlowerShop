@@ -1,5 +1,6 @@
 ﻿using FlowerShop.DataAccess.Models;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;  // Để sử dụng IFormFile cho việc tải ảnh lên
 
 namespace FlowerShop.Web.ViewModels
 {
@@ -11,6 +12,10 @@ namespace FlowerShop.Web.ViewModels
 
 		[Required(ErrorMessage = "Tên nhà cung cấp không được để trống")]
 		public string? CompanyName { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		public string? TaxCode { get; set; }
 
 		[Required(ErrorMessage = "Email không được để trống")]
 		[EmailAddress(ErrorMessage = "Email không đúng định dạng")]
@@ -29,20 +34,14 @@ namespace FlowerShop.Web.ViewModels
 
 		#endregion Hiển thị lên view danh sách
 
-		[Required]
-		[MaxLength(100)]
-		public string? TaxCode { get; set; }
-
 		public int Type { get; set; }
 
-		[Required]
 		[MaxLength(300)]
 		public string? Industry { get; set; }
 
 		[MaxLength(1500)]
-		public string? Images { get; set; }
+		public string? Images { get; set; } // Trường ảnh sử dụng IFormFile để nhận file từ form
 
-		[Required]
 		public bool IsDelete { get; set; }
 	}
 }

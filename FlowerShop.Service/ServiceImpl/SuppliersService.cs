@@ -25,23 +25,32 @@ namespace FlowerShop.Service.ServiceImpl
 			_unitOfWork = unitOfWork;
 		}
 
-		public async Task<ResponeMessage> AddNewSupplier(string companyName, string taxCode, string email, string phone, int type, string images, string description, string industry, string address, bool isDelete)
+		public async Task<ResponeMessage> AddNewSupplier(Supplier _supplier)
 		{
-			// Chuyển danh sách ảnh sang chuỗi JSON
-			string imagesJson = JsonConvert.SerializeObject(images);
+			// Kiểm tra xem ảnh có phải là chuỗi hay không. Nếu là chuỗi thì chuyển thành mảng.
+			List<string> imageNames = new List<string>();
+
+			// Nếu _supplier.Images là một chuỗi, chuyển thành mảng một phần tử
+			if (!string.IsNullOrEmpty(_supplier.Images))
+			{
+				imageNames.Add(_supplier.Images); // Thêm tên ảnh vào danh sách
+			}
+
+			// Chuyển danh sách ảnh thành chuỗi JSON
+			string imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
 
 			Supplier supplier = new Supplier()
 			{
-				CompanyName = companyName,
-				TaxCode = taxCode,
-				Email = email,
-				Phone = phone,
-				Type = type = 1,
+				CompanyName = _supplier.CompanyName,
+				TaxCode = _supplier.TaxCode,
+				Email = _supplier.Email,
+				Phone = _supplier.Phone,
+				Type = _supplier.Type = 1,
 				Images = imagesJson,
-				Description = description,
-				Industry = industry = "Công nghiệp hoa",
-				Address = address,
-				IsDelete = isDelete = false
+				Description = _supplier.Description,
+				Industry = _supplier.Industry = "Công nghiệp hoa",
+				Address = _supplier.Address,
+				IsDelete = _supplier.IsDelete = false
 			};
 			var result = await _supplierRepository.AddAsync(supplier);
 			if (result == null)

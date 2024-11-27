@@ -15,6 +15,8 @@ using static System.Net.Mime.MediaTypeNames;
 using FlowerShop.Common.ViewModels;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
+using FlowerShop.Common.Template;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -24,11 +26,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 	{
 		private readonly FlowerShopContext _context;
 		private readonly ISuppliersService _supplierService;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public SuppliersController(FlowerShopContext context, ISuppliersService suppliersService)
+		public SuppliersController(FlowerShopContext context, ISuppliersService suppliersService, IWebHostEnvironment webHostEnvironment)
 		{
 			_context = context;
 			_supplierService = suppliersService;
+			_webHostEnvironment = webHostEnvironment;
 		}
 
 		// GET: Admin/Suppliers
@@ -58,17 +62,55 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		}
 
 		// POST: Admin/Suppliers/Create
-		[HttpPost]
+		[HttpPost("create")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,CompanyName,TaxCode,Email,Phone,Type,Images,Description,Industry,Address,IsDelete")] Supplier supplier)
+		public async Task<IActionResult> Create([Bind("Id,CompanyName,TaxCode,Email,Phone,Type,Images,Description,Industry,Address,IsDelete")] SupplierViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
-				_context.Add(supplier);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				// Nếu có ảnh được chọn
+				if (Request.Form.Files.Count > 0)
+				{
+					var file = Request.Form.Files[0]; // Lấy file đầu tiên (nếu có)
+
+					// Tạo tên file
+					var fileName = Path.GetFileName(file.FileName);
+
+					// Tạo đường dẫn lưu file vào thư mục
+					var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "suppliers", fileName);
+
+					// Lưu file vào thư mục
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await file.CopyToAsync(stream);  // Lưu file vào thư mục
+					}
+					// Lưu tên file vào model (không lưu file lên server)
+					model.Images = fileName;
+				}
+
+				// Lưu thông tin nhà cung cấp vào cơ sở dữ liệu
+				var supplier = new Supplier
+				{
+					CompanyName = model.CompanyName,
+					TaxCode = model.TaxCode,
+					Email = model.Email,
+					Phone = model.Phone,
+					Description = model.Description,
+					Address = model.Address,
+					Images = model.Images, // Lưu tên file vào DB
+					IsDelete = model.IsDelete
+				};
+				var result = _supplierService.AddNewSupplier(supplier);
+				if (result != null)
+				{
+					TempData["SuccessMessage"] = "Nhà cung cấp đã được thêm thành công!";
+				}
+				else
+				{
+					TempData["ErrorMessage"] = "Có lỗi xảy ra khi thêm nhà cung cấp.";
+				}
 			}
-			return View(supplier);
+			return View(model);  // Trả về lại view nếu có lỗi
 		}
 
 		// GET: Admin/Suppliers/Edit/5
