@@ -122,13 +122,30 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			{
 				return Content(ConstValues.CoLoiXayRa);
 			}
+
+			// Giải mã chuỗi JSON của Images nếu nó là một chuỗi JSON
+			string image = string.Empty;
+			if (!string.IsNullOrEmpty(supplier.Images))
+			{
+				try
+				{
+					// Loại bỏ escape và dấu ngoặc vuông
+					image = supplier.Images.Replace("\"", "").Trim('[', ']');
+				}
+				catch (Exception ex)
+				{
+					image = string.Empty;
+					Console.WriteLine("Error while deserializing image JSON: " + ex.Message);
+				}
+			}
+
 			var supplierVM = new SupplierViewModel()
 			{
 				Id = supplier.Id,
 				CompanyName = supplier.CompanyName,
 				TaxCode = supplier.TaxCode,
 				Type = supplier.Type,
-				Images = supplier.Images,
+				Images = image,  // Chỉ lưu một ảnh duy nhất
 				Industry = supplier.Industry,
 				Address = supplier.Address,
 				IsDelete = supplier.IsDelete,
@@ -153,13 +170,34 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
+				// Nếu có ảnh được chọn
+				if (Request.Form.Files.Count > 0)
+				{
+					var file = Request.Form.Files[0]; // Lấy file đầu tiên (nếu có)
+
+					// Tạo tên file
+					var fileName = Path.GetFileName(file.FileName);
+
+					// Tạo đường dẫn lưu file vào thư mục
+					var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "suppliers", fileName);
+
+					// Lưu file vào thư mục
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await file.CopyToAsync(stream);  // Lưu file vào thư mục
+					}
+					// Lưu tên file vào model (không lưu file lên server)
+					supplierVM.Images = fileName;
+				}
+				else
+				{
+					supplierVM.Images = supplier.Images;  // Giữ lại tên ảnh cũ
+				}
 				try
 				{
 					supplier.CompanyName = supplierVM.CompanyName;
 					supplier.TaxCode = supplierVM.TaxCode;
-					supplier.Type = supplierVM.Type;
 					supplier.Images = supplierVM.Images;
-					supplier.Industry = supplierVM?.Industry;
 					supplier.Address = supplierVM?.Address;
 					supplier.IsDelete = supplierVM.IsDelete;
 					supplier.Email = supplierVM.Email;

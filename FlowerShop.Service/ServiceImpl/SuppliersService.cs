@@ -29,15 +29,13 @@ namespace FlowerShop.Service.ServiceImpl
 		{
 			// Kiểm tra xem ảnh có phải là chuỗi hay không. Nếu là chuỗi thì chuyển thành mảng.
 			List<string> imageNames = new List<string>();
-
+			string imagesJson = string.Empty;
 			// Nếu _supplier.Images là một chuỗi, chuyển thành mảng một phần tử
 			if (!string.IsNullOrEmpty(_supplier.Images))
 			{
 				imageNames.Add(_supplier.Images); // Thêm tên ảnh vào danh sách
+				imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
 			}
-
-			// Chuyển danh sách ảnh thành chuỗi JSON
-			string imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
 
 			Supplier supplier = new Supplier()
 			{
@@ -101,6 +99,15 @@ namespace FlowerShop.Service.ServiceImpl
 
 		public async Task<Supplier> UpdateAsync(Supplier supplier)
 		{
+			// Kiểm tra xem ảnh có phải là chuỗi hay không. Nếu là chuỗi thì chuyển thành mảng.
+			List<string> imageNames = new List<string>();
+			string imagesJson = string.Empty;
+			// Nếu supplier.Images là một chuỗi, chuyển thành mảng một phần tử
+			if (!string.IsNullOrEmpty(supplier.Images))
+			{
+				imageNames.Add(supplier.Images); // Thêm tên ảnh vào danh sách
+				imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
+			}
 			var result = _supplierRepository.Update(supplier);
 			if (result != null)
 			{

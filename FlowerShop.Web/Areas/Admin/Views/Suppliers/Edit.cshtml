@@ -1,25 +1,21 @@
-﻿@model FlowerShop.Web.ViewModels.SupplierViewModel;
+﻿@model FlowerShop.Web.ViewModels.SupplierViewModel
+@using Newtonsoft.Json;
+@using FlowerShop.Common.Helpers;
 
-@{
-	ViewData["Title"] = "Edit";
-}
+<h1>Chỉnh sửa nhà cung cấp</h1>
 
-<h1>Edit</h1>
-
-<h4>Supplier</h4>
-<hr />
 <div class="row">
 	<div class="col-md-4">
-		<form asp-action="Edit">
+		<form asp-action="Edit" id="editform" method="post" enctype="multipart/form-data">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			<input type="hidden" asp-for="Id" />
+			@Html.HiddenFor(model => model.Id)
 			<div class="form-group">
-				<label asp-for="CompanyName" class="control-label"></label>
+				<label asp-for="CompanyName" class="control-label">Tên nhà cung cấp</label>
 				<input asp-for="CompanyName" class="form-control" />
 				<span asp-validation-for="CompanyName" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="TaxCode" class="control-label"></label>
+				<label asp-for="TaxCode" class="control-label">Mã Taxcode</label>
 				<input asp-for="TaxCode" class="form-control" />
 				<span asp-validation-for="TaxCode" class="text-danger"></span>
 			</div>
@@ -29,53 +25,95 @@
 				<span asp-validation-for="Email" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="Phone" class="control-label"></label>
+				<label asp-for="Phone" class="control-label">Số điện thoại</label>
 				<input asp-for="Phone" class="form-control" />
 				<span asp-validation-for="Phone" class="text-danger"></span>
 			</div>
+
 			<div class="form-group">
-				<label asp-for="Type" class="control-label"></label>
-				<input asp-for="Type" class="form-control" />
-				<span asp-validation-for="Type" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="Images" class="control-label"></label>
-				<input asp-for="Images" class="form-control" />
-				<span asp-validation-for="Images" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="Description" class="control-label"></label>
+				<label asp-for="Description" class="control-label">Mô tả</label>
 				<input asp-for="Description" class="form-control" />
 				<span asp-validation-for="Description" class="text-danger"></span>
 			</div>
+
 			<div class="form-group">
-				<label asp-for="Industry" class="control-label"></label>
-				<input asp-for="Industry" class="form-control" />
-				<span asp-validation-for="Industry" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="Address" class="control-label"></label>
+				<label asp-for="Address" class="control-label">Địa chỉ</label>
 				<input asp-for="Address" class="form-control" />
 				<span asp-validation-for="Address" class="text-danger"></span>
 			</div>
+
+			<div class="form-group">
+				<label for="Image" class="control-label">Cập nhật ảnh đại diện</label>
+				<div style="display: flex; align-items: center;">
+					<input asp-for="Images" type="file" id="Image" class="form-control" accept="image/*" style="flex: 1;" />
+					<button id="clearImage" type="button" class="btn btn-danger btn-sm" style="margin-left: 10px; display: none;" onclick="clearSelectedImage()">Xóa</button>
+				</div>
+				<span class="text-danger" asp-validation-for="Images"></span>
+			</div>
+
 			<div class="form-group form-check">
 				<label class="form-check-label">
-					<input class="form-check-input" asp-for="IsDelete" /> @Html.DisplayNameFor(model => model.IsDelete)
+					<input class="form-check-input" asp-for="IsDelete" /> Ngừng cung cấp
 				</label>
 			</div>
-			<div class="form-group">
-				<input type="submit" value="Save" class="btn btn-primary" />
-			</div>
+
+			<!-- Nút lưu -->
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
+				Lưu
+			</button>
+
 		</form>
 	</div>
 </div>
 
-<div>
-	<a asp-action="Index">Back to List</a>
+<!-- Modal xác nhận -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="confirmModalLabel">Xác nhận </h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				Bạn có chắc chắn muốn lưu thay đổi này không?
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+				<button type="button" class="btn btn-primary" id="confirmSaveBtn">Đồng ý</button>
+			</div>
+		</div>
+	</div>
 </div>
 
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<script>
+	document.getElementById('Image').addEventListener('change', function () {
+		const clearButton = document.getElementById('clearImage'); // Nút xóa
+		if (this.files.length > 0) {
+			// Hiển thị nút xóa nếu có tệp được chọn
+			clearButton.style.display = 'inline-block';
+		} else {
+			// Ẩn nút xóa nếu không có tệp nào được chọn
+			clearButton.style.display = 'none';
+		}
+	});
+
+	function clearSelectedImage() {
+		const fileInput = document.getElementById('Image'); // Trường input file
+		const clearButton = document.getElementById('clearImage'); // Nút xóa
+
+		// Reset giá trị của input file
+		fileInput.value = '';
+
+		// Ẩn nút xóa
+		clearButton.style.display = 'none';
 	}
-}
+
+	document.getElementById('confirmSaveBtn').addEventListener('click', function () {
+		// Gửi form hoặc thực hiện hành động khác
+		document.getElementById('editform').submit();
+		$('#confirmModal').modal('hide');
+
+	});
+</script>
