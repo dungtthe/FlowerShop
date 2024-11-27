@@ -6,6 +6,16 @@
 	ViewData["Title"] = "Danh sách nhà cung cấp";
 	int stt = 1;
 }
+<style>
+	tbody tr {
+		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
+	}
+
+		tbody tr:hover {
+			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
+		}
+</style>
+
 <h1>Danh sách các nhà cung cấp</h1>
 
 <div class="mb-3" style="position: relative; width: 460px;">
@@ -64,13 +74,22 @@
 					@Html.DisplayFor(modelItem => item.Description)
 				</td>
 				<td>
-					<a asp-action="Edit" asp-area="Admin" asp-controller="Suppliers" asp-route-id="@item.Id">
+					<a asp-action="Edit" 
+						asp-area="Admin" 
+						asp-controller="Suppliers" 
+						asp-route-id="@item.Id"
+						data-toggle="tooltip"
+						title="Sửa thông tin">
 						<i class="fa-solid fa-pencil" style="color: #FFCC99; width: 20px; height: 30px"></i>
 					</a>|
 
-					<!-- Nút xóa -->
-					<button onclick="DeleteSupplierById(@item.Id)" class="bg-transparent" style="border: none;">
-						<i class="fa-solid fa-trash" style="color:red;"></i>
+					<!-- Nút ngửng nhận hàng -->
+					<button onclick="DeleteSupplierById(@item.Id)"
+							class="bg-transparent"
+							style="border: none;"
+							data-toggle="tooltip"
+							title="Ngừng nhận hàng">
+					<i class="fa-solid fa-trash" style="color:red;"></i>				
 					</button>
 				</td>
 			</tr>
@@ -78,15 +97,6 @@
 	</tbody>
 </table>
 
-<style>
-	tbody tr {
-		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
-	}
-
-		tbody tr:hover {
-			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
-		}
-</style>
 
 <!-- Modal -->
 <div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
