@@ -1,14 +1,14 @@
 ﻿@model FlowerShop.Web.ViewModels.CustomerViewModel;
 
 @{
-	ViewData["Title"] = "Edit";
+	ViewData["Title"] = "Chỉnh sửa thông tin khách hàng";
 }
 
-<h1>Chỉnh sửa khách hàng</h1>
+<h1>Chỉnh sửa thông tin khách hàng</h1>
 
 <div class="row">
 	<div class="col-md-4">
-		<form asp-action="Edit">
+		<form asp-action="Edit" id="editform" method="post" enctype="multipart/form-data">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<input type="hidden" asp-for="Id" />
 			<div class="form-group">
@@ -22,11 +22,6 @@
 				<span asp-validation-for="BirthDay" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="Images" class="control-label">Ảnh</label>
-				<input asp-for="Images" class="form-control" />
-				<span asp-validation-for="Images" class="text-danger"></span>
-			</div>
-			<div class="form-group">
 				<label asp-for="PhoneNumber" class="control-label">Số điện thoại</label>
 				<input asp-for="PhoneNumber" class="form-control" />
 				<span asp-validation-for="PhoneNumber" class="text-danger"></span>
@@ -36,14 +31,25 @@
 				<input asp-for="Email" class="form-control" />
 				<span asp-validation-for="Email" class="text-danger"></span>
 			</div>
+			<div class="form-group">
+				<label for="Image" class="control-label">Cập nhật ảnh đại diện</label>
+				<div style="display: flex; align-items: center;">
+					<input asp-for="Images" type="file" id="Image" class="form-control" accept="image/*" style="flex: 1;" />
+					<button id="clearImage" type="button" class="btn btn-danger btn-sm" style="margin-left: 10px; display: none;" onclick="clearSelectedImage()">Xóa</button>
+				</div>
+				<span class="text-danger" asp-validation-for="Images"></span>
+			</div>
+
 			<div class="form-group form-check">
 				<label class="form-check-label">
 					<input class="form-check-input" asp-for="IsLock" /> Khóa tài khoản
 				</label>
 			</div>
-			<div class="form-group">
-				<input type="submit" value="Lưu" class="btn btn-primary" />
-			</div>
+			<!-- Nút Lưu -->
+			<button type="button" class="btn btn-primary" id="saveButton">
+				Lưu
+			</button>
+
 		</form>
 	</div>
 </div>
@@ -52,8 +58,72 @@
 	<a asp-action="Index">Quay lại</a>
 </div>
 
+<!-- Modal xác nhận -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="confirmModalLabel">Xác nhận </h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				Bạn có chắc chắn muốn lưu thay đổi này không?
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+				<button type="button" class="btn btn-primary" id="confirmSaveBtn">Đồng ý</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 @section Scripts {
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
+	<script>
+		document.getElementById('Image').addEventListener('change', function () {
+			const clearButton = document.getElementById('clearImage'); // Nút xóa
+			if (this.files.length > 0) {
+				// Hiển thị nút xóa nếu có tệp được chọn
+				clearButton.style.display = 'inline-block';
+			} else {
+				// Ẩn nút xóa nếu không có tệp nào được chọn
+				clearButton.style.display = 'none';
+			}
+		});
+
+		function clearSelectedImage() {
+			const fileInput = document.getElementById('Image'); // Trường input file
+			const clearButton = document.getElementById('clearImage'); // Nút xóa
+
+			// Reset giá trị của input file
+			fileInput.value = '';
+
+			// Ẩn nút xóa
+			clearButton.style.display = 'none';
+		}
+
+		// Lắng nghe sự kiện nút Lưu
+		document.getElementById('saveButton').addEventListener('click', function () {
+			// Kiểm tra validation của form
+			if ($('#editform').valid()) {
+				// Nếu form hợp lệ, hiển thị modal xác nhận
+				$('#confirmModal').modal('show');
+			} else {
+				// Nếu form không hợp lệ, có thể thông báo lỗi cho người dùng
+				console.log("Form không hợp lệ");
+			}
+		});
+
+		// Lắng nghe sự kiện nút Đồng ý trong modal
+		document.getElementById('confirmSaveBtn').addEventListener('click', function () {
+			// Khi người dùng nhấn Đồng ý, submit form
+			document.getElementById('editform').submit();
+			$('#confirmModal').modal('hide'); // Đóng modal sau khi submit form
+		});
+
+	</script>
 }

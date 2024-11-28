@@ -1,9 +1,11 @@
 ﻿using FlowerShop.Common.MyConst;
 using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess;
+using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Web.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -16,11 +18,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 	{
 		private readonly FlowerShopContext _context;
 		private readonly ICustomerService _customerService;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public CustomerController(FlowerShopContext context, ICustomerService customerService)
+		public CustomerController(FlowerShopContext context, ICustomerService customerService, IWebHostEnvironment webHostEnvironment)
 		{
 			_context = context;
 			_customerService = customerService;
+			_webHostEnvironment = webHostEnvironment;
 		}
 
 		[HttpGet("")]
@@ -51,12 +55,28 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			{
 				return Content(ConstValues.CoLoiXayRa);
 			}
+
+			// Giải mã chuỗi JSON của Images nếu nó là một chuỗi JSON
+			string image = string.Empty;
+			if (!string.IsNullOrEmpty(customer.Images))
+			{
+				try
+				{
+					// Loại bỏ escape và dấu ngoặc vuông
+					image = customer.Images.Replace("\"", "").Trim('[', ']');
+				}
+				catch (Exception ex)
+				{
+					image = string.Empty;
+				}
+			}
+
 			var customerViewModel = new CustomerViewModel()
 			{
 				Id = customer.Id,
 				FullName = customer.FullName,
 				BirthDay = customer.BirthDay,
-				Images = customer.Images,
+				Images = image,
 				PhoneNumber = customer.PhoneNumber,
 				IsDelete = customer.IsDelete,
 				IsLock = customer.IsLock,
@@ -79,6 +99,43 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
+				// Nếu có ảnh được chọn
+				if (Request.Form.Files.Count > 0)
+				{
+					var file = Request.Form.Files[0]; // Lấy file đầu tiên (nếu có)
+
+					// Tạo tên file
+					var fileName = Path.GetFileName(file.FileName);
+
+					// Tạo đường dẫn lưu file vào thư mục
+					var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "customers", fileName);
+
+					// Lưu file vào thư mục
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await file.CopyToAsync(stream);  // Lưu file vào thư mục
+					}
+					// Lưu tên file vào model (không lưu file lên server)
+					customerVM.Images = fileName;
+				}
+				else
+				{
+					string image = string.Empty;
+					if (!string.IsNullOrEmpty(customer.Images))
+					{
+						try
+						{
+							// Loại bỏ escape và dấu ngoặc vuông
+							image = customer.Images.Replace("\"", "").Trim('[', ']');
+						}
+						catch (Exception ex)
+						{
+							image = string.Empty;
+							Console.WriteLine("Error while deserializing image JSON: " + ex.Message);
+						}
+					}
+					customerVM.Images = image;  // Giữ lại tên ảnh cũ
+				}
 				try
 				{
 					customer.FullName = customerVM.FullName;

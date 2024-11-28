@@ -6,6 +6,7 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +85,16 @@ namespace FlowerShop.Service.ServiceImpl
 
 		public async Task<AppUser> UpdateAsync(AppUser customer)
 		{
+			// Kiểm tra xem ảnh có phải là chuỗi hay không. Nếu là chuỗi thì chuyển thành mảng.
+			List<string> imageNames = new List<string>();
+			string imagesJson = string.Empty;
+			// Nếu supplier.Images là một chuỗi, chuyển thành mảng một phần tử
+			if (!string.IsNullOrEmpty(customer.Images))
+			{
+				imageNames.Add(customer.Images); // Thêm tên ảnh vào danh sách
+				imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
+				customer.Images = imagesJson;
+			}
 			var result = _appUserRepository.Update(customer);
 			if (result != null)
 			{
