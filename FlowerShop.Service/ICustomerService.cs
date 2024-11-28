@@ -16,8 +16,8 @@ namespace FlowerShop.Service
 
 		Task<AppUser> GetSingleById(string id);
 
-		//Task<PopupViewModel> Delete(string id);
-
 		Task<PopupViewModel> Delete(AppUser appUser);
+
+		Task<AppUser> ChiTietKhachHang(string id);
 	}
 }

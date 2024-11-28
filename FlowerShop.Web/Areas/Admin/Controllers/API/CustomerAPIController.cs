@@ -1,6 +1,7 @@
 using FlowerShop.Common.Helpers;
 using FlowerShop.DataAccess;
 using FlowerShop.Service;
+using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,23 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 			}
 			await _customerService.Delete(customer);
 			return Ok(new { message = "Đã khóa tài khoản của khách hàng" });
+		}
+
+		[HttpGet("chi-tiet-khach-hang/{id}")]
+		public async Task<IActionResult> ChiTietKhachHang(int id)
+		{
+			if (id <= 0)
+			{
+				return BadRequest(new { message = "Không tìm thấy khách hàng" });
+			}
+
+			var khachhang = await _customerService.ChiTietKhachHang(id.ToString());
+			if (khachhang == null)
+			{
+				return NotFound(new { message = "Không tìm khách hàng" });
+			}
+
+			return Ok(khachhang);
 		}
 	}
 }

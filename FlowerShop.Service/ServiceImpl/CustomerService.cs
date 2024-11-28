@@ -27,31 +27,15 @@ namespace FlowerShop.Service.ServiceImpl
 			_context = context;
 		}
 
-		/*public async Task<PopupViewModel> Delete(string id)
+		public async Task<AppUser> ChiTietKhachHang(string id)
 		{
-			try
+			var khachhang = await GetSingleById(id);
+			if (khachhang == null)
 			{
-				var customer = await _appUserRepository.FindByIdAsync(id);
-				if (customer == null)
-				{
-					return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
-				}
-
-				//Khóa tài khoản
-				customer.IsLock = true;
-				var rs = _appUserRepository.Update(customer);
-				if (rs == null)
-				{
-					return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
-				}
-				return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đã khóa tài khoản khách hàng thành công");
+				return new AppUser(); // Trả về danh sách rỗng
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-				return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
-			}
-		}*/
+			return khachhang;
+		}
 
 		public async Task<PopupViewModel> Delete(AppUser appUser)
 		{
