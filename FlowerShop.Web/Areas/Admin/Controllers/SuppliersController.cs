@@ -191,7 +191,21 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 				}
 				else
 				{
-					supplierVM.Images = supplier.Images;  // Giữ lại tên ảnh cũ
+					string image = string.Empty;
+					if (!string.IsNullOrEmpty(supplier.Images))
+					{
+						try
+						{
+							// Loại bỏ escape và dấu ngoặc vuông
+							image = supplier.Images.Replace("\"", "").Trim('[', ']');
+						}
+						catch (Exception ex)
+						{
+							image = string.Empty;
+							Console.WriteLine("Error while deserializing image JSON: " + ex.Message);
+						}
+					}
+					supplierVM.Images = image;  // Giữ lại tên ảnh cũ
 				}
 				try
 				{

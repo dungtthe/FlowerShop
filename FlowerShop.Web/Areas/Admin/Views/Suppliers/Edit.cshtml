@@ -57,8 +57,8 @@
 				</label>
 			</div>
 
-			<!-- Nút lưu -->
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
+			<!-- Nút Lưu -->
+			<button type="button" class="btn btn-primary" id="saveButton">
 				Lưu
 			</button>
 
@@ -87,33 +87,51 @@
 	</div>
 </div>
 
-<script>
-	document.getElementById('Image').addEventListener('change', function () {
-		const clearButton = document.getElementById('clearImage'); // Nút xóa
-		if (this.files.length > 0) {
-			// Hiển thị nút xóa nếu có tệp được chọn
-			clearButton.style.display = 'inline-block';
-		} else {
-			// Ẩn nút xóa nếu không có tệp nào được chọn
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+	}
+	<script>
+		document.getElementById('Image').addEventListener('change', function () {
+			const clearButton = document.getElementById('clearImage'); // Nút xóa
+			if (this.files.length > 0) {
+				// Hiển thị nút xóa nếu có tệp được chọn
+				clearButton.style.display = 'inline-block';
+			} else {
+				// Ẩn nút xóa nếu không có tệp nào được chọn
+				clearButton.style.display = 'none';
+			}
+		});
+
+		function clearSelectedImage() {
+			const fileInput = document.getElementById('Image'); // Trường input file
+			const clearButton = document.getElementById('clearImage'); // Nút xóa
+
+			// Reset giá trị của input file
+			fileInput.value = '';
+
+			// Ẩn nút xóa
 			clearButton.style.display = 'none';
 		}
-	});
 
-	function clearSelectedImage() {
-		const fileInput = document.getElementById('Image'); // Trường input file
-		const clearButton = document.getElementById('clearImage'); // Nút xóa
+		// Lắng nghe sự kiện nút Lưu
+		document.getElementById('saveButton').addEventListener('click', function () {
+			// Kiểm tra validation của form
+			if ($('#editform').valid()) {
+				// Nếu form hợp lệ, hiển thị modal xác nhận
+				$('#confirmModal').modal('show');
+			} else {
+				// Nếu form không hợp lệ, có thể thông báo lỗi cho người dùng
+				console.log("Form không hợp lệ");
+			}
+		});
 
-		// Reset giá trị của input file
-		fileInput.value = '';
-
-		// Ẩn nút xóa
-		clearButton.style.display = 'none';
-	}
-
-	document.getElementById('confirmSaveBtn').addEventListener('click', function () {
-		// Gửi form hoặc thực hiện hành động khác
-		document.getElementById('editform').submit();
-		$('#confirmModal').modal('hide');
-
-	});
-</script>
+		// Lắng nghe sự kiện nút Đồng ý trong modal
+		document.getElementById('confirmSaveBtn').addEventListener('click', function () {
+			// Khi người dùng nhấn Đồng ý, submit form
+			document.getElementById('editform').submit();
+			$('#confirmModal').modal('hide'); // Đóng modal sau khi submit form
+		});
+	</script>
+}

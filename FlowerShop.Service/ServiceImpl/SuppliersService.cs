@@ -107,6 +107,7 @@ namespace FlowerShop.Service.ServiceImpl
 			{
 				imageNames.Add(supplier.Images); // Thêm tên ảnh vào danh sách
 				imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
+				supplier.Images = imagesJson;
 			}
 			var result = _supplierRepository.Update(supplier);
 			if (result != null)
