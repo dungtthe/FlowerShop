@@ -142,7 +142,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 			var saleInvoiceDetail = await _saleInvoiceService.ChiTietDonHang(id);
 			if (saleInvoiceDetail == null || !saleInvoiceDetail.Any())
 			{
-				return NotFound(new { message = "Không tìm thấy đơn hàng" });
+				return NotFound(new { message = "Không tìm thấy chi tiết đơn hàng" });
 			}
 
 			return Ok(saleInvoiceDetail.ToList());

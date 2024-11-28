@@ -4,6 +4,16 @@
 	ViewData["Title"] = "Chờ xác nhận";
 }
 
+<style>
+	tbody tr {
+		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
+	}
+
+		tbody tr:hover {
+			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
+		}
+</style>
+
 <h1>Danh sách đơn hàng chờ xác nhận</h1>
 <div class="mb-3" style="position: relative; width: 440px;">
 	<input type="text" id="searchBox"
@@ -34,12 +44,9 @@
 	<tbody>
 		@foreach (var item in Model)
 		{
-			<tr id="hoadon-row-@item.Id">
+			<tr id="hoadon-row-@item.Id" ondblclick="ShowOrderDetails(@item.Id)">
 				<td class="text-center" style="padding-right:60px">
-					<!-- Thêm sự kiện click vào mã đơn hàng -->
-					<a href="javascript:void(0);" onclick="ShowOrderDetails(@item.Id)">
-						@Html.DisplayFor(modelItem => item.Id)
-					</a>
+					@Html.DisplayFor(modelItem => item.Id)
 				</td>
 				<td>
 					@Html.DisplayFor(modelItem => item.Customer.FullName)
@@ -153,7 +160,7 @@
 			return;
 		}
 		try {
-			// Lấy thông tin từ row được chọn
+			// Lấy thông tin từ row được chọn (tr) thông qua orderId
 			const row = document.querySelector(`#hoadon-row-${orderId}`);
 			const customerName = row.querySelector('td:nth-child(2)').innerText; // Tên khách hàng
 			const createDate = row.querySelector('td:nth-child(3)').innerText;  // Ngày tạo hóa đơn
@@ -164,46 +171,51 @@
 
 			fetchGet(`/api/admin/quan-li-don-hang/chi-tiet-don-hang/${orderId}`,
 				(response) => {
-					console.log(response);
+					let tableBody = "";
+					let total = 0;
+					response.forEach(item => {
+						let thanhTien = item.unitPrice * item.quantity; // Thành tiền cho từng sản phẩm
+						total += thanhTien; // Cộng dồn tổng tiền
 
-					if (response.length > 0) {
-						let tableBody = "";
-						let total = 0;
+						tableBody += `
+													<tr>
+														<td>${item.productId}</td>
+														<td>${item.product.title}</td>
+														<td>${item.quantity}</td>
+														<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+														<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+													</tr>
+												`;
+					});
 
-						response.forEach(item => {
-							let thanhTien = item.unitPrice * item.quantity; // Thành tiền cho từng sản phẩm
-							total += thanhTien; // Cộng dồn tổng tiền
+					// Cập nhật nội dung bảng và tổng cộng
+					document.querySelector("#orderDetailsTable tbody").innerHTML = tableBody;
+					document.getElementById("orderTotal").innerText = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
-							tableBody += `
-																																						<tr>
-																																							<td>${item.productId}</td>
-																																							<td>${item.product.title}</td>
-																																							<td>${item.quantity}</td>
-																																							<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-																																							<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-																																						</tr>
-																																					`;
-						});
-
-						// Cập nhật nội dung bảng và tổng cộng
-						document.querySelector("#orderDetailsTable tbody").innerHTML = tableBody;
-						document.getElementById("orderTotal").innerText = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-
-						// Hiển thị modal
-						$('#orderDetailsModal').modal('show');
-					} else {
-						showError("Không tìm thấy chi tiết đơn hàng");
-					}
+					// Hiển thị modal
+					$('#orderDetailsModal').modal('show');
+				},
+				(res) => {
+					showError(res.message);
 				},
 				() => {
 					showError("Có lỗi khi kết nối đến server");
 				});
+			// Đổi màu của dòng khi nhấn double-click
+			const rowToHighlight = document.querySelector(`#hoadon-row-${orderId}`);
+			if (rowToHighlight) {
+				rowToHighlight.style.backgroundColor = "#f0f8ff"; // Màu nhạt báo hiệu
+				setTimeout(() => {
+					rowToHighlight.style.backgroundColor = ""; // Khôi phục màu ban đầu
+				}, 2000);
+			}
 		} catch (error) {
 			console.error(error);
 			showError("Đã xảy ra lỗi khi lấy chi tiết đơn hàng.");
 		}
 	}
 
+	//Tìm kiếm đơn hàng
 	const searchOrders = () => {
 		const query = document.getElementById("searchBox").value.toLowerCase(); // Lấy giá trị tìm kiếm và chuyển thành chữ thường
 		const rows = document.querySelectorAll("tbody tr"); // Lấy tất cả các dòng trong bảng
