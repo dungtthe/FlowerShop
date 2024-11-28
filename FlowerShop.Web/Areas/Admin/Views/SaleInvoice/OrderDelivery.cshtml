@@ -75,26 +75,28 @@
 	</tbody>
 </table>
 @await Html.PartialAsync("_OrderDetailsModal")
+@await Html.PartialAsync("_CancelOrderBox")
 
 <script>
+	//Giao thành công
 	const Success = (id) => {
 		showConfirm("Xác nhận đơn hàng giao thành công?", () => {
 			const reqData = { id: id };
 
 			fetchPost('/api/admin/quan-li-don-hang/giao-thanh-cong', reqData,
 				(response) => {
-					if (response.success) {
-						// Xóa dòng trong bảng
-						const row = document.getElementById('hoadon-row-' + id);
-						if (row) {
-							row.remove();
-						}
-						setTimeout(() => {
-							showSuccess(response.message);
-						}, 500);
-					} else {
-						showError(response.message);
+					// Xóa dòng trong bảng
+					const row = document.getElementById('hoadon-row-' + id);
+					if (row) {
+						row.remove();
 					}
+					setTimeout(() => {
+						showSuccess(response.message);
+					}, 500);
+
+				},
+				(res) => {
+					showError(res.message);
 				},
 				() => {
 					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
@@ -103,30 +105,44 @@
 		});
 	};
 
+	//Giao thất bại
+	let currentOrderIdToCancel = null;
 	const Fail = (id) => {
-		showConfirm("Xác nhận đơn hàng giao thất bại?", () => {
-			const reqData = { id: id };
+		// Lưu mã đơn hàng vào biến toàn cục
+		currentOrderIdToCancel = id;
+		document.getElementById('cancelOrderModalLabel').innerText = "Nhập lý do giao hàng thất bại";
+		document.getElementById('cancelReason').placeholder = "Lý do giao hàng thất bại..."
+		// Hiển thị modal yêu cầu nhập lý do hủy
+		$('#cancelOrderModal').modal('show');
+	};
+	const submitCancelOrder = () => {
+		const cancelReason = document.getElementById("cancelReason").value.trim();
 
-			fetchPost('/api/admin/quan-li-don-hang/giao-that-bai', reqData,
-				(response) => {
-					if (response.success) {
-						// Xóa dòng trong bảng
-						const row = document.getElementById('hoadon-row-' + id);
-						if (row) {
-							row.remove();
-						}
-						setTimeout(() => {
-							showSuccess(response.message);
-						}, 500);
-					} else {
-						showError(response.message);
-					}
-				},
-				() => {
-					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+		if (!cancelReason) {
+			showError("Bạn phải nhập lý do giao thất bại.");
+			return;
+		}
+
+		const reqData = { id: currentOrderIdToCancel, reason: cancelReason };
+
+		fetchPost('/api/admin/quan-li-don-hang/giao-that-bai', reqData,
+			(response) => {
+				const row = document.getElementById('hoadon-row-' + currentOrderIdToCancel);
+				if (row) {
+					row.remove();
 				}
-			);
-		});
+				$('#cancelOrderModal').modal('hide');
+				setTimeout(() => {
+					showSuccess(response.message);
+				}, 500);
+			},
+			(response) => {
+				showError(response.message);
+			},
+			() => {
+				showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+			}
+		);
 	};
 
 	function ShowOrderDetails(orderId) {
@@ -157,14 +173,14 @@
 							total += thanhTien; // Cộng dồn tổng tiền
 
 							tableBody += `
-																<tr>
-																	<td>${item.productId}</td>
-																	<td>${item.product.title}</td>
-																	<td>${item.quantity}</td>
-																	<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-																	<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-																</tr>
-															`;
+																			<tr>
+																				<td>${item.productId}</td>
+																				<td>${item.product.title}</td>
+																				<td>${item.quantity}</td>
+																				<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+																				<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+																			</tr>
+																		`;
 						});
 
 						// Cập nhật nội dung bảng và tổng cộng

@@ -94,37 +94,39 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		}
 
 		[HttpPost("giao-that-bai")]
-		public async Task<IActionResult> GiaoThatBai([FromBody] RequestDeleteByIdViewModel reqData)
+		public async Task<IActionResult> GiaoThatBai([FromBody] RequestDeletedOrder reqData)
 		{
 			if (reqData == null)
 			{
 				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
+			string? reason = reqData.reason;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
 				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
-			await _saleInvoiceService.GiaoThatBai(id ?? -1);
+			await _saleInvoiceService.GiaoThatBai(id ?? -1, reason ?? "");
 
 			return Ok(new { message = "Đơn hàng giao không thành công!" });
 		}
 
 		[HttpPost("huy")]
-		public async Task<IActionResult> Huy([FromBody] RequestDeleteByIdViewModel reqData)
+		public async Task<IActionResult> Huy([FromBody] RequestDeletedOrder reqData)
 		{
 			if (reqData == null)
 			{
 				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
+			string? reason = reqData.reason;
 			var product = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (product == null)
 			{
 				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
-			await _saleInvoiceService.Huy(id ?? -1);
+			await _saleInvoiceService.Huy(id ?? -1, reason ?? "");
 
 			return Ok(new { message = "Đơn hàng đã hủy thành công!" });
 		}

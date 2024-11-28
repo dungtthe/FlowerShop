@@ -132,7 +132,7 @@ namespace FlowerShop.Service.ServiceImpl
 			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã chuyển sang đã xác nhận");
 		}
 
-		public async Task<PopupViewModel> Huy(int id)
+		public async Task<PopupViewModel> Huy(int id, string reason)
 		{
 			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
 			if (order == null)
@@ -140,6 +140,7 @@ namespace FlowerShop.Service.ServiceImpl
 				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
 			}
 			order.Status = ConstStatusSaleInvoice.DA_HUY;
+			order.Note = reason;
 			await XuLyDonHangSauKhiHuy(id);
 			await _unitOfWork.Commit();
 			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã hủy");
@@ -181,7 +182,7 @@ namespace FlowerShop.Service.ServiceImpl
 			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng đã giao thành công!");
 		}
 
-		public async Task<PopupViewModel> GiaoThatBai(int id)
+		public async Task<PopupViewModel> GiaoThatBai(int id, string reason)
 		{
 			var order = await _saleInvoiceRepository.GetSingleByIdAsync(id);
 			if (order == null)
@@ -189,8 +190,10 @@ namespace FlowerShop.Service.ServiceImpl
 				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
 			}
 			order.Status = ConstStatusSaleInvoice.GIAO_HANG_THAT_BAI;
+			order.Note = reason;
+			await XuLyDonHangSauKhiHuy(id);
 			await _unitOfWork.Commit();
-			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn hàng giao không thành công!");
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thất bại", "Đơn hàng giao không thành công!");
 		}
 
 		public async Task<ICollection<SaleInvoiceDetail>> ChiTietDonHang(int id)
