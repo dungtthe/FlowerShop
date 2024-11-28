@@ -112,25 +112,25 @@
 
 			fetchDelete('/api/admin/quan-li-khach-hang/delete', reqData,
 				(response) => {
-					if (response.success) {
-						showSuccess(response.message);
-						// Cập nhật giá trị IsLock
-						const iconCell = document.querySelector(`button[onclick="LockCustomerById(${id})"]`)
-							.closest('tr')
-							.querySelector('.is-lock');
-						if (iconCell) {
-							iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
-							iconCell.setAttribute('data-is-lock', 'true');
-						}
-
-						// Cập nhật icon của nút khóa
-						const lockButton = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
-						if (lockButton) {
-							lockButton.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
-						}
-					} else {
-						showError(response.message);
+					// Cập nhật giá trị IsLock
+					const iconCell = document.querySelector(`button[onclick="LockCustomerById(${id})"]`)
+						.closest('tr')
+						.querySelector('.is-lock');
+					if (iconCell) {
+						iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+						iconCell.setAttribute('data-is-lock', 'true');
 					}
+					// Cập nhật icon của nút khóa
+					const lockButton = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+					if (lockButton) {
+						lockButton.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+					}
+					setTimeout(() => {
+						showSuccess(response.message);
+					}, 500);
+				},
+				(response) => {
+					showError(response.message);
 				},
 				() => {
 					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
