@@ -1,0 +1,185 @@
+.col-custom {
+    flex: 0 1 calc(20% - 10px);
+    margin: 5px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+
+    @media (max-width: 1199.98px) {
+        flex: 0 1 calc(25% - 10px);
+    }
+
+    @media (max-width: 991.98px) {
+        flex: 0 1 calc(33% - 20px);
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    @media (max-width: 767.98px) {
+        flex: 0 1 calc(50% - 20px);
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    @media (max-width: 300.98px) {
+        flex: 0 1 calc(100% - 20px);
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+}
+
+@media (max-width: 1400.98px) {
+    .section-products .owl-carousel {
+        max-height: 400px;
+    }
+}
+
+.section-products .inner-tag {
+    margin-left: -12px;
+    margin-bottom: 15px;
+    font-size: 28px;
+}
+
+.section-products .box-product {
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.section-products .box-product .inner-image {
+    max-width: 100%;
+    overflow: hidden;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    position: relative;
+}
+
+.section-products .box-product .inner-image img {
+    aspect-ratio: 5/4;
+    width: 100%;
+    height: auto;
+    transition: transform 0.8s ease, box-shadow 0.8s ease;
+}
+
+.section-products .box-product .inner-image img:hover {
+    cursor: pointer;
+    transform: scale(1.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.section-products .box-product .inner-image .text-white {
+    z-index: 1;
+}
+
+.section-products .box-product .inner-content {
+    padding-top: 15px;
+    text-align: center;
+    border-bottom: 1px solid #681c1c;
+    border-left: 1px solid #681c1c;
+    border-right: 1px solid #681c1c;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.section-products .box-product .inner-content .inner-price {
+    display: flex;
+    justify-content: center;
+}
+
+.section-products .box-product .inner-content .inner-title {
+    margin-top: 7px;
+    margin-bottom: 7px;
+    font-size: 18px;
+}
+
+.section-products .box-product .inner-content .inner-price .price-old {
+    margin-right: 14px;
+    text-decoration: line-through;
+}
+
+.section-products .box-product .inner-content .inner-price .price-current {
+    color: #d1293a;
+}
+
+.section-products {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.section-products .box-product .inner-image {
+    position: relative;
+}
+
+.section-products .box-product .inner-image .inner-icon {
+    position: absolute;
+    top: 10px;
+    right: 4px;
+    background-color: #d1293a;
+    padding: 5px;
+    border-radius: 50%;
+    display: none;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.section-products .box-product:hover .inner-image .inner-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section-products .box-product .inner-image .inner-icon:hover {
+    transition: background-color 0.3s ease;
+}
+
+.section-products .box-product .inner-image .inner-icon i {
+    font-size: 20px;
+    color: #fff;
+}
+
+.section-products .owl-carousel {
+    display: flex !important;
+    position: relative;
+}
+
+.section-products .owl-carousel .owl-item {
+    margin: 0px !important;
+    width: 263px !important;
+}
+
+.section-products .owl-carousel .cloned {
+    margin: 0px !important;
+    width: 263px !important;
+}
+
+@media (max-width: 1400.98px) {
+    .section-products .owl-carousel .owl-item {
+        width: 222px !important;
+    }
+
+    .section-products .owl-carousel .cloned {
+        width: 222px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .section-products .owl-carousel .owl-item {
+        width: 257px !important;
+    }
+
+    .section-products .owl-carousel .cloned {
+        width: 257px !important;
+    }
+
+    #customer-said h3 {
+        padding-bottom: 25px !important;
+    }
+}
+
+.section-products .inner-products {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
