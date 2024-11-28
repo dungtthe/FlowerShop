@@ -11,7 +11,8 @@ namespace FlowerShop.Service
 {
     public interface IProductService
     {
-        Task<IEnumerable<Product>> GetProductsForIndexAsync();
+        Task<IEnumerable<Product>> GetProductsForIndexInAdminAsync();
+        Task<IEnumerable<Product>> GetProductsForIndexInCustomerAsync();
         Task<ResponeMessage> AddNewProductAsync(string title,string desc,decimal price,int quantity,int packId,List<int>categoriesId,List<Tuple<int,int>>productsItem);
         Task<Product?> FindOneByIdAsync(int id, bool include = true);
         Task<Product> UpdateImageAsync(Product product);

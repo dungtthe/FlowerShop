@@ -40,7 +40,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var products = await _productService.GetProductsForIndexAsync();
+            var products = await _productService.GetProductsForIndexInAdminAsync();
             if (products == null)
             {
                 return NotFound();

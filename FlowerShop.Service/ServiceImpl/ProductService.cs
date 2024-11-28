@@ -70,7 +70,7 @@ namespace FlowerShop.Service.ServiceImpl
             };
 
             var rsAddProductPrice = await _productPriceRepository.AddAsync(productPrice);
-          
+
 
 
             //add ProductCategory
@@ -137,7 +137,7 @@ namespace FlowerShop.Service.ServiceImpl
 
         }
 
-        public async Task<Product?> FindOneByIdAsync(int id,bool include=true)
+        public async Task<Product?> FindOneByIdAsync(int id, bool include = true)
         {
             if (id == -1) return null;
 
@@ -146,7 +146,7 @@ namespace FlowerShop.Service.ServiceImpl
 
                 var rs = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id,
                     p => p.Packaging,
-                    p => p.ProductPrices.Where(pp=>!pp.IsDelete),
+                    p => p.ProductPrices.Where(pp => !pp.IsDelete),
                     p => p.ProductProductItems.Where(pp => !pp.IsDelete),
                     p => p.ProductCategories.Where(pc => !pc.IsDelete)
                     );
@@ -180,9 +180,17 @@ namespace FlowerShop.Service.ServiceImpl
             }
         }
 
-        public async Task<IEnumerable<Product>> GetProductsForIndexAsync()
+        public async Task<IEnumerable<Product>> GetProductsForIndexInAdminAsync()
         {
             var products = (await _productRepository.GetAllWithIncludeAsync(p => p.Packaging)).Where(p => p.IsDelete == false);
+            return products;
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsForIndexInCustomerAsync()
+        {
+            var products = (await _productRepository.GetAllWithIncludeAsync(
+                p => p.ProductPrices.Where(pp => !pp.IsDelete).OrderBy(pp => pp.Priority)
+                )).Where(p => p.IsDelete == false);
             return products;
         }
 
@@ -193,20 +201,20 @@ namespace FlowerShop.Service.ServiceImpl
             {
                 return null;
             }
-            rsFindProduct.Images= product.Images;
+            rsFindProduct.Images = product.Images;
             _productRepository.Update(rsFindProduct);
             await _unitOfWork.Commit();
             return rsFindProduct;
         }
 
 
-        public async Task<ResponeMessage> UpdateProductAsync(Product productOld,int quantityNew, List<ProductPrice> productPrices, List<int> categoriesId, List<Tuple<int, int>> productsItem)
+        public async Task<ResponeMessage> UpdateProductAsync(Product productOld, int quantityNew, List<ProductPrice> productPrices, List<int> categoriesId, List<Tuple<int, int>> productsItem)
         {
-            var rsProductPricesOld = (await _productPriceRepository.GetAllAsync())?.Where(pp=>pp.ProductId==productOld.Id);
-            var rsProductCategoriesOld = (await _productCategoryRepository.GetAllAsync())?.Where(pc=>pc.ProductId==productOld.Id);
+            var rsProductPricesOld = (await _productPriceRepository.GetAllAsync())?.Where(pp => pp.ProductId == productOld.Id);
+            var rsProductCategoriesOld = (await _productCategoryRepository.GetAllAsync())?.Where(pc => pc.ProductId == productOld.Id);
             var rsProductProductItemsOld = (await _productProductItemRepository.GetAllAsync())?.Where(pi => pi.ProductId == productOld.Id);
             var rsProductItems = (await _productItemRepository.GetAllAsync())?.Where(p => !p.IsDelete);
-            if (rsProductPricesOld == null|| rsProductCategoriesOld==null || rsProductCategoriesOld==null || rsProductItems==null || rsProductProductItemsOld==null)
+            if (rsProductPricesOld == null || rsProductCategoriesOld == null || rsProductCategoriesOld == null || rsProductItems == null || rsProductProductItemsOld == null)
             {
                 return new ResponeMessage(ResponeMessage.ERROR, ResponeMessage.CO_LOI_XAY_RA);
             }
@@ -214,13 +222,13 @@ namespace FlowerShop.Service.ServiceImpl
 
             //cập nhật giá bán
             //chuyển toàn bộ giá bán ban đầu về trạng thái đã xóa
-            foreach(var item in rsProductPricesOld)
+            foreach (var item in rsProductPricesOld)
             {
                 item.IsDelete = true;
             }
-            foreach(var item in productPrices)
+            foreach (var item in productPrices)
             {
-                var productPriceOld = rsProductPricesOld.FirstOrDefault(p=>p.Price==item.Price);
+                var productPriceOld = rsProductPricesOld.FirstOrDefault(p => p.Price == item.Price);
                 //chưa có thì tạo mới
                 if (productPriceOld == null)
                 {
@@ -229,9 +237,9 @@ namespace FlowerShop.Service.ServiceImpl
                         ProductId = productOld.Id,
                         Priority = item.Priority,
                         Price = item.Price,
-                        StartDate=item.StartDate,
-                        EndDate=item.EndDate,
-                        IsDelete=false
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate,
+                        IsDelete = false
                     };
                     await _productPriceRepository.AddAsync(productPrice);
                 }
@@ -247,11 +255,11 @@ namespace FlowerShop.Service.ServiceImpl
 
 
             //cập nhật danh mục thuộc về
-            foreach(var item in rsProductCategoriesOld)
+            foreach (var item in rsProductCategoriesOld)
             {
                 item.IsDelete = true;
             }
-            foreach(var item in categoriesId)
+            foreach (var item in categoriesId)
             {
                 var categoryOld = rsProductCategoriesOld.FirstOrDefault(c => c.CategoryId == item);
                 //chưa có thì thêm mới
@@ -259,8 +267,8 @@ namespace FlowerShop.Service.ServiceImpl
                 {
                     await _productCategoryRepository.AddAsync(new ProductCategory()
                     {
-                        ProductId=productOld.Id,
-                        CategoryId=item,
+                        ProductId = productOld.Id,
+                        CategoryId = item,
                         IsDelete = false
                     });
                 }
@@ -274,9 +282,9 @@ namespace FlowerShop.Service.ServiceImpl
 
             //cập nhật sản phẩm bao gồm
             //ném hết sản phẩm bao gồm đang có vào kho
-            foreach(var item in rsProductProductItemsOld)
+            foreach (var item in rsProductProductItemsOld)
             {
-                var productItem = rsProductItems.FirstOrDefault(p=>p.Id==item.ProductItemId);
+                var productItem = rsProductItems.FirstOrDefault(p => p.Id == item.ProductItemId);
                 if (productItem == null)
                 {
                     return new ResponeMessage(ResponeMessage.ERROR, ResponeMessage.CO_LOI_XAY_RA);
@@ -286,7 +294,7 @@ namespace FlowerShop.Service.ServiceImpl
                 item.Quantity = 0;
             }
             //thêm lại sản phẩm bao gồm
-            foreach(var item in productsItem)
+            foreach (var item in productsItem)
             {
                 var productItem = rsProductItems.FirstOrDefault(p => p.Id == item.Item1);
                 if (productItem == null)
@@ -295,21 +303,21 @@ namespace FlowerShop.Service.ServiceImpl
                 }
                 if ((productItem.Quantity - item.Item2 * quantityNew) < 0)
                 {
-                    return new ResponeMessage(ResponeMessage.ERROR,$"{productItem.Name} không đủ số lượng");
+                    return new ResponeMessage(ResponeMessage.ERROR, $"{productItem.Name} không đủ số lượng");
                 }
                 productItem.Quantity = productItem.Quantity - item.Item2 * quantityNew;
 
                 //xem đã có productproductitem chưa
-                var ppi = rsProductProductItemsOld.FirstOrDefault(p=>p.ProductItemId==item.Item1);
+                var ppi = rsProductProductItemsOld.FirstOrDefault(p => p.ProductItemId == item.Item1);
                 //chưa thì thêm mới
                 if (ppi == null)
                 {
                     await _productProductItemRepository.AddAsync(new ProductProductItem()
                     {
-                        ProductId=productOld.Id,
-                        ProductItemId=item.Item1,
-                        Quantity=item.Item2,
-                        IsDelete=false
+                        ProductId = productOld.Id,
+                        ProductItemId = item.Item1,
+                        Quantity = item.Item2,
+                        IsDelete = false
                     });
                 }
                 else
@@ -318,7 +326,7 @@ namespace FlowerShop.Service.ServiceImpl
                     ppi.IsDelete = false;
                 }
             }
-            productOld.Quantity=quantityNew;
+            productOld.Quantity = quantityNew;
             await _unitOfWork.Commit();
 
             return new ResponeMessage(ResponeMessage.SUCCESS, "Sửa thông tin sản phẩm thành công");
