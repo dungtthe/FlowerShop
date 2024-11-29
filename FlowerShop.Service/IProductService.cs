@@ -17,8 +17,28 @@ namespace FlowerShop.Service
         Task<Product?> FindOneByIdAsync(int id, bool include = true);
         Task<Product> UpdateImageAsync(Product product);
         Task<ResponeMessage> UpdateProductAsync(Product product,int quantityNew,List<ProductPrice> productPrices,List<int> categoriesId, List<Tuple<int, int>> productsItem);
+        Task<IEnumerable<Product>> GetTopSellingProductsAsync();
+        Task<(IEnumerable<Product> products, int total, int remaining)> GetNewProductsAsync(int pageIndex = 0, int pageSize = 10);
+        Task<(IEnumerable<Product> products, int total, int remaining)> GetGiftCategoryProductsAsync(int pageIndex = 0, int pageSize = 10);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

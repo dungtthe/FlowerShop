@@ -1,10 +1,13 @@
-﻿using FlowerShop.Common.Template;
+﻿using FlowerShop.Common.MyConst;
+using FlowerShop.Common.Template;
 using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,9 +23,10 @@ namespace FlowerShop.Service.ServiceImpl
         private readonly IProductItemRepository _productItemRepository;
         private readonly IProductProductItemRepository _productProductItemRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ISaleInvoiceDetailRepository _saleInvoiceDetailRepository;
 
 
-        public ProductService(IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, IUnitOfWork unitOfWork, IProductPriceRepository productPriceRepository, IPackagingRepository packagingRepository, ICategoryRepository categoryRepository, IProductItemRepository productItemRepository, IProductProductItemRepository productProductItemRepository)
+        public ProductService(IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, IUnitOfWork unitOfWork, IProductPriceRepository productPriceRepository, IPackagingRepository packagingRepository, ICategoryRepository categoryRepository, IProductItemRepository productItemRepository, IProductProductItemRepository productProductItemRepository, ISaleInvoiceDetailRepository saleInvoiceDetailRepository)
         {
             _productRepository = productRepository;
             _productCategoryRepository = productCategoryRepository;
@@ -32,6 +36,7 @@ namespace FlowerShop.Service.ServiceImpl
             _categoryRepository = categoryRepository;
             _productItemRepository = productItemRepository;
             _productProductItemRepository = productProductItemRepository;
+            _saleInvoiceDetailRepository = saleInvoiceDetailRepository;
         }
 
         public async Task<ResponeMessage> AddNewProductAsync(string title, string desc, decimal price, int quantity, int packId, List<int> categoriesId, List<Tuple<int, int>> productsItem)
@@ -178,6 +183,79 @@ namespace FlowerShop.Service.ServiceImpl
             {
                 return await _productRepository.GetSingleByIdAsync(id);
             }
+        }
+
+        public async Task<IEnumerable<Product>> GetTopSellingProductsAsync()
+        {
+            var productIds = await _saleInvoiceDetailRepository.GetProductIdTopSellingProductsAsync();
+            if (productIds == null)
+            {
+                return null;
+            }
+
+            List<Product> resultProducts = new List<Product>();
+            foreach (var id in productIds)
+            {
+
+                var rsp = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id, p => p.ProductPrices);
+                if (rsp != null)
+                {
+                    resultProducts.Add(rsp);
+                }
+            }
+            if (resultProducts.Count < 8)
+            {
+                var products = (await _productRepository.GetAllWithIncludeAsync(p => p.ProductPrices)).Where(p => !p.IsDelete);
+                if (products != null)
+                {
+                    foreach (var product in products)
+                    {
+                        if (resultProducts.Count >= 8)
+                        {
+                            break;
+                        }
+                        if (!productIds.Contains(product.Id))
+                        {
+                            resultProducts.Add(product);
+                        }
+                    }
+                }
+            }
+            return resultProducts;
+        }
+
+        public async Task<(IEnumerable<Product> products, int total, int remaining)> GetGiftCategoryProductsAsync(int pageIndex = 0, int pageSize = 10)
+        {
+            var giftCategory = await _categoryRepository.SingleOrDefaultWithIncludeAsync(
+                c => c.Name == ConstValues.QUA_TANG_KEM && !c.IsDelete,
+                c => c.SubCategories.Where(s => !s.IsDelete)
+            );
+
+            if (giftCategory == null)
+                return (Enumerable.Empty<Product>(), 0, 0);
+
+            return await _productRepository.GetMultiPagingAsync(
+                p => (!p.IsDelete) &&
+                    p.ProductCategories.Any(pc => !pc.IsDelete &&
+                        giftCategory.SubCategories.Select(sc => sc.Id).Contains(pc.CategoryId)),
+                pageIndex,
+                pageSize,
+                null,
+                p => p.ProductPrices
+            );
+        }
+
+
+
+        public async Task<(IEnumerable<Product> products, int total, int remaining)> GetNewProductsAsync(int pageIndex = 0, int pageSize = 10)
+        {
+            return await _productRepository.GetMultiPagingAsync(
+                p => !p.IsDelete,
+                pageIndex,
+                pageSize,
+                q => q.OrderByDescending(p => p.Id),
+                p => p.ProductPrices
+            );
         }
 
         public async Task<IEnumerable<Product>> GetProductsForIndexInAdminAsync()

@@ -95,8 +95,40 @@ namespace FlowerShop.DataAccess.Infrastructure
         }
 
 
+        public async Task<(IEnumerable<T> Items, int Total, int Remaining)> GetMultiPagingAsync(Expression<Func<T, bool>>? predicate = null, int pageIndex = 0, int pageSize = 10, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, params Expression<Func<T, object>>[] includes)
+        {
+            int skipCount = pageIndex * pageSize;
 
+            IQueryable<T> query = dbSet;
 
+            if (includes != null && includes.Length > 0)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            var total = await query.CountAsync();
+
+            var remaining = Math.Max(0, total - ((pageIndex + 1) * pageSize));
+
+            query = skipCount == 0 ?
+                query.Take(pageSize) :
+                query.Skip(skipCount).Take(pageSize);
+
+            return (await query.ToListAsync(), total, remaining);
+        }
         #endregion
     }
 }
