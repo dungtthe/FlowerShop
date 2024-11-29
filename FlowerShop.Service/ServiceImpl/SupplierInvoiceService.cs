@@ -61,13 +61,13 @@ namespace FlowerShop.Service.ServiceImpl
 
 		public async Task<ICollection<SupplierInvoiceDetail>> ChiTietHoaDonNhap(int id)
 		{
-			var supplierInvoiceDetailList = await _supplierInvoiceDetailRepository.GetAllWithIncludeAsync(s => s.ProductItem, p => p.SupplierInvoice);
-			var supplierInvoiceDetail = supplierInvoiceDetailList.Where(s => s.SupplierInvoiceId == id).ToList();
-			if (supplierInvoiceDetail.Count == 0)
+			var supplierInvoiceDetailList = await _supplierInvoiceDetailRepository.GetAllWithIncludeAsync(s => s.ProductItem);
+			var supplierInvoiceDetail = supplierInvoiceDetailList.Where(s => s.SupplierInvoiceId == id);
+			if (supplierInvoiceDetail == null)
 			{
 				return new List<SupplierInvoiceDetail>();
 			}
-			return supplierInvoiceDetail;
+			return supplierInvoiceDetail.ToList();
 		}
 
 		public async Task<ICollection<SupplierInvoice>> GetCancelledSupplierInvoice()

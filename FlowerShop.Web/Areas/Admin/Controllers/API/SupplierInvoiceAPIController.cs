@@ -1,5 +1,6 @@
 ﻿using FlowerShop.Common.Helpers;
 using FlowerShop.DataAccess;
+using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Service.ServiceImpl;
 using FlowerShop.Web.ViewModels;
@@ -54,6 +55,23 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 			}
 			await _supplierInvoiceService.HuyDonNhap(id ?? -1, reason ?? "");
 			return Ok(new { message = "Đơn nhập hàng đã hủy thành công!" });
+		}
+
+		[HttpGet("chi-tiet-don-nhap/{id}")]
+		public async Task<IActionResult> ChiTietDonNhap(int id)
+		{
+			if (id <= 0)
+			{
+				return BadRequest(new { message = "Không tìm thấy đơn nhập" });
+			}
+
+			var supplierInvoiceDetail = await _supplierInvoiceService.ChiTietHoaDonNhap(id);
+			if (supplierInvoiceDetail == null || !supplierInvoiceDetail.Any())
+			{
+				return NotFound(new { message = "Không tìm thấy chi tiết đơn nhập" });
+			}
+
+			return Ok(supplierInvoiceDetail.ToList());
 		}
 	}
 }
