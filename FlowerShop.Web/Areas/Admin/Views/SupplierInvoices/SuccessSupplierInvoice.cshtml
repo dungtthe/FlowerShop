@@ -18,7 +18,7 @@
 <table class="table">
 	<thead>
 		<tr>
-			<th>
+			<th style="width:144px">
 				Mã đơn hàng
 			</th>
 			<th>
@@ -42,8 +42,8 @@
 			{
 				tongTien = ((Dictionary<int, float>)ViewData["InvoiceTotals"])[item.Id];
 			}
-			<tr>
-				<td>
+			<tr id="hoadon-row-@item.Id" ondblclick="ShowOrderDetails(@item.Id)">
+				<td class="text-center" style="padding-right:60px">
 					@Html.DisplayFor(modelItem => item.Id)
 				</td>
 				<td>

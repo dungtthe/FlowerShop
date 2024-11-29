@@ -1,4 +1,5 @@
-﻿using FlowerShop.DataAccess.Models;
+﻿using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,11 @@ namespace FlowerShop.Service
 		Task<ICollection<SupplierInvoiceDetail>> ChiTietHoaDonNhap(int id);
 
 		Task<float> GetTongTien(int id);
+
+		Task<PopupViewModel> XacNhanDonNhap(int id);
+
+		Task<PopupViewModel> HuyDonNhap(int id, string reason);
+
+		Task XuLyDonNhapSauKhiXacNhan(int id);
 	}
 }

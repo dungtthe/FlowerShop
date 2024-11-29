@@ -43,8 +43,8 @@
 			{
 				tongTien = ((Dictionary<int, float>)ViewData["InvoiceTotals"])[item.Id];
 			}
-			<tr>
-				<td>
+			<tr id="hoadon-row-@item.Id" ondblclick="ShowOrderDetails(@item.Id)">
+				<td class="text-center" style="padding-right:70px">
 					@Html.DisplayFor(modelItem => item.Id)
 				</td>
 				<td>
@@ -56,23 +56,23 @@
 				<td>
 					@string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C}", tongTien)
 				</td>
-				<td>
+				<td class="text-center">
 					<!-- Nút xác nhận -->
 					<button onclick="ConfirmInvoiceById(@item.Id)"
 							class="btn btn-success btn-sm"
 							data-toggle="tooltip"
 							style="width: 95px;"
-							title="Xác nhận đơn hàng">
+							title="Xác nhận đơn nhập">
 						<i class="fa-solid fa-check"></i> Xác nhận
 					</button>
 					<!-- Khoảng cách giữa các nút -->
 					<span style="margin: 0 5px;"></span>
-					<!-- Nút húy hóa đơn -->
-					<button onclick="CancelInvoiceById(@item.Id)"
+					<!-- Nút húy  -->
+					<button onclick="Fail(@item.Id)"
 							class="btn btn-danger btn-sm"
 							data-toggle="tooltip"
 							style="width: 95px;"
-							title="Hủy đơn hàng">
+							title="Hủy đơn nhập">
 						<i class="fa-solid fa-trash"></i> Hủy
 					</button>
 				</td>
@@ -80,3 +80,73 @@
 		}
 	</tbody>
 </table>
+@await Html.PartialAsync("_CancelOrderBox")
+
+<script>
+	// Hoàn tất đơn nhập hàng
+	const ConfirmInvoiceById = (id) => {
+		showConfirm("Đơn nhập hàng này đã hoàn tất?", () => {
+			const reqData = { id: id };
+			fetchPost('/api/admin/quan-li-don-nhap/xac-nhan', reqData,
+				(response) => {
+					// Xóa dòng trong bảng
+					const row = document.getElementById('hoadon-row-' + id);
+					if (row) {
+						row.remove();
+					}
+					setTimeout(() => {
+						showSuccess(response.message);
+					}, 500);
+
+				},
+				(response) => {
+					showError(response.message);
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+			);
+		});
+	};
+
+	//Hủy đơn nhập hàng
+	let currentOrderIdToCancel = null;
+	const Fail = (id) => {
+		// Lưu mã đơn hàng vào biến toàn cục
+		currentOrderIdToCancel = id;
+		document.getElementById('cancelOrderModalLabel').innerText = "Nhập lý do hủy đơn nhập";
+		document.getElementById('cancelReason').placeholder = "Lý do hủy..."
+		// Hiển thị modal yêu cầu nhập lý do hủy
+		$('#cancelOrderModal').modal('show');
+	};
+	const submitCancelOrder = () => {
+		const cancelReason = document.getElementById("cancelReason").value.trim();
+
+		if (!cancelReason) {
+			showError("Bạn phải nhập lý hủy đơn nhập.");
+			return;
+		}
+
+		const reqData = { id: currentOrderIdToCancel, reason: cancelReason };
+
+		fetchPost('/api/admin/quan-li-don-nhap/huy', reqData,
+			(response) => {
+				const row = document.getElementById('hoadon-row-' + currentOrderIdToCancel);
+				if (row) {
+					row.remove();
+				}
+				$('#cancelOrderModal').modal('hide');
+				setTimeout(() => {
+					showSuccess(response.message);
+				}, 500);
+			},
+			(response) => {
+				showError(response.message);
+			},
+			() => {
+				showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+			}
+		);
+	};
+
+</script>

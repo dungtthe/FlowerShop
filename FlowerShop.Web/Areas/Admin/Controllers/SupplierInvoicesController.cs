@@ -12,7 +12,7 @@ using FlowerShop.Service;
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-	[Route("admin/quan-ly-hoa-don-nhap")]
+	[Route("admin/quan-ly-don-nhap")]
 	public class SupplierInvoicesController : Controller
 	{
 		private readonly FlowerShopContext _context;

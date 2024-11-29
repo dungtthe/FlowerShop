@@ -1,4 +1,5 @@
 ﻿using FlowerShop.Common.MyConst;
+using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
@@ -91,6 +92,41 @@ namespace FlowerShop.Service.ServiceImpl
 					result.Add(item);
 			}
 			return result.ToList();
+		}
+
+		public async Task<PopupViewModel> XacNhanDonNhap(int id)
+		{
+			var invoice = await _supplierInvoiceRepository.GetSingleByIdAsync(id);
+			if (invoice == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			invoice.Status = ConstStatusSupplierInvoice.HOAN_TAT;
+			await XuLyDonNhapSauKhiXacNhan(id);
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn nhập hàng đã được xác nhận");
+		}
+
+		public async Task<PopupViewModel> HuyDonNhap(int id, string reason)
+		{
+			var invoice = await _supplierInvoiceRepository.GetSingleByIdAsync(id);
+			if (invoice == null)
+			{
+				return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
+			}
+			invoice.Status = ConstStatusSupplierInvoice.DA_HUY;
+			invoice.Note = reason;
+			await _unitOfWork.Commit();
+			return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đơn nhập hàng đã được hủy");
+		}
+
+		public async Task XuLyDonNhapSauKhiXacNhan(int id)
+		{
+			var chiTietDonNhapList = await ChiTietHoaDonNhap(id);
+			foreach (var item in chiTietDonNhapList)
+			{
+				item.ProductItem.Quantity += item.Quantity;
+			}
 		}
 	}
 }
