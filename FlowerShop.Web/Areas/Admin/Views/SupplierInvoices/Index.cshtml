@@ -1,0 +1,82 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SupplierInvoice>
+
+@{
+	ViewData["Title"] = "Hóa đơn nhập chờ xác nhận";
+}
+<style>
+	tbody tr {
+		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
+	}
+
+		tbody tr:hover {
+			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
+		}
+</style>
+
+<h1>Danh sách hóa đơn nhập hàng chờ xác nhận</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Mã đơn hàng
+			</th>
+			<th>
+				Tên nhà cung cấp
+			</th>
+			<th>
+				Ngày khởi tạo
+			</th>
+			<th>
+				Tổng tiền
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			// Lấy tổng tiền cho từng hóa đơn nhập
+			// Lấy tổng tiền từ ViewData theo mã hóa đơn
+			float tongTien = 0;
+			if (ViewData["InvoiceTotals"] != null && ((Dictionary<int, float>)ViewData["InvoiceTotals"]).ContainsKey(item.Id))
+			{
+				tongTien = ((Dictionary<int, float>)ViewData["InvoiceTotals"])[item.Id];
+			}
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Supplier.CompanyName)
+				</td>
+				<td>
+					@item.CreateDay.ToString("dd/MM/yyyy")
+				</td>
+				<td>
+					@string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C}", tongTien)
+				</td>
+				<td>
+					<!-- Nút xác nhận -->
+					<button onclick="ConfirmInvoiceById(@item.Id)"
+							class="btn btn-success btn-sm"
+							data-toggle="tooltip"
+							style="width: 95px;"
+							title="Xác nhận đơn hàng">
+						<i class="fa-solid fa-check"></i> Xác nhận
+					</button>
+					<!-- Khoảng cách giữa các nút -->
+					<span style="margin: 0 5px;"></span>
+					<!-- Nút húy hóa đơn -->
+					<button onclick="CancelInvoiceById(@item.Id)"
+							class="btn btn-danger btn-sm"
+							data-toggle="tooltip"
+							style="width: 95px;"
+							title="Hủy đơn hàng">
+						<i class="fa-solid fa-trash"></i> Hủy
+					</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

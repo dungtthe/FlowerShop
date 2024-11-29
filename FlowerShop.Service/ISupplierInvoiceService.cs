@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 
 namespace FlowerShop.Service
 {
-	public interface ISupplierInvoice
+	public interface ISupplierInvoiceService
 	{
+		Task<SupplierInvoice> GetSingleById(int id);
+
 		Task<ICollection<SupplierInvoice>> GetSuppliersInvoiceAsync();
 
-		Task<SupplierInvoice> GetSingleById(int id);
+		Task<ICollection<SupplierInvoiceDetail>> ChiTietHoaDonNhap(int id);
+
+		Task<float> GetTongTien(int id);
 	}
 }
