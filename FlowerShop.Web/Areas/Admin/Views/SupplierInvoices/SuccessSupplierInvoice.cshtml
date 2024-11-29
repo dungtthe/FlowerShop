@@ -1,0 +1,61 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SupplierInvoice>
+
+@{
+	ViewData["Title"] = "Hóa đơn nhập đã hoàn ất";
+}
+<style>
+	tbody tr {
+		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
+	}
+
+		tbody tr:hover {
+			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
+		}
+</style>
+
+<h1>Danh sách hóa đơn nhập hoàn tất</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Mã đơn hàng
+			</th>
+			<th>
+				Tên nhà cung cấp
+			</th>
+			<th>
+				Ngày khởi tạo
+			</th>
+			<th>
+				Tổng tiền
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			// Lấy tổng tiền cho từng hóa đơn nhập
+			// Lấy tổng tiền từ ViewData theo mã hóa đơn
+			float tongTien = 0;
+			if (ViewData["InvoiceTotals"] != null && ((Dictionary<int, float>)ViewData["InvoiceTotals"]).ContainsKey(item.Id))
+			{
+				tongTien = ((Dictionary<int, float>)ViewData["InvoiceTotals"])[item.Id];
+			}
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Supplier.CompanyName)
+				</td>
+				<td>
+					@item.CreateDay.ToString("dd/MM/yyyy")
+				</td>
+				<td>
+					@string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C}", tongTien)
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

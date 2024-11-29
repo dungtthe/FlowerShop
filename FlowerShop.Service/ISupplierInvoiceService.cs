@@ -13,6 +13,10 @@ namespace FlowerShop.Service
 
 		Task<ICollection<SupplierInvoice>> GetSuppliersInvoiceAsync();
 
+		Task<ICollection<SupplierInvoice>> GetCancelledSupplierInvoice();
+
+		Task<ICollection<SupplierInvoice>> GetSuccessSupplierInvoice();
+
 		Task<ICollection<SupplierInvoiceDetail>> ChiTietHoaDonNhap(int id);
 
 		Task<float> GetTongTien(int id);

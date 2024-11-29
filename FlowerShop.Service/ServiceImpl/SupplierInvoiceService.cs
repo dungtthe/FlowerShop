@@ -68,5 +68,29 @@ namespace FlowerShop.Service.ServiceImpl
 			}
 			return supplierInvoiceDetail;
 		}
+
+		public async Task<ICollection<SupplierInvoice>> GetCancelledSupplierInvoice()
+		{
+			var supplierInvoiceListTemp = await _supplierInvoiceRepository.GetAllWithIncludeAsync(s => s.Supplier, c => c.SupplierInvoiceDetails);
+			var result = new List<SupplierInvoice>();
+			foreach (var item in supplierInvoiceListTemp)
+			{
+				if (item.Status == ConstStatusSupplierInvoice.DA_HUY)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<ICollection<SupplierInvoice>> GetSuccessSupplierInvoice()
+		{
+			var supplierInvoiceListTemp = await _supplierInvoiceRepository.GetAllWithIncludeAsync(s => s.Supplier, c => c.SupplierInvoiceDetails);
+			var result = new List<SupplierInvoice>();
+			foreach (var item in supplierInvoiceListTemp)
+			{
+				if (item.Status == ConstStatusSupplierInvoice.HOAN_TAT)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
 	}
 }

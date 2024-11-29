@@ -12,7 +12,7 @@ using FlowerShop.Service;
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-	[Route("admin/quan-hoa-don-nhap")]
+	[Route("admin/quan-ly-hoa-don-nhap")]
 	public class SupplierInvoicesController : Controller
 	{
 		private readonly FlowerShopContext _context;
@@ -28,6 +28,44 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var supplierInvoices = await _supplierInvoiceService.GetSuppliersInvoiceAsync();
+
+			var invoiceTotals = new Dictionary<int, float>();
+
+			foreach (var invoice in supplierInvoices)
+			{
+				// Tính tổng tiền cho từng hóa đơn
+				var totalAmount = await _supplierInvoiceService.GetTongTien(invoice.Id);
+				invoiceTotals[invoice.Id] = totalAmount;
+			}
+
+			ViewData["InvoiceTotals"] = invoiceTotals;
+
+			return View(supplierInvoices);
+		}
+
+		[HttpGet("hoa-don-nhap-da-huy")]
+		public async Task<IActionResult> CancelledSupplierInvoice()
+		{
+			var supplierInvoices = await _supplierInvoiceService.GetCancelledSupplierInvoice();
+
+			var invoiceTotals = new Dictionary<int, float>();
+
+			foreach (var invoice in supplierInvoices)
+			{
+				// Tính tổng tiền cho từng hóa đơn
+				var totalAmount = await _supplierInvoiceService.GetTongTien(invoice.Id);
+				invoiceTotals[invoice.Id] = totalAmount;
+			}
+
+			ViewData["InvoiceTotals"] = invoiceTotals;
+
+			return View(supplierInvoices);
+		}
+
+		[HttpGet("hoa-don-nhap-nhap-thanh-cong")]
+		public async Task<IActionResult> SuccessSupplierInvoice()
+		{
+			var supplierInvoices = await _supplierInvoiceService.GetSuccessSupplierInvoice();
 
 			var invoiceTotals = new Dictionary<int, float>();
 
