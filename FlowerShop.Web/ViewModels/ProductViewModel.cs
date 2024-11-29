@@ -32,9 +32,9 @@ namespace FlowerShop.Web.ViewModels
 
         public bool IsDelete { get; set; }
 
-        ICollection<ProductPrice>? ProductPrices { get; set; }
-        ICollection<ProductProductItem>? ProductProductItems { get; set; }
-        ICollection<ProductCategory>? ProductCategories { get; set; }
+        public ICollection<ProductPrice>? ProductPrices { get; set; }
+        public ICollection<ProductProductItem>? ProductProductItems { get; set; }
+        public ICollection<ProductCategory>? ProductCategories { get; set; }
     }
 
 
@@ -117,7 +117,7 @@ namespace FlowerShop.Web.ViewModels
         public int PackagingId { get; set; }
         [DisplayName("Danh mục thuộc về")]
         public List<CategoryViewModel>? Categories { get; set; }
-        public List<int>? CategoriesId {  get; set; }
+        public List<int>? CategoriesId { get; set; }
 
         public List<ProductItemViewModel>? ProductsItemInProduct { get; set; }
         public List<ProductItemViewModel>? ProductsItemInStock { get; set; }

@@ -31,8 +31,6 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
                 // return RedirectToAction("Index", "Home", new { area = "ADMIN" });
 
                 var products = await _productService.GetProductsForIndexInCustomerAsync();
-                var categories = await _categoryService.GetAllCategoriesWithHierarchy();
-                ViewBag.Categories = categories;
                 ViewBag.products= products;
                 return View();
             }

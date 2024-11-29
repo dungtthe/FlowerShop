@@ -1,36 +1,42 @@
-﻿@model FlowerShop.Web.ViewModels.ProductViewModel
+﻿@model FlowerShop.DataAccess.Models.Product;
 @using Newtonsoft.Json;
-
+@using FlowerShop.Common.Helpers;
 
 @{
     string[] listImgInProduct = Model.Images != null
-         ? JsonConvert.DeserializeObject<string[]>(Model.Images)
-         : new string[] { "no_img.png" };
+    ? JsonConvert.DeserializeObject<string[]>(Model.Images)
+    : new string[] { "no_img.png" };
     var firstImg = listImgInProduct[0];
+
+    var productPrices = Model.ProductPrices.OrderBy(p => p.Priority).ToList();
+    var priceDefault = (productPrices.Where(p => p.StartDate == null && p.EndDate == null).First()).Price;
+    var priceSale = productPrices[0].Price;
+
+    var flag = false;
 }
-
-<div class="col-md-6 col-lg-4 col-xl-3 d-flex">
-
-    <div class="rounded position-relative fruite-item d-flex flex-column">
-        <div class="fruite-img">
-            <img src="@Url.Content("~/images/products/" + firstImg)" class="img-fluid w-100 rounded-top" alt="">
+<div class="box-product col-custom">
+    <div class="inner-wrap">
+        <div class="inner-image">
+            @if (priceDefault > priceSale)
+            {
+                <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                    SALE
+                </div>
+                flag = true;
+            }
+            <img src="@Url.Content("~/images/products/" + firstImg)" alt="ảnh sản phẩm">
+            <div class="inner-icon">
+                <i class="bi bi-cart-plus"></i>
+            </div>
         </div>
-        <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-             style="top: 10px; left: 10px;">
-            SALE
-        </div>
-        <div class="p-4 border border-secondary border-top-0 rounded-bottom flex-grow-1 text-center">
-            <!-- title -->
-            <h4>@Model.Title</h4>
-            <!-- desc -->
-            <p>
-                @Model.Description
-            </p>
-            <div class="d-flex justify-content-center align-items-center">
-                <!-- Giá cũ -->
-                <p class="text-dark fs-6 text-decoration-line-through mb-0 me-3">120.000 VNĐ</p>
-                <!-- Giá mới -->
-                <p class="text-danger fs-5 fw-bold mb-0">100.000 VNĐ</p>
+        <div class="inner-content">
+            <h3 class="inner-title">@Model.Title</h3>
+            <div class="inner-price">
+                @if (flag)
+                {
+                    <p class="price-old">@Converter.ConvertToVietnameseDong(priceDefault)</p>
+                }
+                <p class="price-current">@Converter.ConvertToVietnameseDong(priceSale)</p>
             </div>
         </div>
     </div>

@@ -1,0 +1,9 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.Category>
+
+@if (Model != null)
+{
+    foreach (var category in Model)
+    {
+        @await Html.PartialAsync("_CategoryItem", category)
+    }
+}
