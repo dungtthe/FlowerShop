@@ -1,40 +1,20 @@
 ﻿USE [FlowerShopDB];
 
--- 1. Insert data for [Roles]
-INSERT INTO [dbo].[Roles] (Id, Name, NormalizedName, ConcurrencyStamp)
-VALUES 
-('1', 'Admin', 'ADMIN', NEWID()),
-('2', 'Customer', 'CUSTOMER', NEWID()),
-('3', 'Staff', 'STAFF', NEWID()),
-('4', 'Supplier', 'SUPPLIER', NEWID()),
-('5', 'Guest', 'GUEST', NEWID());
-
--- 2. Insert data for [Carts]
-INSERT INTO [dbo].[Carts] DEFAULT VALUES;
-INSERT INTO [dbo].[Carts] DEFAULT VALUES;
-INSERT INTO [dbo].[Carts] DEFAULT VALUES;
-INSERT INTO [dbo].[Carts] DEFAULT VALUES;
-INSERT INTO [dbo].[Carts] DEFAULT VALUES;
-
 -- 3. Insert data for [Packaging]
-INSERT INTO [dbo].[Packaging] (Name, Description, IsDelete)
+INSERT INTO Packaging (Name, Description,IsDelete)
 VALUES 
-('Standard Wrap', 'Standard flower wrap', 0),
-('Gift Wrap', 'Gift wrap for special occasions', 0),
-('Box', 'Box packaging', 0),
-('Luxury Wrap', 'Luxury wrap for premium gifts', 0),
-('Eco-Friendly Wrap', 'Environmentally friendly wrap', 0);
+(N'Bó', N'Hoa được bó đẹp với giấy gói cao cấp, phù hợp tặng sinh nhật, kỷ niệm',0),
+(N'Giỏ', N'Hoa được cắm trong giỏ mây, thích hợp cho các dịp khai trương, tân gia',0),
+(N'Bình', N'Hoa được cắm trong bình thủy tinh, phù hợp để bàn, trang trí nhà',0),
+(N'Hộp', N'Hoa được xếp trong hộp thiết kế sang trọng, là món quà tặng độc đáo',0),
+(N'Lẵng', N'Hoa được cắm trong lẵng lớn, thích hợp cho các dịp chúc mừng, sự kiện',0),
+(N'Hộp Gỗ', N'Hộp gỗ tự nhiên được thiết kế tinh tế, độc đáo',0),
+(N'Giỏ Mây Đan', N'Giỏ mây thủ công với kiểu đan độc đáo',0),
+(N'Hộp Nhung', N'Hộp nhung sang trọng, phù hợp cho hoa cao cấp',0);
 
--- 4. Insert data for [PaymentMethods]
-INSERT INTO [dbo].[PaymentMethods] (Name, Description, Price, Status, IsDelete)
-VALUES 
-('Credit Card', 'Payment via credit card', 0, 1, 0),
-('PayPal', 'Payment via PayPal', 0, 1, 0),
-('Bank Transfer', 'Payment via bank transfer', 0, 1, 0),
-('Cash', 'Payment in cash', 0, 1, 0),
-('Gift Card', 'Payment via gift card', 0, 1, 0);
+-- Insert data for [Categories]
 
--- 5. Insert data for [Categories]
+-- Danh mục để bán
 -- Thêm danh mục cha
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'CHỦ ĐỀ', NULL, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'ĐỐI TƯỢNG', NULL, 1);
@@ -43,6 +23,7 @@ INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'HOA T�
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'MÀU SẮC', NULL, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'BỘ SƯU TẬP', NULL, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'QUÀ TẶNG KÈM', NULL, 1);
+
 -- chủ đề
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Sinh Nhật', 1, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hoa Khai Trương', 1, 1);
@@ -116,68 +97,479 @@ INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Ngày 
 
 
 -- quà tặng kèm
-INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bánh Kem Tous Les Jours', 7, 1);
-INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bánh Kem Brodard', 7, 1);
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bánh Kem', 7, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Chocolate', 7, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Trái Cây', 7, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Gấu Bông', 7, 1);
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Nến Thơm', 7, 1);
-INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Hamper', 7, 1);
 
 
+-- danh mục trong kho, productitem
+-- HOA HỒNG
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete) 
+VALUES (N'HOA HỒNG', NULL, 0, 0);
+DECLARE @HoaHongId INT = SCOPE_IDENTITY();
 
-
--- 6. Insert data for [Users]
-INSERT INTO [dbo].[Users] (Id, FullName, BirthDay, IsLock, IsDelete, CartId, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount)
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description,IsDelete)
 VALUES 
-('101', 'John Doe', '1990-01-01',  0, 0, 1, 'johndoe', 'JOHNDOE', 'john@example.com', 'JOHN@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('102', 'Jane Smith', '1992-02-02', 0, 0, 2, 'janesmith', 'JANESMITH', 'jane@example.com', 'JANE@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('103', 'Alice Johnson', '1985-03-03',  0, 0, 3, 'alicejohnson', 'ALICEJOHNSON', 'alice@example.com', 'ALICE@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('104', 'Bob Brown', '1978-04-04',  0, 0, 4, 'bobbrown', 'BOBBROWN', 'bob@example.com', 'BOB@EXAMPLE.COM', 1, 1, 0, 0, 0),
-('105', 'Charlie Green', '1995-05-05',  0, 0, 5, 'charliegreen', 'CHARLIEGREEN', 'charlie@example.com', 'CHARLIE@EXAMPLE.COM', 1, 1, 0, 0, 0);
+(N'Hoa Hồng Đỏ', 15000, @HoaHongId, 100, N'Hoa hồng đỏ tươi - Biểu tượng của tình yêu',0),
+(N'Hoa Hồng Trắng', 20000, @HoaHongId, 100, N'Hoa hồng trắng tinh khôi - Tượng trưng cho sự thuần khiết',0),
+(N'Hoa Hồng Cam', 18000, @HoaHongId, 100, N'Hoa hồng cam rực rỡ - Màu của nhiệt huyết',0),
+(N'Hoa Hồng Phấn', 20000, @HoaHongId, 100, N'Hoa hồng phấn nhẹ nhàng - Vẻ đẹp dịu dàng',0),
+(N'Hoa Hồng Vàng', 17000, @HoaHongId, 100, N'Hoa hồng vàng tươi sáng - Màu của sự thịnh vượng',0),
+(N'Hoa Hồng Ecuador', 35000, @HoaHongId, 100, N'Hoa hồng Ecuador size đại - Sang trọng và độc đáo',0),
+(N'Hoa Hồng Sapphire', 30000, @HoaHongId, 50, N'Hoa hồng xanh sapphire - Quý hiếm và đặc biệt',0),
+(N'Hoa Hồng Tím Pastel', 22000, @HoaHongId, 100, N'Hoa hồng tím nhạt - Vẻ đẹp lãng mạn',0),
+(N'Hoa Hồng Juliet', 28000, @HoaHongId, 80, N'Hoa hồng juliet - Màu cam đào quyến rũ',0),
+(N'Hoa Hồng Ohara', 25000, @HoaHongId, 80, N'Hoa hồng ohara garden - Phong cách cổ điển',0),
+(N'Hồng Trà', 16000, @HoaHongId, 100, N'Hoa hồng nâu đỏ - Hương thơm đặc trưng',0),
+(N'Hồng Cabbage', 23000, @HoaHongId, 70, N'Hoa hồng bắp cải - Cánh hoa xếp lớp độc đáo',0);
 
--- 7. Insert data for [Addresses]
-INSERT INTO [dbo].[Addresses] (Description, Phone, IsDelete, AppUserId)
+-- HOA LAN
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete) 
+VALUES (N'HOA LAN', NULL, 0, 0);
+DECLARE @HoaLanId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description,IsDelete)
 VALUES 
-('123 Main St, City A', '123-456-7890', 0, '101'),
-('456 Oak St, City B', '234-567-8901', 0, '102'),
-('789 Pine St, City C', '345-678-9012', 0, '103'),
-('101 Maple St, City D', '456-789-0123', 0, '104'),
-('202 Birch St, City E', '567-890-1234', 0, '105');
+(N'Lan Hồ Điệp Trắng', 100000, @HoaLanId, 50, N'Lan hồ điệp trắng - Sang trọng và quý phái',0),
+(N'Lan Hồ Điệp Tím', 120000, @HoaLanId, 50, N'Lan hồ điệp tím - Màu sắc hoàng gia',0),
+(N'Lan Hồ Điệp Hồng', 110000, @HoaLanId, 50, N'Lan hồ điệp hồng - Nhẹ nhàng và tinh tế',0),
+(N'Lan Mokara Đỏ', 80000, @HoaLanId, 50, N'Lan mokara đỏ - Màu sắc nổi bật',0),
+(N'Lan Mokara Vàng', 85000, @HoaLanId, 50, N'Lan mokara vàng - Tươi sáng',0),
+(N'Lan Vũ Nữ', 150000, @HoaLanId, 30, N'Lan vũ nữ - Quý phái và kiêu sa',0),
+(N'Lan Dendro Berry', 90000, @HoaLanId, 40, N'Lan dendro berry - Màu tím mộng mơ',0),
+(N'Lan Phi Điệp Tím', 200000, @HoaLanId, 20, N'Lan phi điệp tím - Đặc biệt quý hiếm',0),
+(N'Lan Ngọc Điểm', 180000, @HoaLanId, 25, N'Lan ngọc điểm - Nhỏ xinh và thanh tao',0),
+(N'Lan Cattleya', 160000, @HoaLanId, 30, N'Lan cattleya - Màu sắc rực rỡ',0);
 
+-- HOA HƯỚNG DƯƠNG
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete) 
+VALUES (N'HOA HƯỚNG DƯƠNG', NULL, 0, 0);
+DECLARE @HuongDuongId INT = SCOPE_IDENTITY();
 
--- 9. Insert data for [ProductItems] (Phụ thuộc vào Categories)
-INSERT INTO [dbo].[ProductItems] (Name, ImportPrice, CategoryId, Description, IsDelete,Quantity)
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
 VALUES 
-('Single Rose', 5, 3, 'A single red rose', 0,99),
-('Single Tulip', 4, 4,  'A single tulip', 0,3232),
-('Dark Chocolate', 10, 5, 'Dark chocolate piece', 0,54354),
-('Milk Chocolate', 8, 5,  'Milk chocolate piece', 0,43),
-('Orchid Plant', 20, 1,  'Single orchid plant', 0,3);
+(N'Hướng Dương Vàng Lớn', 25000, @HuongDuongId, 100, N'Hoa hướng dương vàng size lớn - Rực rỡ',0),
+(N'Hướng Dương Vàng Nhỏ', 15000, @HuongDuongId, 150, N'Hoa hướng dương vàng size nhỏ - Xinh xắn',0),
+(N'Hướng Dương Cam', 28000, @HuongDuongId, 80, N'Hoa hướng dương màu cam - Độc đáo',0),
+(N'Hướng Dương Đỏ', 30000, @HuongDuongId, 70, N'Hoa hướng dương đỏ - Hiếm có',0),
+(N'Hướng Dương Teddy', 35000, @HuongDuongId, 60, N'Hoa hướng dương teddy - Nhỏ xinh đáng yêu',0);
 
--- 10. Insert data for [CartDetails] (Phụ thuộc vào Products và Carts đã có)
-INSERT INTO [dbo].[CartDetails] (CartId, ProductId, Quantity)
-VALUES 
-(1, 1, 2),
-(2, 2, 1),
-(3, 3, 3),
-(4, 4, 1),
-(5, 5, 2);
+-- HOA CÚC
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete) 
+VALUES (N'HOA CÚC', NULL, 0, 0);
+DECLARE @HoaCucId INT = SCOPE_IDENTITY();
 
--- 11. Insert data for [SaleInvoices] (Phụ thuộc vào Users và PaymentMethods)
-INSERT INTO [dbo].[SaleInvoices] (CreateDay, CustomerId, PaymentMethodId, Status, IsDelete)
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
 VALUES 
-(GETDATE(), '101', 1, 1, 0),
-(GETDATE(), '102', 2, 1, 0),
-(GETDATE(), '103', 3, 1, 0),
-(GETDATE(), '104', 4, 1, 0),
-(GETDATE(), '105', 5, 1, 0);
+(N'Cúc Họa Mi', 12000, @HoaCucId, 200, N'Cúc họa mi - Tinh khôi và thanh tao',0),
+(N'Cúc Mẫu Đơn', 18000, @HoaCucId, 150, N'Cúc mẫu đơn - Sang trọng và quý phái',0),
+(N'Cúc Ping Pong', 10000, @HoaCucId, 200, N'Cúc ping pong - Nhỏ xinh tròn trĩnh',0),
+(N'Cúc Đại Đóa', 20000, @HoaCucId, 100, N'Cúc đại đóa - To và rực rỡ',0),
+(N'Cúc Calimero', 15000, @HoaCucId, 150, N'Cúc calimero - Nhỏ nhắn đáng yêu',0),
+(N'Cúc Rossi', 16000, @HoaCucId, 120, N'Cúc rossi - Màu hồng phấn nhẹ nhàng',0),
+(N'Cúc Vàng', 12000, @HoaCucId, 200, N'Cúc vàng - Truyền thống và phổ biến',0);
 
--- 12. Insert data for [SaleInvoiceDetails] (Phụ thuộc vào SaleInvoices và Products)
-INSERT INTO [dbo].[SaleInvoiceDetails] (SaleInvoiceId, ProductId, Quantity, UnitPrice, IsDelete)
+
+
+-- Thêm Products
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) 
+VALUES
+-- 1. Bó hoa hồng đỏ tình yêu
+(N'Love Of Rose', 
+N'Bó hoa hồng đỏ Ecuador 30 bông - Biểu tượng của tình yêu mãnh liệt',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/11590_luxury-bloom.jpg",
+  "https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/11590_luxury-bloom-2.jpg",
+  "https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/11590_luxury-bloom-3.jpg",
+  "no_img.png"]',
+1, -- Bó
+0),
+
+-- 2. Bó hoa sinh nhật mix
+(N'Happy Birthday Bloom',
+N'Bó hoa sinh nhật kết hợp hồng và hướng dương - Tươi vui và rực rỡ',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/12479_rising-sun.jpg",
+  "https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/12479_rising-sun-2.jpg",
+  "no_img.png"]',
+1, -- Bó
+0),
+
+-- 3. Bó hoa cao cấp
+(N'Premium Love',
+N'Bó hoa hồng cao cấp 40 bông kết hợp các loại hoa nhập khẩu',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/13308_premium-blend.jpg",
+  "https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/13308_premium-blend-2.jpg",
+  "no_img.png"]',
+1, -- Bó
+0)
+-- Tiếp tục thêm các sản phẩm khác...
+
+-- Thêm ProductPrices
+INSERT INTO ProductPrices (ProductId, Price, Priority, StartDate, EndDate, IsDelete)
+VALUES
+(1, 750000, 1, NULL, NULL, 0),
+(2, 650000, 1, NULL, NULL, 0),
+(3, 1200000, 1, NULL, NULL, 0);
+
+-- Thêm ProductCategories
+INSERT INTO ProductCategories (ProductId, CategoryId, IsDelete)
+VALUES
+-- Love Of Rose
+(1, 14, 0), -- Hoa Tình Yêu
+(1, 16, 0), -- Hoa Tặng Người Yêu
+(1, 27, 0), -- Bó Hoa Tươi
+(1, 30, 0), -- Hoa Hồng
+(1, 39, 0), -- Màu Đỏ
+(1, 46, 0), -- Hoa Cao Cấp
+
+-- Happy Birthday Bloom
+(2, 8, 0),  -- Hoa Sinh Nhật
+(2, 27, 0), -- Bó Hoa Tươi
+(2, 31, 0), -- Hoa Hướng Dương
+(2, 45, 0), -- Kết Hợp Màu
+(2, 47, 0), -- Hoa Sinh Viên
+
+-- Premium Love
+(3, 14, 0), -- Hoa Tình Yêu
+(3, 27, 0), -- Bó Hoa Tươi
+(3, 30, 0), -- Hoa Hồng
+(3, 46, 0); -- Hoa Cao Cấp
+
+-- Thêm ProductProductItems
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete)
+VALUES
+-- Love Of Rose
+(1, 6, 30, 0),  -- 30 bông hồng Ecuador
+
+-- Happy Birthday Bloom
+(2, 4, 15, 0),  -- 15 hồng phấn
+(2, 25, 5, 0),  -- 5 hướng dương
+(2, 31, 10, 0), -- 10 cúc calimero
+
+-- Premium Love
+(3, 6, 40, 0),  -- 40 hồng Ecuador
+(3, 2, 10, 0),  -- 10 hồng trắng
+(3, 8, 5, 0);   -- 5 hồng tím pastel
+
+
+-- Thêm Products tiếp
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) 
+VALUES
+-- 4. Giỏ hoa khai trương
+(N'Thành Công', 
+N'Giỏ hoa khai trương sang trọng kết hợp hồng và lan hồ điệp',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/gio-hoa/13398_success-2.jpg",
+ "https://hoayeuthuong.com/hinh-hoa-tuoi/gio-hoa/13398_success-3.jpg",
+ "no_img.png"]',
+2, -- Giỏ
+0),
+
+-- 5. Giỏ hoa sinh nhật
+(N'Happy Day',
+N'Giỏ hoa sinh nhật tươi tắn với hồng, cúc và hướng dương',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/gio-hoa/13391_happy-day.jpg",
+ "https://hoayeuthuong.com/hinh-hoa-tuoi/gio-hoa/13391_happy-day-2.jpg",
+ "no_img.png"]',
+2, -- Giỏ
+0),
+
+-- 6. Hộp hoa cao cấp
+(N'Luxury Box',
+N'Hộp hoa hồng premium với thiết kế sang trọng',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/hop-hoa/13397_elegance-bloom.jpg",
+ "https://hoayeuthuong.com/hinh-hoa-tuoi/hop-hoa/13397_elegance-bloom-2.jpg",
+ "no_img.png"]',
+4, -- Hộp
+0);
+
+-- Thêm ProductPrices
+INSERT INTO ProductPrices (ProductId, Price, Priority, StartDate, EndDate, IsDelete)
+VALUES
+(4, 2500000, 1, NULL, NULL, 0),
+(5, 850000, 1, NULL, NULL, 0),
+(6, 1500000, 1, NULL, NULL, 0);
+
+-- Thêm ProductCategories
+INSERT INTO ProductCategories (ProductId, CategoryId, IsDelete)
+VALUES
+-- Thành Công
+(4, 9, 0),   -- Hoa Khai Trương
+(4, 28, 0),  -- Giỏ Hoa Tươi
+(4, 33, 0),  -- Lan Hồ Điệp
+(4, 46, 0),  -- Hoa Cao Cấp
+(4, 56, 0),  -- Hoa Sự Kiện
+
+-- Happy Day
+(5, 8, 0),   -- Hoa Sinh Nhật
+(5, 28, 0),  -- Giỏ Hoa Tươi
+(5, 30, 0),  -- Hoa Hồng
+(5, 31, 0),  -- Hoa Hướng Dương
+(5, 45, 0),  -- Kết Hợp Màu
+
+-- Luxury Box
+(6, 29, 0),  -- Hộp Hoa Tươi
+(6, 30, 0),  -- Hoa Hồng
+(6, 46, 0);  -- Hoa Cao Cấp
+
+-- Thêm ProductProductItems
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete)
+VALUES
+-- Thành Công
+(4, 6, 24, 0),   -- 24 hồng Ecuador
+(4, 13, 3, 0),   -- 3 lan hồ điệp tím
+(4, 14, 3, 0),   -- 3 lan hồ điệp hồng
+
+-- Happy Day
+(5, 4, 20, 0),   -- 20 hồng phấn
+(5, 25, 3, 0),   -- 3 hướng dương
+(5, 31, 10, 0),  -- 10 cúc calimero
+
+-- Luxury Box
+(6, 6, 36, 0),   -- 36 hồng Ecuador
+(6, 2, 12, 0);   -- 12 hồng trắng
+
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) 
+VALUES
+-- 7. Bó hoa sinh viên
+(N'Sweet Day', 
+N'Bó hoa nhỏ xinh với hướng dương và cúc họa mi, phù hợp sinh viên',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/11569_sunshine.jpg",
+ "https://hoayeuthuong.com/hinh-hoa-tuoi/bo-hoa/11569_sunshine-2.jpg",
+ "no_img.png"]',
+1, 0),
+
+-- 8. Lẵng hoa chúc mừng
+(N'Congratulations', 
+N'Lẵng hoa chúc mừng khai trương hoành tráng với lan và hồng',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/lang-hoa/13372_successful-2.jpg",
+ "https://hoayeuthuong.com/hinh-hoa-tuoi/lang-hoa/13372_successful-3.jpg",
+ "no_img.png"]',
+5, 0),
+
+-- 9. Bình hoa để bàn
+(N'Office Charm',
+N'Bình hoa tươi trang trí văn phòng với cúc và hồng',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/binh-hoa/13266_blushing-room.jpg",
+ "https://hoayeuthuong.com/hinh-hoa-tuoi/binh-hoa/13266_blushing-room-2.jpg",
+ "no_img.png"]',
+3, 0);
+
+INSERT INTO ProductPrices (ProductId, Price, Priority, StartDate, EndDate, IsDelete)
+VALUES
+(7, 350000, 1, NULL, NULL, 0),
+(8, 2800000, 1, NULL, NULL, 0),
+(9, 750000, 1, NULL, NULL, 0);
+
+INSERT INTO ProductCategories (ProductId, CategoryId, IsDelete)
+VALUES
+-- Sweet Day
+(7, 47, 0), -- Hoa Sinh Viên
+(7, 31, 0), -- Hoa Hướng Dương
+(7, 27, 0), -- Bó Hoa Tươi
+(7, 48, 0), -- Mẫu Hoa Mới
+
+-- Congratulations
+(8, 9, 0),  -- Hoa Khai Trương
+(8, 33, 0), -- Lẵng Hoa 
+(8, 46, 0), -- Hoa Cao Cấp
+(8, 45, 0), -- Kết Hợp Màu
+
+-- Office Charm
+(9, 30, 0), -- Bình Hoa Tươi
+(9, 37, 0), -- Hoa Cúc
+(9, 25, 0); -- Hoa Tặng Đồng Nghiệp
+
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete)
+VALUES
+-- Sweet Day
+(7, 25, 3, 0),   -- 3 hướng dương
+(7, 28, 10, 0),  -- 10 cúc họa mi
+
+-- Congratulations  
+(8, 6, 50, 0),   -- 50 hồng Ecuador
+(8, 11, 5, 0),   -- 5 lan hồ điệp trắng
+(8, 13, 5, 0),   -- 5 lan hồ điệp tím
+
+-- Office Charm
+(9, 4, 12, 0),   -- 12 hồng phấn
+(9, 31, 10, 0),  -- 10 cúc calimero
+(9, 33, 5, 0);   -- 5 cúc đại đóa
+
+
+
+-- Thêm danh mục trong kho cho quà tặng 
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
+VALUES (N'QUÀ TẶNG KÈM-KHO', NULL, 0, 0);
+DECLARE @QuaTangKem_KhoId INT = SCOPE_IDENTITY();
+
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
+VALUES (N'BÁNH KEM', @QuaTangKem_KhoId, 0, 0);
+DECLARE @BanhKemId INT = SCOPE_IDENTITY();
+
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
+VALUES (N'CHOCOLATE', @QuaTangKem_KhoId, 0, 0);
+DECLARE @ChocolateId INT = SCOPE_IDENTITY();
+
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
+VALUES (N'GẤU BÔNG', @QuaTangKem_KhoId, 0, 0);
+DECLARE @GauBongId INT = SCOPE_IDENTITY();
+
+-- Thêm ProductItems cho từng loại
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+-- Bánh kem
+(N'Bánh Kem Chocolate', 150000, @BanhKemId, 50, N'Bánh kem socola cao cấp - 20cm', 0);
+DECLARE @BanhKemChocolateId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Bánh Red Velvet', 180000, @BanhKemId, 30, N'Bánh red velvet thơm ngon - 20cm', 0);
+DECLARE @BanhRedVelvetId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Bánh Kem Vanilla', 150000, @BanhKemId, 50, N'Bánh kem vanilla truyền thống - 20cm', 0);
+DECLARE @BanhVanillaId INT = SCOPE_IDENTITY();
+
+-- Chocolate
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
 VALUES 
-(1, 1, 2, 15, 0),
-(2, 2, 1, 10, 0),
-(3, 3, 3, 25, 0),
-(4, 4, 1, 20, 0),
-(5, 5, 2, 30, 0);
+(N'Ferrero Rocher 16 viên', 180000, @ChocolateId, 100, N'Hộp chocolate Ferrero Rocher 16 viên', 0);
+DECLARE @FerreroId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Chocolate Godiva', 350000, @ChocolateId, 50, N'Hộp chocolate Godiva cao cấp', 0);
+DECLARE @GodivaId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Chocolate Lindor', 250000, @ChocolateId, 80, N'Hộp chocolate Lindor thượng hạng', 0);
+DECLARE @LindorId INT = SCOPE_IDENTITY();
+
+-- Gấu bông
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Gấu Teddy 30cm', 120000, @GauBongId, 100, N'Gấu bông teddy màu nâu - 30cm', 0);
+DECLARE @TeddyId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Gấu Love 25cm', 100000, @GauBongId, 100, N'Gấu bông ôm tim Love you - 25cm', 0);
+DECLARE @LoveId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Thỏ Bông 35cm', 150000, @GauBongId, 80, N'Thỏ bông dễ thương - 35cm', 0);
+DECLARE @RabbitId INT = SCOPE_IDENTITY();
+
+-- Sử dụng SCOPE_IDENTITY() để lấy ID tăng dần
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Premium Chocolate Collection',
+N'Bộ sưu tập chocolate cao cấp Godiva và Lindor',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12577_premium-collection.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductId4 INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Bunny Sweet Box',
+N'Set quà thỏ bông xinh xắn và Ferrero Rocher',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12579_bunny-sweet.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductId5 INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Double Love Bears',
+N'Cặp gấu Teddy và Love siêu dễ thương',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12580_love-bears.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductId6 INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Chocolate Paradise',
+N'Combo 3 loại chocolate cao cấp nhất',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12581_choco-paradise.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductId7 INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Sweet Cake Duo',
+N'Bộ đôi bánh kem chocolate và vanilla',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/banh-kem/12582_sweet-duo.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductId8 INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Love Bear Cake Set',
+N'Set quà gấu Love và bánh Red Velvet',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12583_bear-cake.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductId9 INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Ultimate Gift Box',
+N'Combo bánh kem, chocolate và gấu bông cao cấp',
+1,
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12584_ultimate-gift.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductId10 INT = SCOPE_IDENTITY();
+
+-- Insert ProductPrices
+INSERT INTO ProductPrices (ProductId, Price, Priority, StartDate, EndDate, IsDelete) VALUES
+(@ProductId4, 799000, 1, NULL, NULL, 0),
+(@ProductId5, 449000, 1, NULL, NULL, 0),
+(@ProductId6, 399000, 1, NULL, NULL, 0),
+(@ProductId7, 899000, 1, NULL, NULL, 0),
+(@ProductId8, 499000, 1, NULL, NULL, 0),
+(@ProductId9, 599000, 1, NULL, NULL, 0),
+(@ProductId10, 999000, 1, NULL, NULL, 0);
+
+-- Insert ProductCategories
+INSERT INTO ProductCategories (ProductId, CategoryId, IsDelete) VALUES
+(@ProductId4, 59, 0),
+(@ProductId5, 59, 0),
+(@ProductId5, 61, 0),
+(@ProductId6, 61, 0),
+(@ProductId7, 59, 0),
+(@ProductId8, 58, 0),
+(@ProductId9, 58, 0),
+(@ProductId9, 61, 0),
+(@ProductId10, 58, 0),
+(@ProductId10, 59, 0),
+(@ProductId10, 61, 0);
+
+-- Insert ProductProductItems
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductId4, @GodivaId, 1, 0),
+(@ProductId4, @LindorId, 1, 0),
+(@ProductId5, @RabbitId, 1, 0),
+(@ProductId5, @FerreroId, 1, 0),
+(@ProductId6, @TeddyId, 1, 0),
+(@ProductId6, @LoveId, 1, 0),
+(@ProductId7, @GodivaId, 1, 0),
+(@ProductId7, @LindorId, 1, 0),
+(@ProductId7, @FerreroId, 1, 0),
+(@ProductId8, @BanhKemChocolateId, 1, 0),
+(@ProductId8, @BanhVanillaId, 1, 0),
+(@ProductId9, @LoveId, 1, 0),
+(@ProductId9, @BanhRedVelvetId, 1, 0),
+(@ProductId10, @BanhKemChocolateId, 1, 0),
+(@ProductId10, @GodivaId, 1, 0),
+(@ProductId10, @TeddyId, 1, 0);

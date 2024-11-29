@@ -183,3 +183,48 @@
     flex-direction: column;
     align-items: center;
 }
+
+
+.section-products .box-product {
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #681c1c;
+    border-radius: 8px;
+}
+
+.section-products .box-product .inner-content {
+    padding-top: 15px;
+    text-align: center;
+    border: none;
+}
+
+.section-products .box-product .inner-image {
+    border-radius: 0;
+}
+
+.section-products .box-product .inner-image {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.section-products .box-product .inner-image {
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid #681c1c;
+}
+
+.section-products .box-product .inner-content {
+    padding-top: 15px;
+    text-align: center;
+    border: none;
+}
+
+.section-products .box-product .inner-image {
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid #681c1c;
+    padding-bottom: 15px;
+}

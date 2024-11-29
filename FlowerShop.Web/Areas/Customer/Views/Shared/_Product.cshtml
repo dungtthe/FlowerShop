@@ -24,7 +24,16 @@
                 </div>
                 flag = true;
             }
-            <img src="@Url.Content("~/images/products/" + firstImg)" alt="ảnh sản phẩm">
+
+            @if (firstImg.Contains("http"))
+            {
+                <img src="@firstImg" alt="ảnh sản phẩm" style="mix-blend-mode: multiply; !important">
+            }
+            else
+            {
+                <img src="@Url.Content("~/images/products/" + firstImg)" alt="ảnh sản phẩm"
+                    style="mix-blend-mode: multiply; !important">
+            }
             <div class="inner-icon">
                 <i class="bi bi-cart-plus"></i>
             </div>

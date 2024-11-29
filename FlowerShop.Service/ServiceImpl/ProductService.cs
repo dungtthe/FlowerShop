@@ -187,7 +187,7 @@ namespace FlowerShop.Service.ServiceImpl
 
         public async Task<IEnumerable<Product>> GetTopSellingProductsAsync()
         {
-            var productIds = await _saleInvoiceDetailRepository.GetProductIdTopSellingProductsAsync();
+            var productIds = await _saleInvoiceDetailRepository.GetProductIdTopSellingProductsAsync(10);
             if (productIds == null)
             {
                 return null;
@@ -203,14 +203,14 @@ namespace FlowerShop.Service.ServiceImpl
                     resultProducts.Add(rsp);
                 }
             }
-            if (resultProducts.Count < 8)
+            if (resultProducts.Count < 10)
             {
                 var products = (await _productRepository.GetAllWithIncludeAsync(p => p.ProductPrices)).Where(p => !p.IsDelete);
                 if (products != null)
                 {
                     foreach (var product in products)
                     {
-                        if (resultProducts.Count >= 8)
+                        if (resultProducts.Count >= 10)
                         {
                             break;
                         }

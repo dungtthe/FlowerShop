@@ -1,6 +1,11 @@
-﻿@{
-    var products = ViewBag.products as IEnumerable<FlowerShop.Web.ViewModels.ProductViewModel>;
+﻿@using FlowerShop.DataAccess.Models;
+@{
+    var topSellingProducts = ViewBag.topSellingProducts as IEnumerable<Product>;
+    var newProducts = ViewBag.newProducts as IEnumerable<Product>;
+    var giftProducts = ViewBag.giftProducts as IEnumerable<Product>;
 }
+
+
 <div class="container-fluid py-5 mb-5 hero-header">
     <div class="container py-5">
         <div class="row g-5 align-items-center">
@@ -10,34 +15,34 @@
                     Hoa Yêu Thương – nhắn gửi yêu thương, cánh hoa dẫn đường!
                 </h1>
                 <!-- <div class="position-relative mx-auto">
-                        <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number"
-                            placeholder="Search">
-                        <button type="submit"
-                            class="btn-custom  border-2 border-secondary py-3 px-4 position-absolute rounded-pill  h-100"
-                            style="top: 0; right: 25%;">Submit Now</button>
-                    </div> -->
+                    <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number"
+                        placeholder="Search">
+                    <button type="submit"
+                        class="btn-custom  border-2 border-secondary py-3 px-4 position-absolute rounded-pill  h-100"
+                        style="top: 0; right: 25%;">Submit Now</button>
+                </div> -->
             </div>
             <div class="col-md-12 col-lg-5">
                 <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                     <div class="carousel-inner" role="listbox">
                         <div class="carousel-item active rounded">
-                            <img src="~/customer/img/hero-img-1.png" class="img-fluid w-100 h-100 bg-secondary rounded"
-                                alt="First slide">
+                            <img src="~/customer/img/hero-img-1.png"
+                                 class="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide">
                             <a href="#" class="btn px-4 py-2 text-white rounded">Hoa sinh nhật</a>
                         </div>
                         <div class="carousel-item rounded">
                             <img src="~/customer/img/hero-img-2.jpg" class="img-fluid w-100 h-100 rounded"
-                                alt="Second slide">
+                                 alt="Second slide">
                             <a href="#" class="btn px-4 py-2 text-white rounded">Hoa cưới</a>
                         </div>
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselId"
-                        data-bs-slide="prev">
+                            data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
                     <button class="carousel-control-next" type="button" data-bs-target="#carouselId"
-                        data-bs-slide="next">
+                            data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
@@ -46,293 +51,44 @@
         </div>
     </div>
 </div>
+
 @* sản phẩm bán chạy *@
 
 <div class="section-products">
-    <div class="container-fluid vesitable py-5">
-        <div class="container py-5">
+    <div class="container">
+        <div class="inner-tag" style="padding-bottom: 25px;">
             <h2>Sản phẩm bán chạy</h2>
-            <div class="owl-carousel vegetable-carousel justify-content-center">
-                <div class="inner-products">
-                    <div class="rounded position-relative fruite-item d-flex flex-column">
-                        <div class="box-product col-custom">
-                            <div class="inner-wrap">
-                                <div class="inner-image">
-                                    <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                        style="top: 10px; left: 10px;">
-                                        SALE
-                                    </div>
-                                    <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                                    <div class="inner-icon">
-                                        <i class="bi bi-cart-plus"></i>
-                                    </div>
-                                </div>
-                                <div class="inner-content">
-                                    <h3 class="inner-title">Bó hoa hồng</h3>
-                                    <div class="inner-price">
-                                        <p class="price-old">100.000đ</p>
-                                        <p class="price-current">120.000đ</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="inner-products">
-                    <div class="rounded position-relative fruite-item d-flex flex-column">
-                        <div class="box-product col-custom">
-                            <div class="inner-wrap">
-                                <div class="inner-image">
-                                    <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                        style="top: 10px; left: 10px;">
-                                        SALE
-                                    </div>
-                                    <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                                    <div class="inner-icon">
-                                        <i class="bi bi-cart-plus"></i>
-                                    </div>
-                                </div>
-                                <div class="inner-content">
-                                    <h3 class="inner-title">Bó hoa hồng</h3>
-                                    <div class="inner-price">
-                                        <p class="price-old">100.000đ</p>
-                                        <p class="price-current">120.000đ</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="inner-products">
-                    <div class="rounded position-relative fruite-item d-flex flex-column">
-                        <div class="box-product col-custom">
-                            <div class="inner-wrap">
-                                <div class="inner-image">
-                                    <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                        style="top: 10px; left: 10px;">
-                                        SALE
-                                    </div>
-                                    <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                                    <div class="inner-icon">
-                                        <i class="bi bi-cart-plus"></i>
-                                    </div>
-                                </div>
-                                <div class="inner-content">
-                                    <h3 class="inner-title">Bó hoa hồng</h3>
-                                    <div class="inner-price">
-                                        <p class="price-old">100.000đ</p>
-                                        <p class="price-current">120.000đ</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="inner-products">
-                    <div class="rounded position-relative fruite-item d-flex flex-column">
-                        <div class="box-product col-custom">
-                            <div class="inner-wrap">
-                                <div class="inner-image">
-                                    <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                        style="top: 10px; left: 10px;">
-                                        SALE
-                                    </div>
-                                    <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                                    <div class="inner-icon">
-                                        <i class="bi bi-cart-plus"></i>
-                                    </div>
-                                </div>
-                                <div class="inner-content">
-                                    <h3 class="inner-title">Bó hoa hồng</h3>
-                                    <div class="inner-price">
-                                        <p class="price-old">100.000đ</p>
-                                        <p class="price-current">120.000đ</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="inner-products">
-                    <div class="rounded position-relative fruite-item d-flex flex-column">
-                        <div class="box-product col-custom">
-                            <div class="inner-wrap">
-                                <div class="inner-image">
-                                    <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                        style="top: 10px; left: 10px;">
-                                        SALE
-                                    </div>
-                                    <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                                    <div class="inner-icon">
-                                        <i class="bi bi-cart-plus"></i>
-                                    </div>
-                                </div>
-                                <div class="inner-content">
-                                    <h3 class="inner-title">Bó hoa hồng</h3>
-                                    <div class="inner-price">
-                                        <p class="price-old">100.000đ</p>
-                                        <p class="price-current">120.000đ</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="inner-products">
-                    <div class="rounded position-relative fruite-item d-flex flex-column">
-                        <div class="box-product col-custom">
-                            <div class="inner-wrap">
-                                <div class="inner-image">
-                                    <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                        style="top: 10px; left: 10px;">
-                                        SALE
-                                    </div>
-                                    <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                                    <div class="inner-icon">
-                                        <i class="bi bi-cart-plus"></i>
-                                    </div>
-                                </div>
-                                <div class="inner-content">
-                                    <h3 class="inner-title">Bó hoa hồng</h3>
-                                    <div class="inner-price">
-                                        <p class="price-old">100.000đ</p>
-                                        <p class="price-current">120.000đ</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
+        </div>
+        <div class="inner-products">
+            <div class="row">
+                @foreach (var item in topSellingProducts)
+                {
+                    await Html.RenderPartialAsync("_Product", item);
+                }
             </div>
         </div>
+
     </div>
 </div>
+
+
 
 @*end sản phẩm bán chạy *@
 
 
 
-<!-- Vesitable Shop End -->
 @* mẫu hoa mới *@
-<div class="section-products" style="margin-top: -50px;">
+<div class="section-products" style="margin-top: 50px;">
     <div class="container">
         <div class="inner-tag" style="padding-bottom: 25px;">
             <h2>Sản phẩm mới</h2>
         </div>
         <div class="inner-products">
             <div class="row">
-                <div class="box-product col-custom">
-                    <div class="inner-wrap">
-                        <div class="inner-image">
-                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                style="top: 10px; left: 10px;">
-                                SALE
-                            </div>
-                            <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                            <div class="inner-icon">
-                                <i class="bi bi-cart-plus"></i>
-                            </div>
-                        </div>
-                        <div class="inner-content">
-                            <h3 class="inner-title">Bó hoa hồng</h3>
-                            <div class="inner-price">
-                                <p class="price-old">100.000đ</p>
-                                <p class="price-current">120.000đ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="box-product col-custom">
-                    <div class="inner-wrap">
-                        <div class="inner-image">
-                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                style="top: 10px; left: 10px;">
-                                SALE
-                            </div>
-                            <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                            <div class="inner-icon">
-                                <i class="bi bi-cart-plus"></i>
-                            </div>
-                        </div>
-                        <div class="inner-content">
-                            <h3 class="inner-title">Bó hoa hồng</h3>
-                            <div class="inner-price">
-                                <p class="price-old">100.000đ</p>
-                                <p class="price-current">120.000đ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="box-product col-custom">
-                    <div class="inner-wrap">
-                        <div class="inner-image">
-                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                style="top: 10px; left: 10px;">
-                                SALE
-                            </div>
-                            <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                            <div class="inner-icon">
-                                <i class="bi bi-cart-plus"></i>
-                            </div>
-                        </div>
-                        <div class="inner-content">
-                            <h3 class="inner-title">Bó hoa hồng</h3>
-                            <div class="inner-price">
-                                <p class="price-old">100.000đ</p>
-                                <p class="price-current">120.000đ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="box-product col-custom">
-                    <div class="inner-wrap">
-                        <div class="inner-image">
-                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                style="top: 10px; left: 10px;">
-                                SALE
-                            </div>
-                            <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                            <div class="inner-icon">
-                                <i class="bi bi-cart-plus"></i>
-                            </div>
-                        </div>
-                        <div class="inner-content">
-                            <h3 class="inner-title">Bó hoa hồng</h3>
-                            <div class="inner-price">
-                                <p class="price-old">100.000đ</p>
-                                <p class="price-current">120.000đ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="box-product col-custom">
-                    <div class="inner-wrap">
-                        <div class="inner-image">
-                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute"
-                                style="top: 10px; left: 10px;">
-                                SALE
-                            </div>
-                            <img src="~/customer/img/fruite-item-5.jpg" alt="ảnh sản phẩm">
-                            <div class="inner-icon">
-                                <i class="bi bi-cart-plus"></i>
-                            </div>
-                        </div>
-                        <div class="inner-content">
-                            <h3 class="inner-title">Bó hoa hồng</h3>
-                            <div class="inner-price">
-                                <p class="price-old">100.000đ</p>
-                                <p class="price-current">120.000đ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @foreach (var item in newProducts)
+                {
+                    await Html.RenderPartialAsync("_Product", item);
+                }
             </div>
             <button class="button-view-more-products">
                 Xem thêm, còn 142 sản phẩm <span style="font-size: 12px;">▼</span>
@@ -344,7 +100,33 @@
 @* end mẫu hoa mới *@
 
 <!-- quà tặng kèm  -->
+
+
+@if (giftProducts.Count() != 0)
+{
+    <div class="section-products" style="margin-top: 50px;">
+        <div class="container">
+            <div class="inner-tag" style="padding-bottom: 25px;">
+                <h2>Quà tặng kèm</h2>
+            </div>
+            <div class="inner-products">
+                <div class="row">
+                    @foreach (var item in giftProducts)
+                    {
+                        await Html.RenderPartialAsync("_Product", item);
+                    }
+                </div>
+                <button class="button-view-more-products">
+                    Xem thêm, còn 142 sản phẩm <span style="font-size: 12px;">▼</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
 <!-- end quà tặng kèm -->
+
+
 @* Tại sao bạn nên dùng dịch vụ của Chúng tôi? *@
 <div class="container-fluid py-5" style="margin-top: 70px;">
     <div class="container">

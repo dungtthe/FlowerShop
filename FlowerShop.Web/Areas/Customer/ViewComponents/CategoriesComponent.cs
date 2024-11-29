@@ -14,7 +14,7 @@ namespace FlowerShop.Web.Areas.Customer.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var categories = await _categoryService.GetAllCategoriesWithHierarchy();
+            var categories = (await _categoryService.GetAllCategoriesWithHierarchy()).Where(c=>c.IsCategorySell);
             return View(categories); 
         }
     }
