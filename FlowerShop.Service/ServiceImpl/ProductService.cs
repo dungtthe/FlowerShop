@@ -149,7 +149,7 @@ namespace FlowerShop.Service.ServiceImpl
             if (include)
             {
 
-                var rs = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id,
+                var rs = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id && !p.IsDelete,
                     p => p.Packaging,
                     p => p.ProductPrices.Where(pp => !pp.IsDelete),
                     p => p.ProductProductItems.Where(pp => !pp.IsDelete),
@@ -181,7 +181,12 @@ namespace FlowerShop.Service.ServiceImpl
             }
             else
             {
-                return await _productRepository.GetSingleByIdAsync(id);
+                var rsp= await _productRepository.GetSingleByIdAsync(id);
+                if(rsp!=null && rsp.IsDelete)
+                {
+                    rsp = null;
+                }
+                return rsp;
             }
         }
 

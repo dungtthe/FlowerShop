@@ -14,6 +14,10 @@ const fetchGet = async (uri, onSuccess, onFail, onException) => {
       window.location.href = `/login`;
       return;
     }
+    if (res.status === 404) {
+      window.location.href = `/error/notfound`;
+      return;
+    }
 
     const data = await res.json();
     if (!res.ok) {
@@ -35,6 +39,10 @@ const fetchPost = async (uri, reqData, onSuccess, onFail, onException) => {
     });
     if (res.status === 401) {
       window.location.href = `/login`;
+      return;
+    }
+    if (res.status === 404) {
+      window.location.href = `/error/notfound`;
       return;
     }
     const data = await res.json();
@@ -59,6 +67,10 @@ const fetchDelete = async (uri, reqData, onSuccess, onFail, onException) => {
       window.location.href = `/login`;
       return;
     }
+    if (res.status === 404) {
+      window.location.href = `/error/notfound`;
+      return;
+    }
     const data = await res.json();
     if (!res.ok) {
       onFail(data);
@@ -79,6 +91,10 @@ const fetchPut = async (uri, reqData, onSuccess, onFail, onException) => {
     });
     if (res.status === 401) {
       window.location.href = `/login`;
+      return;
+    }
+    if (res.status === 404) {
+      window.location.href = `/error/notfound`;
       return;
     }
     const data = await res.json();

@@ -28,14 +28,14 @@ namespace FlowerShop.Service.ServiceImpl
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ResponeMessage> AddProductToCart(AppUser appUser, int productId, int quantity)
+        public async Task<ResponeMessage> AddProductToCartAsync(AppUser appUser, int productId, int quantity)
         {
             if (quantity <= 0)
             {
                 quantity = 1;
             }
 
-            var rsfProduct = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == productId, pp => pp.ProductPrices);
+            var rsfProduct = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == productId && !p.IsDelete, pp => pp.ProductPrices);
             if (rsfProduct == null)
             {
                 return new ResponeMessage(ResponeMessage.NOT_FOUND, "");
@@ -50,7 +50,7 @@ namespace FlowerShop.Service.ServiceImpl
 
 
             var cartDetailOld = rsfCart.CartDetails.FirstOrDefault(c => c.ProductId == productId);
-            bool isNew = false;
+            string msg = "new";
             //thêm mới
             if (cartDetailOld == null)
             {
@@ -61,16 +61,41 @@ namespace FlowerShop.Service.ServiceImpl
                     IsDeleted = false,
                     Quantity = quantity
                 });
-                isNew = true;
             }
             else//update số lượng
             {
+                if (!cartDetailOld.IsDeleted)
+                {
+                    msg = "old";
+                }
                 cartDetailOld.IsDeleted = false;
                 cartDetailOld.Quantity += quantity;
             }
 
             await _unitOfWork.Commit();
-            return new ResponeMessage(ResponeMessage.SUCCESS, isNew ? "new" : "old");
+            return new ResponeMessage(ResponeMessage.SUCCESS, msg);
+        }
+
+        public async Task<ResponeMessage> DeleteProductFromCartAsync(AppUser appUser, int productId)
+        {
+           
+            var rsfCart = await GetCartByUserIdAsync(appUser.Id);
+            if (rsfCart == null)
+            {
+                return new ResponeMessage(ResponeMessage.NOT_FOUND, "");
+            }
+
+            var cartDetailOld = rsfCart.CartDetails.FirstOrDefault(c => c.ProductId == productId);
+            if (cartDetailOld == null)
+            {
+                return new ResponeMessage(ResponeMessage.NOT_FOUND, "");
+            }
+            else
+            {
+                cartDetailOld.IsDeleted = true;
+            }
+            await _unitOfWork.Commit();
+            return new ResponeMessage(ResponeMessage.SUCCESS, "");
         }
 
         public async Task<Cart> GetCartByUserIdAsync(string userId)
@@ -80,6 +105,15 @@ namespace FlowerShop.Service.ServiceImpl
             if (user?.Cart != null)
             {
                 user.Cart.CartDetails = (await _cartDetailRepository.FindAsync(c => c.CartId == user.Cart.Id)).ToList();
+                foreach(var item in user.Cart.CartDetails)
+                {
+                    var product = await _productRepository.GetSingleByIdAsync(item.ProductId);
+                    if(product==null || product.IsDelete)
+                    {
+                        item.IsDeleted = true;
+                    }
+                }
+                await _unitOfWork.Commit();
             }
             return user?.Cart;
         }

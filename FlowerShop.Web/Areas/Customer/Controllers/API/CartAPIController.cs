@@ -25,11 +25,11 @@ namespace FlowerShop.Web.Areas.Customer.Controllers.API
         public async Task<IActionResult> AddProductToCartAsync(int id, int quantity)
         {
             var appUser = await _appUserService.GetAppUser(HttpContext);
-            var rsp = await _cartService.AddProductToCart(appUser, id, quantity);
+            var rsp = await _cartService.AddProductToCartAsync(appUser, id, quantity);
 
             if (rsp.Id == ResponeMessage.NOT_FOUND)
             {
-                return BadRequest(new { message = "notfound" });
+                return StatusCode(StatusCodes.Status404NotFound);
             }
 
             if (rsp.Id == ResponeMessage.ERROR)
@@ -38,6 +38,25 @@ namespace FlowerShop.Web.Areas.Customer.Controllers.API
             }
 
             return Ok(new { message = rsp.Message });
+        }
+
+        [HttpGet("delete")]
+        public async Task<IActionResult> DeleteProductFromCartAsync(int id)
+        {
+            var appUser = await _appUserService.GetAppUser(HttpContext);
+            var rsp = await _cartService.DeleteProductFromCartAsync(appUser, id);
+
+            if (rsp.Id != ResponeMessage.NOT_FOUND)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+
+            if (rsp.Id == ResponeMessage.ERROR)
+            {
+                return BadRequest(new { message = rsp.Message });
+            }
+
+            return Ok();
         }
     }
 }

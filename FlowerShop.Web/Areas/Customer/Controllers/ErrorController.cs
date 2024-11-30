@@ -9,6 +9,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
         [HttpGet("notfound")]
         public IActionResult NotFoundAsync()
         {
+            ViewBag.tilePage = "Lỗi 404";
             return View("NotFound");
         }
     }

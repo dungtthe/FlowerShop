@@ -8,6 +8,16 @@
     if (appUser != null)
     {
         cartUser = await _cartService.GetCartByUserIdAsync(appUser.Id);
+        if (cartUser != null)
+        {
+            cartUser.CartDetails = cartUser.CartDetails.Where(c => !c.IsDeleted).ToList();
+        }
+    }
+
+    string tilePage = "";
+    if (ViewBag.tilePage != null)
+    {
+        tilePage = ViewBag.tilePage;
     }
 }
 <!DOCTYPE html>
@@ -77,8 +87,10 @@
         <div class="container px-0">
             <nav class="navbar navbar-light bg-white navbar-expand-xl">
 
-                <div class="inner-logo" style="margin-left: 15px;">
-                    <img style="width: 48px; " src="~/customer/img/logo_tran.png">
+                <div style="cursor: pointer;" class="inner-logo" style="margin-left: 15px;">
+                    <a href="/">
+                        <img style="width: 48px; " src="~/customer/img/logo_tran.png">
+                    </a>
                 </div>
                 <!-- <a href="index.html" class="navbar-brand">
                     <h1 class="text-primary display-6">Hoa Yêu Thương</h1>
@@ -89,11 +101,8 @@
                 </button>
                 <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
                     <div class="navbar-nav mx-auto">
-
                         @* render categories *@
                         @await Component.InvokeAsync("Categories")
-
-
                     </div>
                     <div class="d-flex m-3 me-0">
                         <button
@@ -102,8 +111,9 @@
                             <i class="fas fa-search text-primary"></i>
                         </button>
                         <a href="#" class="position-relative me-4 my-auto">
-                            <a href="#" class="position-relative me-4 my-auto">
-                                <i onclick="testxiu()" class="fa fa-shopping-bag fa-2x"></i>
+                            <a class="position-relative me-4 my-auto" asp-action="CartDetail" asp-controller="Cart"
+                                asp-area="CUSTOMER">
+                                <i class="fa fa-shopping-bag fa-2x"></i>
                                 <span id="count-cartdetail"
                                     class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
                                     style="top: -5px; left: 15px; height: 20px; min-width: 20px;">
@@ -139,7 +149,12 @@
     </div>
 
 
-
+    @if (tilePage != "")
+    {
+        <div class="container-fluid page-header py-5">
+            <h1 class="text-center text-white display-6">@tilePage</h1>
+        </div>
+    }
 
 
     <!-- Modal Search End -->

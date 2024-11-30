@@ -15,10 +15,11 @@ namespace FlowerShop.Web.Controllers
         }
 
         [HttpGet("/login")]
-        public IActionResult Login()
+        public IActionResult Login(string? ReturnUrl)
         {
             try
             {
+                TempData["ReturnUrl"] = ReturnUrl;
                 return View();
             }
             catch (Exception ex)
@@ -31,18 +32,19 @@ namespace FlowerShop.Web.Controllers
             //{
             //    return RedirectToAction("Index", "Home", new { area = "Admin" });
             //}
-           // return Content("Có lỗi xảy ra");
+            // return Content("Có lỗi xảy ra");
         }
-
-
 
         [HttpPost("/login")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("UserName,Password")] LoginViewModel appUserViewModel, string? returnUrl = null)
+        public async Task<IActionResult> Login([Bind("UserName,Password")] LoginViewModel appUserViewModel)
         {
             bool result = await _appUserService.LoginAsync(appUserViewModel.UserName, appUserViewModel.Password, false);
             if (result)
             {
+
+                string? returnUrl = TempData["ReturnUrl"]?.ToString();
+
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
@@ -53,7 +55,6 @@ namespace FlowerShop.Web.Controllers
 
             return RedirectToAction("Login", "Access");
         }
-
 
         [HttpGet("/forgetpassword")]
         public IActionResult ForgetPassword()

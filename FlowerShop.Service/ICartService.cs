@@ -10,7 +10,8 @@ namespace FlowerShop.Service
 {
     public interface ICartService
     {
-        Task<ResponeMessage> AddProductToCart(AppUser appUser, int productId, int quantity);
+        Task<ResponeMessage> AddProductToCartAsync(AppUser appUser, int productId, int quantity);
         Task<Cart> GetCartByUserIdAsync(string userId);
+        Task<ResponeMessage> DeleteProductFromCartAsync(AppUser appUser,int productId);
     }
 }

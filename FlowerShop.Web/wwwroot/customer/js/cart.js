@@ -1,6 +1,6 @@
 //thêm 1 sản phẩm vào giỏ hàng
 const AddProductToCart = (productId, quantity) => {
-  const uri = `/cart/add?id=${productId}&quantity=${quantity}`;
+  const uri = `/api/cart/add?id=${productId}&quantity=${quantity}`;
   fetchGet(
     uri,
     (success) => {
