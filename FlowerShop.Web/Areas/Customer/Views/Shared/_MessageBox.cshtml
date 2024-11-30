@@ -1,148 +1,11 @@
-﻿@{
-    Layout = null; // Set your layout here if needed
-}
-
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Message Box</title>
-    <style>
-        /* Style chung cho message box */
-        .message-box {
-            display: none; /* Ẩn mặc định */
-            background-color: #ffffff;
-            color: #333;
-            border: none; /* Loại bỏ viền */
-            padding: 30px; /* Tăng padding để tạo cảm giác cao */
-            border-radius: 15px;
-            width: 90%; /* Responsive */
-            max-width: 400px; /* Đảm bảo kích thước không quá lớn */
-            margin: 20px auto;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Tăng độ đậm cho bóng */
-            font-family: Arial, sans-serif;
-            text-align: center;
-            position: relative; /* Định vị cho nút đóng */
-            min-height: 200px; /* Tăng chiều cao tối thiểu */
-        }
-
-        .message-box .icon {
-            margin: 0 auto;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .message-box .icon img {
-            width: 30px;
-            height: 30px;
-        }
-
-        .message-box .title {
-            font-size: 20px; /* Tăng kích thước tiêu đề */
-            font-weight: bold;
-            color: #333;
-            margin-top: 20px;
-        }
-
-        .message-box .description {
-            font-size: 16px; /* Tăng kích thước nội dung */
-            margin-top: 15px;
-            line-height: 1.6; /* Tăng khoảng cách giữa các dòng */
-        }
-
-        .close-btn {
-            background-color: transparent;
-            border: none;
-            color: #333;
-            font-weight: bold;
-            cursor: pointer;
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            font-size: 18px;
-        }
-
-        .close-btn:hover {
-            color: #f44336;
-        }
-
-        /* Biểu tượng lỗi */
-        .message-box.error .icon {
-            background-color: #f44336;
-        }
-
-        /* Biểu tượng thành công */
-        .message-box.success .icon {
-            background-color: #4caf50;
-        }
-
-        /* Biểu tượng câu hỏi */
-        .message-box.question .icon {
-            background-color: #2196F3;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .message-box {
-                padding: 20px;
-            }
-            .message-box .title {
-                font-size: 18px;
-            }
-            .message-box .description {
-                font-size: 14px;
-            }
-        }
-
-        .yes-no-buttons {
-            margin-top: 20px;
-        }
-
-        .yes-no-buttons button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .yes-no-buttons .yes {
-            background-color: #4caf50; /* Màu xanh lá cây */
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .yes-no-buttons .no {
-            background-color: #f44336; /* Màu đỏ */
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-
-<!-- Nút để mở message box lỗi -->
-<button onclick="showErrorBox()">Hiển thị thông báo lỗi</button>
-
-<!-- Nút để mở message box thành công -->
-<button onclick="showSuccessBox()">Hiển thị thông báo thành công</button>
-
-<!-- Nút để mở message box câu hỏi -->
-<button onclick="showQuestionBox()">Bạn có muốn đăng ký tài khoản không?</button>
-
+﻿<div class="overlay"></div>
 <!-- Message Box Lỗi -->
 <div id="errorBox" class="message-box error">
     <button class="close-btn" onclick="closeBox('errorBox')">×</button>
     <div class="icon">
         <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="Cảnh báo">
     </div>
-    <div class="title">Lỗi đăng ký</div>
+    <div class="title">Thất bại</div>
     <div class="description">
         Tên tài khoản, mật khẩu không được chứa kí tự đặc biệt và phải chứa từ 6-30 kí tự.
     </div>
@@ -166,7 +29,7 @@
     <div class="icon">
         <img src="https://cdn-icons-png.flaticon.com/512/1828/1828863.png" alt="Câu hỏi">
     </div>
-    <div class="title">Câu hỏi</div>
+    <div class="title">Yêu cầu xác nhận</div>
     <div class="description">
         Bạn có muốn đăng ký tài khoản không?
     </div>
@@ -177,37 +40,46 @@
 </div>
 
 <script>
-    // Hàm hiển thị message box lỗi
-    function showErrorBox() {
-        document.getElementById("errorBox").style.display = "block";
-    }
-
-    // Hàm hiển thị message box thành công
-    function showSuccessBox() {
-        document.getElementById("successBox").style.display = "block";
-    }
-
-    // Hàm hiển thị message box câu hỏi
-    function showQuestionBox() {
-        document.getElementById("questionBox").style.display = "block";
-    }
-
     // Hàm đóng message box
     function closeBox(boxId) {
-        document.getElementById(boxId).style.display = "none";
+        document.getElementById(boxId).classList.remove('active');
+        document.querySelector('.overlay').classList.remove('active');
     }
 
-    // Hàm xử lý phản hồi từ nút Yes/No
-    function handleResponse(response) {
-        if (response === 'yes') {
-            alert("Bạn đã chọn Có!");
-            // Thực hiện hành động cho việc đăng ký
-        } else {
-            alert("Bạn đã chọn Không!");
+    // Hàm hiển thị message box error
+    function showError(message) {
+        document.querySelector('.overlay').classList.add('active');
+        const errorBox = document.getElementById("errorBox");
+        errorBox.querySelector('.description').textContent = message;
+        errorBox.classList.add('active');
+    }
+
+    // Hàm hiển thị message box success
+    function showSuccess(message) {
+        document.querySelector('.overlay').classList.add('active');
+        const successBox = document.getElementById("successBox");
+        successBox.querySelector('.description').textContent = message;
+        successBox.classList.add('active');
+    }
+
+    // Hàm hiển thị message box question
+    function showQuestion(message, yesCallback) {
+        document.querySelector('.overlay').classList.add('active');
+        const questionBox = document.getElementById("questionBox");
+        questionBox.querySelector('.description').textContent = message;
+        questionBox.classList.add('active');
+
+        // Gán callback cho nút Yes
+        const yesBtn = questionBox.querySelector('.yes');
+        yesBtn.onclick = () => {
+            if (yesCallback) yesCallback();
+            closeBox('questionBox');
         }
-        closeBox('questionBox'); // Đóng message box câu hỏi
+
+        // Nút No chỉ đóng message box
+        const noBtn = questionBox.querySelector('.no');
+        noBtn.onclick = () => {
+            closeBox('questionBox');
+        }
     }
 </script>
-
-</body>
-</html>
