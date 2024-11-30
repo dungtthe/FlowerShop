@@ -10,5 +10,7 @@ namespace FlowerShop.DataAccess.Repositories
 {
     public interface ICategoryRepository : IRepository<Category>
     {
+        Task<Category> GetByIdAsync(int id);
+        Task<IEnumerable<Category>> GetAllAsync();
     }
 }

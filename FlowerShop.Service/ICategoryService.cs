@@ -21,5 +21,7 @@ namespace FlowerShop.Service
         Task<Category?> FindOneWithoutIncludeByIdAsync(int id);
         Task<bool> IsDescendantAsync(int childCategoryId, int parentCategoryId);
 
+        Task<Category> GetCategoryByIdAsync(int categoryId);
+        Task<IEnumerable<Category>> GetAllCategoriesAsync();
     }
 }

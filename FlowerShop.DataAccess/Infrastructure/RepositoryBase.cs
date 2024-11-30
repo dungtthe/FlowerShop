@@ -16,6 +16,7 @@ namespace FlowerShop.DataAccess.Infrastructure
         protected IDbFactory DbFactory { get; private set; }
 
         protected FlowerShopContext DbContext => dbContext ??= DbFactory.Init();//nếu context null thì khởi tạo
+        protected DbSet<T> DbSet => dbSet;
         #endregion
 
         protected RepositoryBase(IDbFactory dbFactory)

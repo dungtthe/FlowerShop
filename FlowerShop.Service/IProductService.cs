@@ -20,6 +20,8 @@ namespace FlowerShop.Service
         Task<IEnumerable<Product>> GetTopSellingProductsAsync();
         Task<(IEnumerable<Product> products, int total, int remaining)> GetNewProductsAsync(int pageIndex = 0, int pageSize = 10);
         Task<(IEnumerable<Product> products, int total, int remaining)> GetGiftCategoryProductsAsync(int pageIndex = 0, int pageSize = 10);
+
+        Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId);
     }
 }
 

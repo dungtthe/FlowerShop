@@ -205,6 +205,16 @@ namespace FlowerShop.Service.ServiceImpl
             }
             return false;
         }
+
+        public async Task<Category> GetCategoryByIdAsync(int categoryId)
+        {
+            return await _categoryRepository.GetByIdAsync(categoryId);
+        }
+
+        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        {
+            return await _categoryRepository.GetAllAsync();
+        }
     }
 
 }

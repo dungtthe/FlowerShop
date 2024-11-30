@@ -1,6 +1,6 @@
 ﻿@model FlowerShop.DataAccess.Models.Category
 
-<div class="nav-item dropdown">
+@* <div class="nav-item dropdown">
     @if (Model.SubCategories != null && Model.SubCategories.Any())
     {
         if (Model.ParentCategoryId == null)
@@ -34,5 +34,40 @@
     {
         <a href="#" class="nav-link">@Model.Name</a>
     }
-</div>
+</div> *@
 
+<div class="nav-item dropdown">
+    @if (Model.SubCategories != null && Model.SubCategories.Any())
+    {
+        if (Model.ParentCategoryId == null)
+        {
+            <!-- Root Category: Hover để mở menu -->
+            <div class="dropdown">
+                <a href="@Url.Action("ProductCategory", "Home", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@Model.Name</a>
+                <div class="dropdown-menu m-0 bg-secondary rounded-0">
+                    @foreach (var subCategory in Model.SubCategories)
+                    {
+                        @await Html.PartialAsync("_CategoryItem", subCategory)
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Subcategory: Click để mở menu -->
+            <div class="dropdown-submenu">
+                <a href="@Url.Action("ProductCategory", "Home", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link dropdown-toggle">@Model.Name</a>
+                <div class="dropdown-menu m-0 bg-secondary rounded-0">
+                    @foreach (var subCategory in Model.SubCategories)
+                    {
+                        @await Html.PartialAsync("_CategoryItem", subCategory)
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <a href="@Url.Action("ProductCategory", "Home", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link">@Model.Name</a>
+    }
+</div>

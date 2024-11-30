@@ -410,5 +410,10 @@ namespace FlowerShop.Service.ServiceImpl
             return new ResponeMessage(ResponeMessage.SUCCESS, "Sửa thông tin sản phẩm thành công");
         }
 
+
+        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId)
+        {
+            return await _productRepository.GetProductsByCategoryAsync(categoryId);
+        }
     }
 }
