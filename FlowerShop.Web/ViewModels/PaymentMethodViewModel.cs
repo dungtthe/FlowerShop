@@ -7,18 +7,18 @@ namespace FlowerShop.Web.ViewModels
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage ="Tên phương thức không được để trống")]
+        
         public string? Name { get; set; }
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "Giá không được để trống")]
-        [MinValueDecimal("fasdfasd",1000)]
+       
         public decimal? Price { get; set; }
 
-        [Required(ErrorMessage = "Trạng thái không được để trống")]
+        
+        [Range(0, 1, ErrorMessage = "Trạng thái chỉ nhận 0 hoặc 1.")]
         public byte Status { get; set; }
 
-        [Required(ErrorMessage = "Trạng thái xóa không được để trống")]
+        
         public bool IsDelete { get; set; }
     }
 }

@@ -1,9 +1,8 @@
-﻿using FlowerShop.DataAccess.Infrastructure;
-using FlowerShop.DataAccess.Models;
-using System;
+﻿using FlowerShop.DataAccess.Models;
+using FlowerShop.DataAccess.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FlowerShop.DataAccess.Repositories.RepositoriesImpl
@@ -12,6 +11,19 @@ namespace FlowerShop.DataAccess.Repositories.RepositoriesImpl
     {
         public ProductRepository(IDbFactory dbFactory) : base(dbFactory)
         {
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId)
+        {
+            // Lấy danh sách sản phẩm thuộc CategoryId thông qua bảng ProductCategories
+            var products = await DbContext.ProductCategories
+                .Where(pc => pc.CategoryId == categoryId && !pc.IsDelete) // Lọc theo CategoryId và không bị xóa
+                .Include(pc => pc.Product) // Bao gồm thông tin sản phẩm
+                .Select(pc => pc.Product) // Lấy danh sách sản phẩm
+                .Where(p => !p.IsDelete) // Lọc sản phẩm chưa bị xóa
+                .ToListAsync(); // Thực hiện bất đồng bộ
+
+            return products;
         }
     }
 }
