@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <!-- Thêm Control Geocoder -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+
+        #search-container {
+            margin: 20px 0;
+        }
+
+        #address-input {
+            width: 300px;
+            padding: 8px;
+        }
+
+        .store-marker {
+            background-color: #e74c3c;
+            border-radius: 50%;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid white;
+        }
+
+        .customer-marker {
+            background-color: #3498db;
+            border-radius: 50%;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="search-container">
+        <input type="text" id="address-input" placeholder="Nhập địa chỉ của bạn">
+        <button onclick="searchAddress()">Tìm kiếm</button>
+    </div>
+    <div id="map"></div>
+    <div id="distance"></div>
+
+    <script>
+        let map, customerMarker, routingControl;
+        const storeLocation = [10.870771, 106.803183];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Khởi tạo map
+            map = L.map('map').setView(storeLocation, 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Tạo custom icon cho cửa hàng
+            const storeIcon = L.divIcon({
+                className: 'store-marker',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            // Tạo custom icon cho khách hàng
+            const customerIcon = L.divIcon({
+                className: 'customer-marker',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            // Marker cửa hàng
+            const storeMarker = L.marker(storeLocation, {
+                icon: storeIcon,
+                draggable: false
+            }).addTo(map);
+            storeMarker.bindPopup('Vị trí cửa hàng');
+
+            // Thêm geocoder control vào map
+            const geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false
+            }).addTo(map);
+
+            // Xử lý click trên map
+            map.on('click', function (e) {
+                updateCustomerPosition(e.latlng, customerIcon);
+            });
+        });
+
+        function searchAddress() {
+            const address = document.getElementById('address-input').value;
+            if (!address) return;
+
+            // Sử dụng Nominatim API để tìm kiếm địa chỉ
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const location = L.latLng(data[0].lat, data[0].lon);
+                        updateCustomerPosition(location, L.divIcon({
+                            className: 'customer-marker',
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        }));
+                        map.setView(location, 15);
+                    } else {
+                        alert('Không tìm thấy địa chỉ');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tìm kiếm địa chỉ');
+                });
+        }
+
+        function updateCustomerPosition(latlng, icon) {
+            // Xóa marker cũ nếu có
+            if (customerMarker) {
+                map.removeLayer(customerMarker);
+            }
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+
+            // Thêm marker mới
+            customerMarker = L.marker(latlng, {
+                icon: icon,
+                draggable: true
+            }).addTo(map);
+            customerMarker.bindPopup('Vị trí của bạn');
+
+            // Tính tuyến đường
+            calculateRoute(storeLocation, latlng);
+
+            // Xử lý kéo thả marker
+            customerMarker.on('dragend', function (event) {
+                calculateRoute(storeLocation, event.target.getLatLng());
+            });
+        }
+
+        function calculateRoute(from, to) {
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(from[0], from[1]),
+                    L.latLng(to.lat, to.lng)
+                ],
+                routeWhileDragging: true,
+                lineOptions: {
+                    styles: [{ color: '#03A9F4', weight: 4 }]
+                },
+                createMarker: function () { return null; }
+            }).addTo(map);
+
+            routingControl.on('routesfound', function (e) {
+                const routes = e.routes;
+                const distance = routes[0].summary.totalDistance;
+                const time = routes[0].summary.totalTime;
+
+                document.getElementById('distance').innerHTML = `
+                    <strong>Khoảng cách:</strong> ${(distance / 1000).toFixed(2)} km<br>
+                    <strong>Thời gian dự kiến:</strong> ${Math.round(time / 60)} phút
+                `;
+            });
+        }
+    </script>
+</body>
+
+</html>
