@@ -10,6 +10,8 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
 using FlowerShop.Common.MyConst;
+using FlowerShop.Service.ServiceImpl;
+using AutoMapper;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -19,12 +21,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
     {
         private readonly FlowerShopContext _context;
         private readonly IPaymentMethodService _paymentMethodService;
-
-        public PaymentMethodController(FlowerShopContext context, IPaymentMethodService paymentMethodService)
+		private readonly IMapper _mapper;
+		public PaymentMethodController(FlowerShopContext context, IPaymentMethodService paymentMethodService, IMapper mapper)
         {
             _context = context;
             _paymentMethodService = paymentMethodService;
-        }
+			_mapper = mapper;
+		}
 
         // GET: Admin/PaymentMethod
         [HttpGet("")]
@@ -57,27 +60,53 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(paymentMethod);
         }
 
-        // GET: Admin/PaymentMethod/Create
-        public IActionResult Create()
+		// GET: Admin/PaymentMethod/Create
+		[HttpGet("create")]
+		public IActionResult Create()
         {
             return View();
         }
+		// POST: Admin/PaymentMethod/Create
+		[HttpPost("create")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("Name,Description,Status")] PaymentMethodViewModel paymentMethodVM)
+		{
+			// Kiểm tra trùng lặp tên phương thức thanh toán
+			var allPaymentMethod = await _paymentMethodService.GetPaymentMethodsAsync();
+			var isNameDuplicate = allPaymentMethod.Any(item => item.Name.Equals(paymentMethodVM.Name, StringComparison.OrdinalIgnoreCase));
 
-        // POST: Admin/PaymentMethod/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Status,IsDelete")] PaymentMethod paymentMethod)
-        {
-            if (ModelState.IsValid)
+			if (isNameDuplicate)
+			{
+                ModelState.AddModelError("Name", "Tên phương thức thanh toán đã tồn tại. Vui lòng nhập tên khác.");
+			}
+            // Kiểm tra giá trị Price và gán 0 nếu nó là null hoặc không hợp lệ
+            if (paymentMethodVM.Price == null || paymentMethodVM.Price <= 0)
             {
-                _context.Add(paymentMethod);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                paymentMethodVM.Price = 0;
             }
-            return View(paymentMethod);
-        }
+
+            if (ModelState.IsValid)
+			{
+				// Chuyển đổi ViewModel thành Entity
+				var payment = _mapper.Map<PaymentMethod>(paymentMethodVM);
+
+				// Thêm mới phương thức thanh toán
+				var result = await _paymentMethodService.AddAsync(payment);
+				if (result != null)
+				{
+					return RedirectToAction(nameof(Index));
+				}
+				else
+				{
+					return Content(ConstValues.CoLoiXayRa);
+				}
+			}
+
+			// Nếu có lỗi, trả về lại trang với dữ liệu cũ
+			return View(paymentMethodVM);
+		}
+
+		
 
         // GET: Admin/PaymentMethod/Edit/5
         [HttpGet("edit")]

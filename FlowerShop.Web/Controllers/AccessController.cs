@@ -17,14 +17,14 @@ namespace FlowerShop.Web.Controllers
         [HttpGet("/login")]
         public IActionResult Login()
         {
-            //return View();
+            return View();
 
             //bool result = await _appUserService.LoginAsync("1", "1", false);
             //if (result)
             //{
             //    return RedirectToAction("Index", "Home", new { area = "Admin" });
             //}
-            return Content("Có lỗi xảy ra");
+            //return Content("Có lỗi xảy ra");
         }
 
 
@@ -44,5 +44,20 @@ namespace FlowerShop.Web.Controllers
 
             return RedirectToAction("Login", "Access");
         }
+
+
+        [HttpGet("/forgetpassword")]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+
+
+        [HttpGet("/register")]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
     }
 }

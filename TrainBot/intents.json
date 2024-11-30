@@ -1,0 +1,97 @@
+{
+  "intents": [
+    {
+      "tag": "chao_hoi",
+      "patterns": [
+        "Chào",
+        "Xin chào",
+        "Ai đó?",
+        "Chào bạn",
+        "Chào cửa hàng"
+      ],
+      "responses": [
+        "Chào bạn, Hoa Yêu Thương xin được phục vụ!",
+        "Xin chào, bạn cần hỗ trợ gì ạ?",
+        "Chào bạn, hôm nay bạn muốn tìm loại hoa nào ạ?"
+      ]
+    },
+    {
+      "tag": "tam_biet",
+      "patterns": [
+        "Tạm biệt",
+        "Hẹn gặp lại",
+        "Chào nhé"
+      ],
+      "responses": [
+        "Tạm biệt, cảm ơn bạn đã ghé thăm!",
+        "Hẹn gặp lại bạn nhé!",
+        "Cảm ơn bạn, chúc bạn một ngày tốt lành!"
+      ]
+    },
+    {
+      "tag": "cam_on",
+      "patterns": [
+        "Cảm ơn",
+        "Cảm ơn nhiều",
+        "Cám ơn bạn",
+        "Rất cảm ơn"
+      ],
+      "responses": [
+        "Rất vui được giúp bạn!",
+        "Không có gì, bạn cần hỗ trợ thêm cứ nói nhé!",
+        "Cảm ơn bạn đã tin tưởng Hoa Yêu Thương!"
+      ]
+    },
+    {
+      "tag": "san_pham",
+      "patterns": [
+        "Cửa hàng có hoa gì?",
+        "Shop bán hoa gì?",
+        "Tôi muốn xem các loại hoa",
+        "Có loại hoa nào đẹp không?"
+      ],
+      "responses": [
+        "Chúng tôi có hoa hồng, hoa lan, hoa cẩm chướng, và nhiều loại hoa khác.",
+        "Hoa Yêu Thương cung cấp hoa tươi theo từng dịp đặc biệt như sinh nhật, cưới hỏi, hoặc lễ Tết.",
+        "Bạn có thể ghé mục sản phẩm để xem tất cả các loại hoa nhé!"
+      ]
+    },
+    {
+      "tag": "thanh_toan",
+      "patterns": [
+        "Tôi có thể thanh toán bằng thẻ không?",
+        "Có nhận thanh toán online không?",
+        "Cửa hàng có chấp nhận thẻ Visa không?",
+        "Tôi có thể trả tiền qua chuyển khoản được không?"
+      ],
+      "responses": [
+        "Chúng tôi chấp nhận thanh toán qua Visa, Mastercard, và chuyển khoản ngân hàng.",
+        "Bạn có thể thanh toán bằng tiền mặt, thẻ tín dụng hoặc chuyển khoản nhé!"
+      ]
+    },
+    {
+      "tag": "giao_hang",
+      "patterns": [
+        "Giao hàng mất bao lâu?",
+        "Khi nào tôi nhận được hoa?",
+        "Cửa hàng giao hàng trong bao lâu?"
+      ],
+      "responses": [
+        "Thời gian giao hàng là từ 2-4 tiếng trong nội thành.",
+        "Hoa sẽ được giao trong vòng 2-4 tiếng, tùy vào địa điểm của bạn."
+      ]
+    },
+    {
+      "tag": "tro_chuyen",
+      "patterns": [
+        "Kể một câu chuyện cười đi!",
+        "Có câu chuyện vui nào không?",
+        "Hãy kể tôi nghe một câu chuyện vui!"
+      ],
+      "responses": [
+        "Bạn có biết không? Hoa lan rất đẹp, còn bạn thì cute",
+        "Hoa hồng nói: 'Tôi là biểu tượng của tình yêu,' còn bạn thì sao? Bạn là biểu tượng của sự đáng yêu đó!"
+      ]
+    }
+  ]
+}

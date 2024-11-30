@@ -24,6 +24,9 @@ namespace FlowerShop.Web.Mappings
 
 			CreateMap<Packaging, PackagingViewModel>();
 			CreateMap<PackagingViewModel, Packaging>();
-		}
+
+            CreateMap<PaymentMethod, PaymentMethodViewModel>();
+            CreateMap<PaymentMethodViewModel, PaymentMethod>();
+        }
     }
 }
