@@ -34,7 +34,7 @@
                 <img src="@Url.Content("~/images/products/" + firstImg)" alt="ảnh sản phẩm"
                     style="mix-blend-mode: multiply; !important">
             }
-            <div class="inner-icon">
+            <div class="inner-icon" onclick="AddProductToCart(@Model.Id,1)">
                 <i class="bi bi-cart-plus"></i>
             </div>
         </div>

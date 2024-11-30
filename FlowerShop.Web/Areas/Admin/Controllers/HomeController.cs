@@ -4,12 +4,14 @@ using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Service.ServiceImpl;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
 
     [Area("ADMIN")]
     [Route("admin")]
+    [Authorize]
     public class HomeController : Controller
     {
         IAppUserService _appUserService;

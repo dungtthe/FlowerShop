@@ -1,4 +1,5 @@
-﻿using FlowerShop.Service;
+﻿using FlowerShop.DataAccess.Models;
+using FlowerShop.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlowerShop.Web.Areas.Customer.Controllers
@@ -24,27 +25,37 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
         [Route("home")]
         public async Task<IActionResult> IndexAsync()
         {
-            try
-            {
-                bool result = await _appUserService.LoginAsync("1", "1", false);
-                if (result)
-                {
-                    // return RedirectToAction("Index", "Home", new { area = "ADMIN" });
+            var topSellingProducts = await _productService.GetTopSellingProductsAsync();
+            var newProducts = (await _productService.GetNewProductsAsync(0, 10)).products;
+            var giftProducts = (await _productService.GetGiftCategoryProductsAsync(0, 10)).products;
+            ViewBag.topSellingProducts = topSellingProducts;
+            ViewBag.newProducts = newProducts;
+            ViewBag.giftProducts = giftProducts;
 
-                    var topSellingProducts = await _productService.GetTopSellingProductsAsync();
-                    var newProducts = (await _productService.GetNewProductsAsync(0, 10)).products;
-                    var giftProducts = (await _productService.GetGiftCategoryProductsAsync(0, 10)).products;
-                    ViewBag.topSellingProducts = topSellingProducts;
-                    ViewBag.newProducts = newProducts;
-                    ViewBag.giftProducts = giftProducts;
-                    return View();
-                }
-                return RedirectToAction("NotFound", "Error");
-            }
-            catch(Exception e)
-            {
-                return RedirectToAction("NotFound", "Error");
-            }
+
+            return View();
+
+            //try
+            //{
+            //    bool result = await _appUserService.LoginAsync("1", "1", false);
+            //    if (result)
+            //    {
+            //        // return RedirectToAction("Index", "Home", new { area = "ADMIN" });
+
+            //        var topSellingProducts = await _productService.GetTopSellingProductsAsync();
+            //        var newProducts = (await _productService.GetNewProductsAsync(0, 10)).products;
+            //        var giftProducts = (await _productService.GetGiftCategoryProductsAsync(0, 10)).products;
+            //        ViewBag.topSellingProducts = topSellingProducts;
+            //        ViewBag.newProducts = newProducts;
+            //        ViewBag.giftProducts = giftProducts;
+            //        return View();
+            //    }
+            //    return RedirectToAction("NotFound", "Error");
+            //}
+            //catch(Exception e)
+            //{
+            //    return RedirectToAction("NotFound", "Error");
+            //}
 
         }
     }

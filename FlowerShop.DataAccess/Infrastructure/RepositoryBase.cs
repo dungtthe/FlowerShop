@@ -59,6 +59,8 @@ namespace FlowerShop.DataAccess.Infrastructure
             return await dbSet.ToListAsync();
         }
 
+
+        //không có kết quả nào thỏa mãn thì nó trả về empty list thay vì null
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
             return await dbSet.Where(predicate).ToListAsync();

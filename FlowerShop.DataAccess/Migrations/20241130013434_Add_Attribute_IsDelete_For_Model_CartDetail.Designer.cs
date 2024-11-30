@@ -4,6 +4,7 @@ using FlowerShop.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerShop.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    partial class FlowerShopContextModelSnapshot : ModelSnapshot
+    [Migration("20241130013434_Add_Attribute_IsDelete_For_Model_CartDetail")]
+    partial class Add_Attribute_IsDelete_For_Model_CartDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
