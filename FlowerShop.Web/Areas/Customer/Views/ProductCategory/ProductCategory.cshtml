@@ -61,61 +61,50 @@
                 <div class="row g-4">
                     <div class="col-xl-3">
                         <div class="input-group w-100 mx-auto d-flex">
-                            <input type="search" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
+                            
+                            <input oninput="SearchProductItem(this.value)" type="text" id="searchInput" class="form-control p-3" placeholder="Tìm kiếm sản phẩm..." aria-describedby="search-icon-1">
+
                             <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
                         </div>
                     </div>
+
+
                     <div class="col-6"></div>
                     <div class="col-xl-3">
                         <label for="sortOrder">Sắp xếp giá:</label>
                         <select id="sortOrder" name="sortOrder" class="border-0 form-select-sm bg-light" onchange="sortProducts()">
                             <option value="">Chưa sắp xếp</option>
-                            <option value="asc">Tăng dần</option>
-                            <option value="desc">Giảm dần</option>
+                            <option value="ascending">Giá tăng dần</option>
+                            <option value="descending">Giá giảm dần</option>
                         </select>
                     </div>
 
                 </div>
                 <div class="row g-4">
-                    <div class="col-lg-3">
+                    <div class="col-lg-3 ">
                         <div class="row g-4">
                             <div class="col-lg-12">
-                                <div class="mb-3">
+                                <div class="mb-3" style="margin-top : 20px">
                                     <h4>Cách đóng gói</h4>
+                                    <!-- Radio button "Tất cả" với thuộc tính checked -->
                                     <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-1" name="Categories-1" value="Beverages">
-                                        <label for="Categories-1"> Bó</label>
+                                        <input type="radio" class="me-2" id="Categories-all" name="Categories-1" value="" checked>
+                                        <label for="Categories-all">Tất cả</label>
                                     </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-2" name="Categories-1" value="Beverages">
-                                        <label for="Categories-2"> Giỏ</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-3" name="Categories-1" value="Beverages">
-                                        <label for="Categories-3"> Bình</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-4" name="Categories-1" value="Beverages">
-                                        <label for="Categories-4"> Hộp</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-5" name="Categories-1" value="Beverages">
-                                        <label for="Categories-5"> Lãng</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-6" name="Categories-1" value="Beverages">
-                                        <label for="Categories-5"> Hộp Gỗ</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-7" name="Categories-1" value="Beverages">
-                                        <label for="Categories-5"> Giỏ Mây Đan</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-8" name="Categories-1" value="Beverages">
-                                        <label for="Categories-5"> Hộp Nhung</label>
-                                    </div>
+                                    <!-- Các radio button cho packaging khác -->
+                                    @foreach (var item in ViewBag.Packagings as IEnumerable<Packaging>)
+                                    {
+                                        <div class="mb-2">
+                                            <input type="radio" class="me-2" id="Categories-@item.Id" name="Categories-1" value="@item.Id">
+                                            <label for="Categories-@item.Id">@item.Name</label>
+                                        </div>
+                                    }
                                 </div>
                             </div>
+
+
+
+
                             <div class="col-lg-12">
                                 <h4 class="mb-3">Featured products</h4>
                                 <div class="d-flex align-items-center justify-content-start">
@@ -201,11 +190,11 @@
                             }
                             else
                             {
-                                <div id="product-list" class="row" style="width: 900px">
+                                <div id="product-list" class="row" style="width: 900px" >
                                     @foreach (var item in Model)
                                     {
-
-                                        <div  style="height: 281px; width: 218px">
+                                        
+                                        <div style="height: 281px; width: 218px" data-packaging-id="@item.PackagingId">
                                             @await Html.PartialAsync("_Product", item)
                                         </div>
 
@@ -238,76 +227,130 @@
 </div>
 <!-- Fruits Shop End-->
 <script>
-    // Hàm xử lý sắp xếp
-    async function sortProducts() {
+    function sortProducts() {
         const sortOrder = document.getElementById("sortOrder").value; // Lấy giá trị sortOrder
-        const categoryId = '@ViewBag.Category.Id'; // Lấy categoryId từ ViewBag
-
-        // Kiểm tra nếu categoryId không hợp lệ
-        if (!categoryId) {
-            console.error("Category ID không hợp lệ.");
-            alert("Category ID không hợp lệ.");
-            return;
-        }
-
-        // Lấy phần tử product-list để cập nhật danh sách sản phẩm
         const productList = document.getElementById("product-list");
-        if (!productList) {
-            console.error("Không tìm thấy phần tử với id='product-list'.");
-            alert("Không tìm thấy phần tử để hiển thị sản phẩm.");
-            return;
-        }
+        const products = Array.from(productList.querySelectorAll('.box-product')); // Lấy danh sách sản phẩm hiện tại
 
-        // Hiển thị spinner trong khi chờ dữ liệu
-        productList.innerHTML = `
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            `;
+        // Sắp xếp sản phẩm dựa trên giá
+        const sortedProducts = products.sort((a, b) => {
+            const priceA = parseFloat(a.querySelector('.price-current').textContent.replace(/[^\d.-]/g, '')); // Lấy giá sản phẩm A
+            const priceB = parseFloat(b.querySelector('.price-current').textContent.replace(/[^\d.-]/g, '')); // Lấy giá sản phẩm B
 
-        // Gửi yêu cầu fetch đến server
-        const url = `/category/${categoryId}/sort?sortOrder=${sortOrder}`;
-        console.log("Gửi yêu cầu đến URL:", url);
-
-        try {
-            const response = await fetch(url);
-
-            // Kiểm tra phản hồi từ server
-            if (!response.ok) {
-                throw new Error(`Không thể tải dữ liệu. Mã lỗi: ${response.status}`);
+            // Tùy thuộc vào sortOrder (ascending hoặc descending)
+            if (sortOrder === "ascending") {
+                return priceA - priceB;
+            } else if (sortOrder === "descending") {
+                return priceB - priceA;
             }
+        });
 
-            const data = await response.json(); // Giả sử server trả về JSON thay vì HTML
+        // Cập nhật lại sản phẩm sau khi sắp xếp
+        productList.innerHTML = '';
+        sortedProducts.forEach(product => {
+            productList.appendChild(product);
+        });
+    }
 
-            if (data.success) {
-                // Nếu thành công, cập nhật danh sách sản phẩm
-                productList.innerHTML = data.products; // Giả sử sản phẩm là chuỗi HTML
+
+    // Hàm lọc sản phẩm theo PackagingId
+    function filterProductsByPackaging(packagingId) {
+        console.log("Lọc sản phẩm theo PackagingId:", packagingId);
+
+        const productList = document.getElementById("product-list");
+        const products = Array.from(productList.querySelectorAll('[data-packaging-id]')); // Lấy thẻ có `data-packaging-id`
+
+        let hasVisibleProduct = false; // Biến để kiểm tra có sản phẩm nào hiển thị không
+
+        products.forEach(product => {
+            const productPackagingId = product.getAttribute('data-packaging-id') || "";
+
+            if (packagingId === "" || productPackagingId === packagingId) {
+                product.style.display = ''; // Hiển thị sản phẩm
+                hasVisibleProduct = true;
             } else {
-                // Nếu server trả về lỗi, hiển thị thông báo lỗi
-                console.error(data.message || "Có lỗi xảy ra.");
-                productList.innerHTML = `
-                        <p class="text-danger">${data.message || "Không thể tải sản phẩm."}</p>
-                    `;
+                product.style.display = 'none'; // Ẩn sản phẩm
             }
-        } catch (error) {
-            // Nếu có lỗi trong quá trình fetch hoặc xử lý
-            console.error("Lỗi khi tải sản phẩm:", error);
-            productList.innerHTML = `
-                    <p class="text-danger">Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.</p>
-                `;
+        });
+
+        // Kiểm tra nếu không có sản phẩm nào được hiển thị, thêm thông báo không có sản phẩm
+        showNoProductsMessage(hasVisibleProduct);
+    }
+
+    // Hàm tìm kiếm sản phẩm
+    function SearchProductItem(noidung) {
+        const searchTerm = noidung.toLowerCase();
+        const productItems = document.querySelectorAll('.box-product'); // Chọn tất cả sản phẩm
+        let hasVisibleProduct = false; // Biến để kiểm tra có sản phẩm nào hiển thị không
+
+        productItems.forEach(item => {
+            const productName = item.querySelector('.inner-title').textContent.toLowerCase(); // Lấy tên sản phẩm (trong .inner-title)
+
+            // Kiểm tra nếu tên sản phẩm chứa từ khóa tìm kiếm
+            if (productName.includes(searchTerm)) {
+                item.style.display = ''; // Hiển thị sản phẩm
+                hasVisibleProduct = true;
+            } else {
+                item.style.display = 'none'; // Ẩn sản phẩm
+            }
+        });
+
+        // Kiểm tra nếu không có sản phẩm nào được hiển thị, thêm thông báo không có sản phẩm
+        showNoProductsMessage(hasVisibleProduct);
+    }
+
+    
+
+   
+
+
+    // Hàm hiển thị hoặc ẩn thông báo không có sản phẩm
+    function showNoProductsMessage(hasVisibleProduct) {
+        const noProductsMessage = document.getElementById("no-products-message");
+
+        if (hasVisibleProduct) {
+            if (noProductsMessage) {
+                noProductsMessage.style.display = 'none'; // Ẩn thông báo nếu có sản phẩm
+            }
+        } else {
+            if (!noProductsMessage) {
+                // Tạo thông báo không có sản phẩm
+                const messageDiv = document.createElement("div");
+                messageDiv.id = "no-products-message";
+                messageDiv.className = "col-12 text-center";
+                messageDiv.innerHTML = '<p class="text-muted fs-3">Chưa có sản phẩm</p>';
+                document.getElementById("product-list").appendChild(messageDiv); // Thêm thông báo vào cuối danh sách sản phẩm
+            } else {
+                noProductsMessage.style.display = ''; // Hiển thị thông báo nếu không có sản phẩm
+            }
         }
     }
 
-    // Đảm bảo script hoạt động sau khi DOM đã được load
-    document.addEventListener("DOMContentLoaded", function () {
-        const sortOrderDropdown = document.getElementById("sortOrder");
-        if (!sortOrderDropdown) {
-            console.error("Không tìm thấy phần tử với id='sortOrder'.");
-            return;
+    document.addEventListener('DOMContentLoaded', () => {
+        // Đảm bảo chọn "Tất cả" mặc định
+        const defaultRadioButton = document.querySelector('input[name="Categories-1"][value=""]');
+        if (defaultRadioButton) {
+            defaultRadioButton.checked = true;
+            filterProductsByPackaging(""); // Hiển thị tất cả sản phẩm
         }
 
-        // Gắn sự kiện onchange cho dropdown
-        sortOrderDropdown.addEventListener("change", sortProducts);
+        // Lắng nghe sự kiện chọn radio button để lọc sản phẩm theo cách đóng gói
+        const radioButtons = document.querySelectorAll('input[name="Categories-1"]');
+        radioButtons.forEach((button) => {
+            button.addEventListener('change', () => {
+                const selectedValue = document.querySelector('input[name="Categories-1"]:checked').value;
+                console.log("Radio button chọn giá trị:", selectedValue);
+                filterProductsByPackaging(selectedValue); // Lọc sản phẩm theo PackagingId
+            });
+        });
+
+        // Gọi hàm tìm kiếm khi người dùng nhập vào ô tìm kiếm
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (event) => {
+            console.log('Người dùng nhập:', event.target.value);
+            SearchProductItem(event.target.value); // Truyền giá trị tìm kiếm từ ô input
+        });
     });
+
 </script>
 

@@ -1,5 +1,9 @@
 ﻿using FlowerShop.Service;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
+using FlowerShop.DataAccess;
+using FlowerShop.Service.ServiceImpl;
 
 namespace FlowerShop.Web.Areas.Customer.Controllers
 {
@@ -8,11 +12,15 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
+        private readonly IPackagingService _packagingService;
+        private readonly FlowerShopContext _context;
 
-        public ProductCategoryController(ICategoryService categoryService, IProductService productService)
+        public ProductCategoryController(FlowerShopContext context, ICategoryService categoryService, IProductService productService, IPackagingService packagingService)
         {
             _categoryService = categoryService;
             _productService = productService;
+            _packagingService = packagingService;
+            _context = context;
         }
 
         [Route("category/{categoryId}")]
@@ -29,9 +37,16 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
 
                 // Lấy danh sách sản phẩm theo danh mục
                 var products = await _productService.GetProductsByCategoryAsync(categoryId);
+
+                // Lấy danh sách đóng gói từ database
+                var packagings = await _packagingService.GetAllPackagingAsync();
+
+                // Gửi dữ liệu vào ViewBag
                 ViewBag.Category = category; // Gửi thông tin danh mục vào ViewBag
                 ViewBag.Products = products; // Gửi danh sách sản phẩm vào ViewBag
+                ViewBag.Packagings = packagings; // Gửi danh sách đóng gói vào ViewBag
 
+                // Trả về view với danh sách sản phẩm
                 return View(products);
             }
             catch (Exception)
@@ -40,40 +55,11 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("category/{categoryId}/sort")]
-        public async Task<IActionResult> GetSortedProductsPartial(int categoryId, string? sortOrder = null)
-        {
-            try
-            {
-                var products = await _productService.GetProductsByCategoryAsync(categoryId);
-                // Kiểm tra nếu không có sản phẩm
-                if (products == null || !products.Any())
-                {
-                    return Json(new { success = false, message = "Không có sản phẩm nào." });
-                }
 
-                // Áp dụng sắp xếp
-                if (!string.IsNullOrEmpty(sortOrder))
-                {
-                    products = sortOrder.ToLower() switch
-                    {
-                        "asc" => products.OrderBy(p => p.ProductPrices.OrderByDescending(pp => pp.StartDate).FirstOrDefault()?.Price ?? 0).ToList(),
-                        "desc" => products.OrderByDescending(p => p.ProductPrices.OrderByDescending(pp => pp.StartDate).FirstOrDefault()?.Price ?? 0).ToList(),
-                        _ => products
-                    };
-                }
 
-                return Json(new { success = true, products = products });
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Lỗi: {ex.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
-                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình xử lý." });
-            }
-        }
+
+
 
 
 
