@@ -57,7 +57,7 @@
 <div class="section-products">
     <div class="container">
         <div class="inner-tag" style="padding-bottom: 25px;">
-            <h2>Sản phẩm bán chạy</h2>
+            <h2 id="san-pham-ban-chay">Sản phẩm bán chạy</h2>
         </div>
         <div class="inner-products">
             <div class="row">
@@ -265,3 +265,21 @@
         </div>
     </div>
 </div>
+<script>
+    // Đảm bảo mã cuộn chạy sau khi trang tải xong
+    window.addEventListener('load', function () {
+        // Kiểm tra xem URL có chứa hash hay không
+        const hash = window.location.hash;
+        if (hash) {
+            // Lấy phần tử theo hash (ví dụ: #san-pham-ban-chay)
+            const element = document.querySelector(hash);
+            if (element) {
+                // Cuộn đến phần tử với hiệu ứng smooth
+                element.scrollIntoView({ behavior: "smooth" });
+                console.log("Đã cuộn đến phần tử " + hash);
+            } else {
+                console.log("Không tìm thấy phần tử " + hash);
+            }
+        }
+    });
+</script>
