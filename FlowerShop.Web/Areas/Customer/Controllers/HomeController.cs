@@ -48,30 +48,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
 
         }
 
-        [Route("category/{categoryId}")]
-        public async Task<IActionResult> ProductCategoryAsync(int categoryId)
-        {
-            try
-            {
-                // Lấy thông tin danh mục
-                var category = await _categoryService.GetCategoryByIdAsync(categoryId);
-                if (category == null)
-                {
-                    return RedirectToAction("NotFound", "Error");
-                }
-
-                // Lấy danh sách sản phẩm theo danh mục
-                var products = await _productService.GetProductsByCategoryAsync(categoryId);
-                ViewBag.Category = category; // Gửi thông tin danh mục vào ViewBag
-                ViewBag.Products = products; // Gửi danh sách sản phẩm vào ViewBag
-                
-                return View(products);
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("NotFound", "Error");
-            }
-        }
+       
 
 
 
