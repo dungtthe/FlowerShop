@@ -415,5 +415,42 @@ namespace FlowerShop.Service.ServiceImpl
         {
             return await _productRepository.GetProductsByCategoryAsync(categoryId);
         }
+
+        public async Task<Product> GetProductByIdAsync(int productId)
+        {
+            return await _productRepository.SingleOrDefaultWithIncludeAsync(
+                p => p.Id == productId && !p.IsDelete,
+                p => p.ProductCategories,
+                p => p.ProductPrices
+            );
+        }
+
+        public async Task<IEnumerable<Category>> GetCategoriesByProductIdAsync(int productId)
+        {
+            // Lấy tất cả các ProductCategories không bị xóa
+            var productCategories = await _productCategoryRepository.GetAllAsync();
+
+            // Lọc các ProductCategory liên kết với sản phẩm và chưa bị xóa
+            var productCategoryIds = productCategories
+                .Where(pc => pc.ProductId == productId && !pc.IsDelete)
+                .Select(pc => pc.CategoryId)
+                .ToList();
+
+            // Lấy tất cả các danh mục chưa bị xóa
+            var categories = await _categoryRepository.GetAllAsync();
+
+            // Lọc các danh mục có CategoryId trong danh sách của ProductCategories
+            var filteredCategories = categories
+                .Where(c => productCategoryIds.Contains(c.Id) && !c.IsDelete)
+                .ToList();
+
+            return filteredCategories;
+        }
+
+        public async Task<Packaging> GetPackagingByIdAsync(int packagingId)
+        {
+            return await _packagingRepository.SingleOrDefaultAsync(p => p.Id == packagingId);
+        }
+
     }
 }

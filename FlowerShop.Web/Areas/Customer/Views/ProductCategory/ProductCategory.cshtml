@@ -187,17 +187,18 @@
                             }
                             else
                             {
-                                <div id="product-list" class="row" style="width: 900px" >
+                                <div id="product-list" class="row" style="width: 900px">
                                     @foreach (var item in Model)
                                     {
-                                        
-                                        <div style="height: 281px; width: 218px" data-packaging-id="@item.PackagingId">
-                                            @await Html.PartialAsync("_Product", item)
-                                        </div>
-
-                                       
+                                        <a href="@Url.Action("DetailsAsync", "ProductDetail", new { id = item.Id })" style="text-decoration: none; color: inherit;">
+                                            <div style="height: 281px; width: 218px" data-packaging-id="@item.PackagingId">
+                                                @await Html.PartialAsync("_Product", item)
+                                            </div>
+                                        </a>
                                     }
                                 </div>
+
+
                             }
                         </div>
 
