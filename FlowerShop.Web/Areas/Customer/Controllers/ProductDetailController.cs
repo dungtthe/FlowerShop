@@ -30,7 +30,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
                 // Lấy thông tin sản phẩm qua Service
                 var product = await _productService.GetProductByIdAsync(id);
                 var topSellingProducts = await _productService.GetTopSellingProductsAsync();
-                
+
                 if (product == null)
                 {
                     return RedirectToAction("NotFound", "Error");
@@ -40,15 +40,24 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
                 var categories = await _productService.GetCategoriesByProductIdAsync(id);
                 var category = categories.FirstOrDefault(); // Lấy danh mục đầu tiên
 
+                // Lấy danh sách sản phẩm cùng danh mục
+                var relatedProducts = new List<Product>();
+                if (category != null)
+                {
+                    relatedProducts = (await _productService.GetProductsByCategoryAsync(category.Id)).ToList();
+                }
+
+
                 // Lấy thông tin đóng gói qua Service
                 var packaging = await _productService.GetPackagingByIdAsync(product.PackagingId);
-
-
 
                 // Truyền dữ liệu qua ViewBag
                 ViewBag.Category = category;
                 ViewBag.Packaging = packaging;
+                ViewBag.Quantity = product.Quantity; // Thêm số lượng tồn vào ViewBag
                 ViewBag.topSellingProducts = topSellingProducts;
+                ViewBag.RelatedProducts = relatedProducts; // Truyền sản phẩm cùng danh mục vào ViewBag
+
 
                 return View("ProductDetail", product);
             }
@@ -58,5 +67,10 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
                 return RedirectToAction("NotFound", "Error");
             }
         }
+
+
+
+
+
     }
 }
