@@ -16,27 +16,28 @@
 }
 <div class="box-product col-custom">
     <div class="inner-wrap">
-        <div class="inner-image">
-            @if (priceDefault > priceSale)
-            {
-                <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
-                    SALE
-                </div>
-                flag = true;
-            }
+        <div class="inner-image" >
+            @* <a style="display:none; height:1000px; width:100px;" asp-action="Details" asp-controller="ProductDetail" asp-route-id="@Model.Id"></a> *@
+                @if (priceDefault > priceSale)
+                {
+                    <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                        SALE
+                    </div>
+                    flag = true;
+                }
 
-            @if (firstImg.Contains("http"))
-            {
-                <img src="@firstImg" alt="ảnh sản phẩm" style="mix-blend-mode: multiply; !important">
-            }
-            else
-            {
-                <img src="@Url.Content("~/images/products/" + firstImg)" alt="ảnh sản phẩm"
-                    style="mix-blend-mode: multiply; !important">
-            }
-            <div class="inner-icon" onclick="AddProductToCart(@Model.Id,1)">
-                <i class="bi bi-cart-plus"></i>
-            </div>
+                @if (firstImg.Contains("http"))
+                {
+                    <img src="@firstImg" alt="ảnh sản phẩm" style="mix-blend-mode: multiply; !important">
+                }
+                else
+                {
+                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="ảnh sản phẩm"
+                         style="mix-blend-mode: multiply; !important">
+                }
+                <div class="inner-icon" onclick="AddProductToCart(@Model.Id,1)">
+                    <i class="bi bi-cart-plus"></i>
+                </div>
         </div>
         <div class="inner-content">
             <h3 class="inner-title">@Model.Title</h3>

@@ -7,6 +7,7 @@ using FlowerShop.DataAccess.Models;
 namespace FlowerShop.Web.Areas.Customer.Controllers
 {
     [Area("CUSTOMER")]
+    [Route("chi-tiet-sp")]
     public class ProductDetailController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -22,13 +23,13 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             _context = context;
         }
 
-        [Route("ProductDetail/DetailsAsync/{id}")]
-        public async Task<IActionResult> DetailsAsync(int id)
+        [HttpGet("detail")]
+        public async Task<IActionResult> DetailsAsync(int ?id)
         {
             try
             {
                 // Lấy thông tin sản phẩm qua Service
-                var product = await _productService.GetProductByIdAsync(id);
+                var product = await _productService.GetProductByIdAsync(id??-1);
                 var topSellingProducts = await _productService.GetTopSellingProductsAsync();
 
                 if (product == null)
@@ -37,7 +38,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
                 }
 
                 // Lấy danh mục liên quan (Chỉ lấy 1 danh mục)
-                var categories = await _productService.GetCategoriesByProductIdAsync(id);
+                var categories = await _productService.GetCategoriesByProductIdAsync(id ?? -1);
                 var category = categories.FirstOrDefault(); // Lấy danh mục đầu tiên
 
                 // Lấy danh sách sản phẩm cùng danh mục
