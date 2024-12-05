@@ -43,7 +43,7 @@
         {
             <!-- Root Category: Hover để mở menu -->
             <div class="dropdown">
-                <a href="@Url.Action("ProductCategory", "Home", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@Model.Name</a>
+                <a href="@Url.Action("ProductCategory", "ProductCategory", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@Model.Name</a>
                 <div class="dropdown-menu m-0 bg-secondary rounded-0">
                     @foreach (var subCategory in Model.SubCategories)
                     {
@@ -56,7 +56,7 @@
         {
             <!-- Subcategory: Click để mở menu -->
             <div class="dropdown-submenu">
-                <a href="@Url.Action("ProductCategory", "Home", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link dropdown-toggle">@Model.Name</a>
+                <a href="@Url.Action("ProductCategory", "ProductCategory", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link dropdown-toggle">@Model.Name</a>
                 <div class="dropdown-menu m-0 bg-secondary rounded-0">
                     @foreach (var subCategory in Model.SubCategories)
                     {
@@ -68,6 +68,6 @@
     }
     else
     {
-        <a href="@Url.Action("ProductCategory", "Home", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link">@Model.Name</a>
+        <a href="@Url.Action("ProductCategory", "ProductCategory", new { area = "CUSTOMER", categoryId = Model.Id })" class="nav-link">@Model.Name</a>
     }
 </div>

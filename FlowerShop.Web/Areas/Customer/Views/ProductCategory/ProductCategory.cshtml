@@ -1,0 +1,358 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.Product>
+@using FlowerShop.DataAccess.Models;
+@using Newtonsoft.Json;
+@using FlowerShop.Common.Helpers;
+@{
+
+    ViewBag.Title = ViewBag.Category?.Name ?? "Danh mục";
+    var sortOrder = ViewBag.SortOrder as string;
+    var topSellingProducts = ViewBag.topSellingProducts as IEnumerable<Product>;
+}
+
+<style>
+    #btnViewMore:hover a{
+        color:black !important;
+    }
+</style>
+
+
+@{
+    string parentCategoryName = "";
+
+    // Determine the parent category name based on ParentCategoryId
+    switch (@ViewBag.Category?.ParentCategoryId)
+    {
+        case 1:
+            parentCategoryName = "CHỦ ĐỀ";
+            break;
+        case 2:
+            parentCategoryName = "ĐỐI TƯỢNG";
+            break;
+        case 3:
+            parentCategoryName = "KIỂU DÁNG";
+            break;
+        case 4:
+            parentCategoryName = "HOA TƯƠI";
+            break;
+        case 5:
+            parentCategoryName = "MÀU SẮC";
+            break;
+        case 6:
+            parentCategoryName = "BỘ SƯU TẬP";
+            break;
+        case 7:
+            parentCategoryName = "QUÀ TẶNG KÈM";
+            break;
+        default:
+            parentCategoryName = "Unknown Category";
+            break;
+    }
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">@ViewBag.Category?.Name</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">@parentCategoryName</a></li>
+        <li class="breadcrumb-item active text-white">@ViewBag.Category?.Name</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+<!-- Fruits Shop Start-->
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <h1 class="mb-4">Hoa Yêu Thương</h1>
+        <div class="row g-4">
+            <div class="col-lg-12">
+                <div class="row g-4">
+                    <div class="col-xl-3">
+                        <div class="input-group w-100 mx-auto d-flex">
+                            
+                            <input oninput="SearchProductItem(this.value)" type="text" id="searchInput" class="form-control p-3" placeholder="Tìm kiếm sản phẩm..." aria-describedby="search-icon-1">
+
+                            <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+
+
+                    <div class="col-6"></div>
+                    <div class="col-xl-3">
+                        <label for="sortOrder">Sắp xếp giá:</label>
+                        <select id="sortOrder" name="sortOrder" class="border-0 form-select-sm bg-light" onchange="sortProducts()">
+                            <option value="">Chưa sắp xếp</option>
+                            <option value="ascending">Giá tăng dần</option>
+                            <option value="descending">Giá giảm dần</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-3 ">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="mb-3" style="margin-top : 20px">
+                                    <h4>Cách đóng gói</h4>
+                                    <!-- Radio button "Tất cả" với thuộc tính checked -->
+                                    <div class="mb-2">
+                                        <input type="radio" class="me-2" id="Categories-all" name="Categories-1" value="" checked>
+                                        <label for="Categories-all">Tất cả</label>
+                                    </div>
+                                    <!-- Các radio button cho packaging khác -->
+                                    @foreach (var item in ViewBag.Packagings as IEnumerable<Packaging>)
+                                    {
+                                        <div class="mb-2">
+                                            <input type="radio" class="me-2" id="Categories-@item.Id" name="Categories-1" value="@item.Id">
+                                            <label for="Categories-@item.Id">@item.Name</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-12">
+                                <h4 class="mb-3">Sản phẩm bán chạy</h4>
+                                @foreach (var product in topSellingProducts.Take(5))
+                                {
+                                    // Giải mã chuỗi JSON Images thành danh sách URL ảnh
+                                    var imageUrls = JsonConvert.DeserializeObject<List<string>>(product.Images);
+
+                                    // Kiểm tra xem danh sách ảnh có chứa ảnh không
+                                    var firstImageUrl = imageUrls?.FirstOrDefault();
+
+                                    <div class="d-flex align-items-center justify-content-start mb-4">
+                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
+                                            @if (!string.IsNullOrEmpty(firstImageUrl))
+                                            {
+                                                <img src="@firstImageUrl" class="img-fluid rounded" alt="@product.Title" />
+                                            }
+                                            else
+                                            {
+                                                <img src="no_img.png" class="img-fluid rounded" alt="@product.Title" style="width: 100px !important; height: 100px !important; object-fit: cover !important;" />
+
+
+
+
+                                            }
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-2">@product.Title</h6>
+                                            <div class="d-flex mb-2">
+                                                @if (product.ProductPrices != null && product.ProductPrices.Any())
+                                                {
+                                                    <h5 class="me-2">
+                                                        @(@product.ProductPrices.OrderByDescending(p => p.Priority).FirstOrDefault()?.Price.ToString("#,0") + " đ")
+                                                    </h5>
+                                                }
+                                                else
+                                                {
+                                                    <h5 class="me-2">Price not available</h5>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div id ="btnViewMore" class="d-flex justify-content-center my-4">
+                                    <a  class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100"  onclick="viewMore()">View More</a>
+                                </div>
+
+
+
+                            </div>
+
+
+
+
+
+
+                            <div class="col-lg-12">
+                                <div class="position-relative">
+                                    <img src="/customer/img/banner-fruits.jpg" class="img-fluid w-100 rounded" alt="">
+                                    <div class="position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
+                                        <h3 class="text-secondary fw-bold">Hoa <br> Yêu <br> Thương</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 section-products container">
+                        <div class="row g-4 inner-products">
+                            @if (Model == null || !Model.Any())
+                            {
+                                <!-- Thông báo khi không có sản phẩm -->
+                                <div class="col-12 text-center">
+                                    <p class="text-muted fs-3">Chưa có sản phẩm</p>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="product-list" class="row" style="width: 900px">
+                                    @foreach (var item in Model)
+                                    {
+                                        <a href="@Url.Action("DetailsAsync", "ProductDetail", new { id = item.Id })" style="text-decoration: none; color: inherit;">
+                                            <div style="height: 281px; width: 218px" data-packaging-id="@item.PackagingId">
+                                                @await Html.PartialAsync("_Product", item)
+                                            </div>
+                                        </a>
+                                    }
+                                </div>
+
+
+                            }
+                        </div>
+
+
+                            
+                            <div class="col-12">
+                                <div class="pagination d-flex justify-content-center mt-5">
+                                    <a href="#" class="rounded">&laquo;</a>
+                                    <a href="#" class="active rounded">1</a>
+                                    <a href="#" class="rounded">2</a>
+                                    <a href="#" class="rounded">3</a>
+                                    <a href="#" class="rounded">4</a>
+                                    <a href="#" class="rounded">5</a>
+                                    <a href="#" class="rounded">6</a>
+                                    <a href="#" class="rounded">&raquo;</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fruits Shop End-->
+<script>
+    function viewMore() {
+        window.location.href = "/#san-pham-ban-chay";
+    }
+
+    function sortProducts() {
+        const sortOrder = document.getElementById("sortOrder").value; // Lấy giá trị sortOrder
+        const productList = document.getElementById("product-list");
+        const products = Array.from(productList.querySelectorAll('.box-product')); // Lấy danh sách sản phẩm hiện tại
+
+        // Sắp xếp sản phẩm dựa trên giá
+        const sortedProducts = products.sort((a, b) => {
+            const priceA = parseFloat(a.querySelector('.price-current').textContent.replace(/[^\d.-]/g, '')); // Lấy giá sản phẩm A
+            const priceB = parseFloat(b.querySelector('.price-current').textContent.replace(/[^\d.-]/g, '')); // Lấy giá sản phẩm B
+
+            // Tùy thuộc vào sortOrder (ascending hoặc descending)
+            if (sortOrder === "ascending") {
+                return priceA - priceB;
+            } else if (sortOrder === "descending") {
+                return priceB - priceA;
+            }
+        });
+
+        // Cập nhật lại sản phẩm sau khi sắp xếp
+        productList.innerHTML = '';
+        sortedProducts.forEach(product => {
+            productList.appendChild(product);
+        });
+    }
+
+
+    // Hàm lọc sản phẩm theo PackagingId
+    function filterProductsByPackaging(packagingId) {
+        console.log("Lọc sản phẩm theo PackagingId:", packagingId);
+
+        const productList = document.getElementById("product-list");
+        const products = Array.from(productList.querySelectorAll('[data-packaging-id]')); // Lấy thẻ có `data-packaging-id`
+
+        let hasVisibleProduct = false; // Biến để kiểm tra có sản phẩm nào hiển thị không
+
+        products.forEach(product => {
+            const productPackagingId = product.getAttribute('data-packaging-id') || "";
+
+            if (packagingId === "" || productPackagingId === packagingId) {
+                product.style.display = ''; // Hiển thị sản phẩm
+                hasVisibleProduct = true;
+            } else {
+                product.style.display = 'none'; // Ẩn sản phẩm
+            }
+        });
+
+        // Kiểm tra nếu không có sản phẩm nào được hiển thị, thêm thông báo không có sản phẩm
+        showNoProductsMessage(hasVisibleProduct);
+    }
+
+    // Hàm tìm kiếm sản phẩm
+    function SearchProductItem(noidung) {
+        const searchTerm = noidung.toLowerCase();
+        const productItems = document.querySelectorAll('.box-product'); // Chọn tất cả sản phẩm
+        let hasVisibleProduct = false; // Biến để kiểm tra có sản phẩm nào hiển thị không
+
+        productItems.forEach(item => {
+            const productName = item.querySelector('.inner-title').textContent.toLowerCase(); // Lấy tên sản phẩm (trong .inner-title)
+
+            // Kiểm tra nếu tên sản phẩm chứa từ khóa tìm kiếm
+            if (productName.includes(searchTerm)) {
+                item.style.display = ''; // Hiển thị sản phẩm
+                hasVisibleProduct = true;
+            } else {
+                item.style.display = 'none'; // Ẩn sản phẩm
+            }
+        });
+
+        // Kiểm tra nếu không có sản phẩm nào được hiển thị, thêm thông báo không có sản phẩm
+        showNoProductsMessage(hasVisibleProduct);
+    }
+
+    
+
+   
+
+
+    // Hàm hiển thị hoặc ẩn thông báo không có sản phẩm
+    function showNoProductsMessage(hasVisibleProduct) {
+        const noProductsMessage = document.getElementById("no-products-message");
+
+        if (hasVisibleProduct) {
+            if (noProductsMessage) {
+                noProductsMessage.style.display = 'none'; // Ẩn thông báo nếu có sản phẩm
+            }
+        } else {
+            if (!noProductsMessage) {
+                // Tạo thông báo không có sản phẩm
+                const messageDiv = document.createElement("div");
+                messageDiv.id = "no-products-message";
+                messageDiv.className = "col-12 text-center";
+                messageDiv.innerHTML = '<p class="text-muted fs-3">Chưa có sản phẩm</p>';
+                document.getElementById("product-list").appendChild(messageDiv); // Thêm thông báo vào cuối danh sách sản phẩm
+            } else {
+                noProductsMessage.style.display = ''; // Hiển thị thông báo nếu không có sản phẩm
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Đảm bảo chọn "Tất cả" mặc định
+        const defaultRadioButton = document.querySelector('input[name="Categories-1"][value=""]');
+        if (defaultRadioButton) {
+            defaultRadioButton.checked = true;
+            filterProductsByPackaging(""); // Hiển thị tất cả sản phẩm
+        }
+
+        // Lắng nghe sự kiện chọn radio button để lọc sản phẩm theo cách đóng gói
+        const radioButtons = document.querySelectorAll('input[name="Categories-1"]');
+        radioButtons.forEach((button) => {
+            button.addEventListener('change', () => {
+                const selectedValue = document.querySelector('input[name="Categories-1"]:checked').value;
+                console.log("Radio button chọn giá trị:", selectedValue);
+                filterProductsByPackaging(selectedValue); // Lọc sản phẩm theo PackagingId
+            });
+        });
+
+        // Gọi hàm tìm kiếm khi người dùng nhập vào ô tìm kiếm
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (event) => {
+            console.log('Người dùng nhập:', event.target.value);
+            SearchProductItem(event.target.value); // Truyền giá trị tìm kiếm từ ô input
+        });
+    });
+
+</script>
+
