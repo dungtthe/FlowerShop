@@ -16,8 +16,7 @@
 }
 <div class="box-product col-custom">
     <div class="inner-wrap">
-        <div class="inner-image" >
-            @* <a style="display:none; height:1000px; width:100px;" asp-action="Details" asp-controller="ProductDetail" asp-route-id="@Model.Id"></a> *@
+        <div class="inner-image" onClick="DetailProduct(@Model.Id)">
                 @if (priceDefault > priceSale)
                 {
                     <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">

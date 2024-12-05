@@ -7,15 +7,15 @@ using FlowerShop.DataAccess.Models;
 namespace FlowerShop.Web.Areas.Customer.Controllers
 {
     [Area("CUSTOMER")]
-    [Route("chi-tiet-sp")]
-    public class ProductDetailController : Controller
+    [Route("product")]
+    public class ProductController : Controller
     {
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IPackagingService _packagingService;
         private readonly FlowerShopContext _context;
 
-        public ProductDetailController(FlowerShopContext context, ICategoryService categoryService, IProductService productService, IPackagingService packagingService)
+        public ProductController(FlowerShopContext context, ICategoryService categoryService, IProductService productService, IPackagingService packagingService)
         {
             _categoryService = categoryService;
             _productService = productService;
@@ -24,7 +24,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
         }
 
         [HttpGet("detail")]
-        public async Task<IActionResult> DetailsAsync(int ?id)
+        public async Task<IActionResult> DetailAsync(int ?id)
         {
             try
             {

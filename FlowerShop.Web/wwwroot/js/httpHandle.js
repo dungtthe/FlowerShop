@@ -19,7 +19,12 @@ const fetchGet = async (uri, onSuccess, onFail, onException) => {
       return;
     }
 
-    const data = await res.json();
+      const data = await res.json();
+      if ("redirect" in data) {
+          const urlNew = data.redirect;
+          window.location.href = urlNew;
+          return;
+      }
     if (!res.ok) {
       onFail(data);
       return;
