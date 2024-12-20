@@ -41,5 +41,9 @@ namespace FlowerShop.Service
 		Task<PopupViewModel> Huy(int id, string reason);
 
 		Task XuLyDonHangSauKhiHuy(int id);
+
+		Task<double> TongTienCuaMotDonHang(int id);
+
+		Task<double> TongDoanhThuThangNay();
 	}
 }
