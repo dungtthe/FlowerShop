@@ -263,5 +263,12 @@ namespace FlowerShop.Service.ServiceImpl
 			}
 			return tongtien;
 		}
+
+		public async Task<int> SoDonHangCho()
+		{
+			var donHangCho = await GetSaleInvoiceWithIcludeAsync();
+			var soLuong = donHangCho.Count();
+			return soLuong;
+		}
 	}
 }

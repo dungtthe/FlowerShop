@@ -25,6 +25,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			var tongDoanhThuThangNay = await _saleInvoiceService.TongDoanhThuThangNay();
 			var tongChiThangNay = await _supplierInvoiceService.TongChiThangNay();
 			var tongDoanhThuHomNay = await _saleInvoiceService.TongDoanhThuHomNay();
+			var soDonHangCho = await _saleInvoiceService.SoDonHangCho();
 
 			// Truyền dữ liệu sang View
 			if (tongDoanhThuThangNay == 0)
@@ -53,6 +54,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			{
 				ViewBag.TongChiThangNay = string.Format("{0:0,0}", tongChiThangNay).Replace(",", ".");
 			}
+			ViewBag.SoDonHangCho = soDonHangCho;
 
 			return View();
 		}
