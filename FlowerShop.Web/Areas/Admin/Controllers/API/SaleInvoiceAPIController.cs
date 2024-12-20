@@ -147,5 +147,31 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
 			return Ok(saleInvoiceDetail.ToList());
 		}
+
+		[HttpGet("doanh-thu-theo-ngay")]
+		public async Task<IActionResult> GetSalesDataByDateRange([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+		{
+			try
+			{
+				if (!startDate.HasValue || !endDate.HasValue)
+				{
+					return BadRequest(new { error = "Vui lòng cung cấp ngày bắt đầu và ngày kết thúc." });
+				}
+
+				var data = await _saleInvoiceService.GetSalesDataByDateRangeAsync(startDate, endDate);
+
+				if (data == null || !data.ContainsKey("labels") || !data.ContainsKey("values"))
+				{
+					return NotFound(new { message = "Không tìm thấy dữ liệu doanh thu trong khoảng thời gian được chọn." });
+				}
+
+				return Ok(data);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi khi gọi API GetSalesDataByDateRange: {ex.Message}");
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
 	}
 }

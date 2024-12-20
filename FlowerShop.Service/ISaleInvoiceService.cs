@@ -49,5 +49,7 @@ namespace FlowerShop.Service
 		Task<double> TongDoanhThuHomNay();
 
 		Task<int> SoDonHangCho();
+
+		Task<Dictionary<string, object>> GetSalesDataByDateRangeAsync(DateTime? startDate, DateTime? endDate);
 	}
 }

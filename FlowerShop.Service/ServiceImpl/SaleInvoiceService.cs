@@ -270,5 +270,79 @@ namespace FlowerShop.Service.ServiceImpl
 			var soLuong = donHangCho.Count();
 			return soLuong;
 		}
+
+		public async Task<Dictionary<string, object>> GetSalesDataByDateRangeAsync(DateTime? startDate, DateTime? endDate)
+		{
+			try
+			{
+				var invoices = await _saleInvoiceRepository.GetAllAsync();
+
+				var filteredInvoices = invoices.Where(i => i.Status == ConstStatusSaleInvoice.GIAO_HANG_THANH_CONG);
+
+				if (startDate.HasValue)
+				{
+					filteredInvoices = filteredInvoices.Where(i => i.CreateDay >= startDate.Value);
+				}
+				if (endDate.HasValue)
+				{
+					filteredInvoices = filteredInvoices.Where(i => i.CreateDay <= endDate.Value);
+				}
+
+				// Nhóm doanh thu theo ngày
+				var dailySales = filteredInvoices
+					.GroupBy(i => i.CreateDay.Date)
+					.ToDictionary(g => g.Key, g => g.ToList());
+
+				// Danh sách ngày cần hiển thị: luôn bao gồm startDate và endDate
+				var labels = new HashSet<string>
+		{
+			startDate.Value.ToString("dd/MM/yyyy"),
+			endDate.Value.ToString("dd/MM/yyyy")
+		};
+
+				var values = new List<double>();
+
+				// Thêm tối đa 3 ngày có doanh thu khác 0, ưu tiên ngày gần nhất
+				foreach (var day in dailySales.Keys.OrderBy(d => d))
+				{
+					if (labels.Count >= 5) break; // Bao gồm startDate, endDate và tối đa 3 ngày khác
+					labels.Add(day.ToString("dd/MM/yyyy"));
+				}
+
+				// Đảm bảo giá trị được sắp xếp theo thời gian
+				var sortedLabels = labels.OrderBy(label => DateTime.ParseExact(label, "dd/MM/yyyy", null)).ToList();
+
+				foreach (var label in sortedLabels)
+				{
+					var date = DateTime.ParseExact(label, "dd/MM/yyyy", null);
+
+					if (dailySales.ContainsKey(date))
+					{
+						double total = 0;
+						foreach (var invoice in dailySales[date])
+						{
+							total += await TongTienCuaMotDonHang(invoice.Id);
+						}
+						values.Add(total);
+					}
+					else
+					{
+						// Gán 0 nếu không có hóa đơn cho ngày đó
+						values.Add(0);
+					}
+				}
+
+				return new Dictionary<string, object>
+		{
+			{ "labels", sortedLabels },
+			{ "values", values }
+		};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi trong Service GetSalesDataByDateRangeAsync: {ex.Message}");
+				throw;
+			}
+		}
 	}
 }
