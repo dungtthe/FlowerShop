@@ -23,9 +23,11 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var tongDoanhThuThangNay = await _saleInvoiceService.TongDoanhThuThangNay();
+			var tongChiThangNay = await _supplierInvoiceService.TongChiThangNay();
 
-			// Truyền dữ liệu sang View nếu cần
+			// Truyền dữ liệu sang View
 			ViewBag.TongDoanhThuThangNay = string.Format("{0:0,0}", tongDoanhThuThangNay).Replace(",", ".");
+			ViewBag.TongChiThangNay = string.Format("{0:0,0}", tongChiThangNay).Replace(",", ".");
 
 			return View();
 		}
