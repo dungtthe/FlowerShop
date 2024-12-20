@@ -24,10 +24,35 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		{
 			var tongDoanhThuThangNay = await _saleInvoiceService.TongDoanhThuThangNay();
 			var tongChiThangNay = await _supplierInvoiceService.TongChiThangNay();
+			var tongDoanhThuHomNay = await _saleInvoiceService.TongDoanhThuHomNay();
 
 			// Truyền dữ liệu sang View
-			ViewBag.TongDoanhThuThangNay = string.Format("{0:0,0}", tongDoanhThuThangNay).Replace(",", ".");
-			ViewBag.TongChiThangNay = string.Format("{0:0,0}", tongChiThangNay).Replace(",", ".");
+			if (tongDoanhThuThangNay == 0)
+			{
+				ViewBag.TongDoanhThuThangNay = 0;
+			}
+			else
+			{
+				ViewBag.TongDoanhThuThangNay = string.Format("{0:0,0}", tongDoanhThuThangNay).Replace(",", ".");
+			}
+
+			if (tongDoanhThuHomNay == 0)
+			{
+				ViewBag.TongDoanhThuHomNay = 0;
+			}
+			else
+			{
+				ViewBag.TongDoanhThuHomNay = string.Format("{0:0,0}", tongDoanhThuHomNay).Replace(",", ".");
+			}
+
+			if (tongChiThangNay == 0)
+			{
+				ViewBag.TongChiThangNay = 0;
+			}
+			else
+			{
+				ViewBag.TongChiThangNay = string.Format("{0:0,0}", tongChiThangNay).Replace(",", ".");
+			}
 
 			return View();
 		}

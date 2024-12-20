@@ -245,5 +245,23 @@ namespace FlowerShop.Service.ServiceImpl
 			}
 			return tongtien;
 		}
+
+		public async Task<double> TongDoanhThuHomNay()
+		{
+			double tongtien = 0;
+			var donHangGiaoThanhCong = await LayCacDonHangGiaoThanhCong();
+			// Lọc các đơn hàng giao thành công hôm nay
+			var donHangHomNay = donHangGiaoThanhCong
+				.Where(d => d.CreateDay.Month == DateTime.Now.Month
+				&& d.CreateDay.Year == DateTime.Now.Year && d.CreateDay.Day == DateTime.Now.Day);
+
+			// Tính tổng tiền của các đơn hàng trong hôm nay
+			foreach (var item in donHangHomNay)
+			{
+				var tien = await TongTienCuaMotDonHang(item.Id);
+				tongtien += tien;
+			}
+			return tongtien;
+		}
 	}
 }

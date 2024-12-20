@@ -45,5 +45,7 @@ namespace FlowerShop.Service
 		Task<double> TongTienCuaMotDonHang(int id);
 
 		Task<double> TongDoanhThuThangNay();
+
+		Task<double> TongDoanhThuHomNay();
 	}
 }
