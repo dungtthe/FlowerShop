@@ -1,0 +1,308 @@
+﻿<div class="container-fluid">
+
+	<!-- Page Heading -->
+	<div class="d-sm-flex align-items-center justify-content-between mb-4">
+		<h1 class="h3 mb-0 text-gray-800">Thống kê doanh thu</h1>
+	</div>
+
+	<!-- Content Row -->
+	<div class="row">
+
+		<!-- Thu nhập tháng này -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-primary shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+								Tổng thu tháng này
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.TongDoanhThuThangNay VNĐ</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Đầu ra tháng này -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-success shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+								Tổng chi tháng này
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.TongChiThangNay VNĐ</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Doanh thu hôm nay -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-info shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+								Doanh thu hôm nay
+							</div>
+							<div class="row no-gutters align-items-center">
+								<div class="col-auto">
+									<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.TongDoanhThuHomNay VNĐ</div>
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Số lượng đơn hàng chờ xác nhận -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-warning shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+								Số đơn hàng chờ
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.SoDonHangCho </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--Biểu đồ-->
+
+	<div class="row">
+
+		<!-- Biểu đồ -->
+		<div class="col-xl-12 col-lg-12">
+			<div class="card shadow mb-4">
+				<!-- Card Header - Dropdown -->
+				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					<h6 class="m-0 font-weight-bold text-primary">Biểu đồ báo cáo doanh thu</h6>
+					<div class="dropdown no-arrow"></div>
+					<a href="#" id="generateReport" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+						<i class="fas fa-download fa-sm text-white-50"></i> Tạo báo cáo
+					</a>
+
+				</div>
+				<!-- Card Body -->
+				<div class="card-body" style="height: 600px">
+					<div class="chart-area">
+						<div id="highchart-container" style="height: 400px;"></div>
+					</div>
+
+					<div style="margin-top: 90px;"></div>
+					<!-- Date-->
+					<div class="row mt-3 d-flex justify-content-center">
+						<div class="col-md-4">
+							<label for="startDate" class="form-label">Ngày bắt đầu</label>
+							<input type="date" id="startDate" class="form-control">
+						</div>
+						<div class="col-md-4">
+							<label for="endDate" class="form-label">Ngày kết thúc</label>
+							<input type="date" id="endDate" class="form-control">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+<script>
+	async function getSalesData(startDate = '', endDate = '') {
+		try {
+			const url = `/api/admin/quan-li-don-hang/doanh-thu-theo-ngay?startDate=${startDate}&endDate=${endDate}`;
+			const response = await fetch(url);
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || 'Lỗi khi tải dữ liệu doanh thu hàng tháng');
+			}
+			return await response.json(); // Dữ liệu JSON từ API
+		} catch (error) {
+			console.error("Lỗi khi gọi API:", error);
+			return null;
+		}
+	}
+
+	async function getAllSalesData(startDate = '', endDate = '') {
+		try {
+			const url = `/api/admin/quan-li-don-hang/doanh-thu?startDate=${startDate}&endDate=${endDate}`;
+			const response = await fetch(url);
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || 'Lỗi khi tải dữ liệu doanh thu hàng tháng');
+			}
+			return await response.json(); // Dữ liệu JSON từ API
+		} catch (error) {
+			console.error("Lỗi khi gọi API:", error);
+			return null;
+		}
+	}
+
+	async function updateChart() {
+		const startDateInput = document.getElementById('startDate');
+		const endDateInput = document.getElementById('endDate');
+
+		// Lấy giá trị ngày bắt đầu và ngày kết thúc
+		const startDate = startDateInput.value || getStartOfMonth();
+		const endDate = endDateInput.value || getEndOfMonth();
+
+		// Cập nhật giá trị mặc định nếu chưa có
+		if (!startDateInput.value) {
+			startDateInput.value = getStartOfMonth();
+		}
+		if (!endDateInput.value) {
+			endDateInput.value = getEndOfMonth();
+		}
+
+		const salesData = await getSalesData(startDate, endDate);
+
+		if (salesData && salesData.labels && salesData.values) {
+			Highcharts.chart('highchart-container', {
+				chart: {
+					type: 'line',
+					height: 400,
+				},
+				title: {
+					text: 'Biểu đồ báo cáo doanh thu',
+				},
+				xAxis: {
+					categories: salesData.labels, // Nhãn từ API
+					title: {
+						text: 'Ngày',
+						style: {
+							fontWeight: 'bold', // Làm đậm chữ
+							fontSize: '16px', // Kích thước chữ
+							color: '#333333', // Màu chữ
+						},
+					},
+				},
+				yAxis: {
+					title: {
+						text: 'Doanh thu (VNĐ)',
+						style: {
+							fontWeight: 'bold', // Làm đậm chữ
+							fontSize: '16px', // Kích thước chữ
+							color: '#333333', // Màu chữ
+						},
+					},
+					labels: {
+						formatter: function () {
+							return this.value.toLocaleString('vi-VN') + ' VNĐ';
+						},
+					},
+				},
+				tooltip: {
+					formatter: function () {
+						return `<b>${this.point.category}</b>: ${this.y.toLocaleString('vi-VN')} VNĐ`;
+					},
+				},
+				series: [
+					{
+						name: 'Doanh thu',
+						data: salesData.values,
+					},
+				],
+			});
+		} else {
+			console.error('Không thể hiển thị biểu đồ do lỗi dữ liệu.');
+			alert('Không thể tải dữ liệu doanh thu. Vui lòng thử lại sau.');
+		}
+	}
+
+	// Hàm lấy ngày đầu tháng
+	function getStartOfMonth() {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+	}
+
+	// Hàm lấy ngày cuối tháng
+	function getEndOfMonth() {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+	}
+
+	// Lắng nghe sự kiện thay đổi của các input ngày
+	document.getElementById('startDate').addEventListener('change', updateChart);
+	document.getElementById('endDate').addEventListener('change', updateChart);
+
+	// Cập nhật biểu đồ ngay khi trang load
+	updateChart();
+
+	//Format ngày
+	function formatDate(dateInput) {
+		const date = new Date(dateInput);
+		return date.toLocaleDateString('vi-VN', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric'
+		});
+	}
+
+	//Tạo filexecel
+	document.getElementById('generateReport').addEventListener('click', async function () {
+		const startDateInput = document.getElementById('startDate').value || getStartOfMonth();
+		const endDateInput = document.getElementById('endDate').value || getEndOfMonth();
+
+		try {
+			// Gọi API lấy dữ liệu
+			const salesData = await getAllSalesData(startDateInput, endDateInput);
+
+			if (salesData && salesData.labels && salesData.values) {
+				// Chuẩn bị dữ liệu cho file Excel
+				const data = [];
+				let totalRevenue = 0;
+
+				const formattedStartDate = formatDate(startDateInput);
+				const formattedEndDate = formatDate(endDateInput);
+
+				// Dòng tiêu đề
+				data.push([`Báo cáo doanh thu từ ngày ${formattedStartDate} -> ${formattedEndDate}`]);
+				data.push(['Ngày', 'Doanh thu']);
+
+				// Thêm các ngày có doanh thu
+				salesData.labels.forEach((date, index) => {
+					const revenue = salesData.values[index];
+					if (revenue > 0) {
+						totalRevenue += revenue;
+						data.push([date, revenue]);
+					}
+
+				});
+
+				// Thêm tổng doanh thu
+				data.push(['Tổng cộng', totalRevenue]);
+
+				// Tạo workbook và worksheet
+				const worksheet = XLSX.utils.aoa_to_sheet(data);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, 'Doanh thu');
+
+				// Xuất file Excel
+				XLSX.writeFile(workbook, 'Báo cáo doanh thu.xlsx');
+			} else {
+				alert('Không có dữ liệu để tạo báo cáo.');
+			}
+		} catch (error) {
+			console.error('Lỗi khi tạo báo cáo:', error);
+			alert('Không thể tạo báo cáo. Vui lòng thử lại.');
+		}
+	});
+
+</script>

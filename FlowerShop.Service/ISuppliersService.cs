@@ -1,4 +1,5 @@
-﻿using FlowerShop.Common.ViewModels;
+﻿using FlowerShop.Common.Template;
+using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess.Models;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,9 @@ namespace FlowerShop.Service
 		Task<Supplier> GetSingleById(int id);
 
 		Task<PopupViewModel> Delete(int id);
+
+		Task<ResponeMessage> AddNewSupplier(Supplier supplier);
+
+		Task<ICollection<Supplier>> ChiTietNhaCungCap(int id);
 	}
 }

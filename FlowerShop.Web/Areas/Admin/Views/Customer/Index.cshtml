@@ -4,6 +4,15 @@
 	ViewData["Title"] = "Danh sách khách hàng";
 	int stt = 1;
 }
+<style>
+	tbody tr {
+		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
+	}
+
+		tbody tr:hover {
+			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
+		}
+</style>
 
 <h1>Danh sách khách hàng</h1>
 <div class="mb-3" style="position: relative; width: 440px;">
@@ -37,7 +46,7 @@
 	<tbody>
 		@foreach (var item in Model)
 		{
-			<tr>
+			<tr ondblclick="openModal(@item.Id)">
 				<td>
 					@(stt++)
 				</td>
@@ -62,12 +71,21 @@
 					@Html.DisplayFor(modelItem => item.PhoneNumber)
 				</td>
 				<td>
-					<a asp-action="Edit" asp-area="Admin" asp-controller="Customer" asp-route-id="@item.Id">
+					<a asp-action="Edit"
+					   asp-area="Admin"
+					   asp-controller="Customer"
+					   asp-route-id="@item.Id"
+					   data-toggle="tooltip"
+					   title="Sửa thông tin">
 						<i class="fa-solid fa-pencil" style="color: #FFCC99;"></i>
 					</a> |
 
 					<!-- Nút khóa -->
-					<button onclick="LockCustomerById(@item.Id)" class="bg-transparent" style="border: none;">
+					<button onclick="LockCustomerById(@item.Id)"
+							class="bg-transparent"
+							style="border: none;"
+							data-toggle="tooltip"
+							title="Khóa tài khoản">
 						@if (item.IsLock)
 						{
 							<i class="fa-solid fa-lock" style="color:red;"></i>
@@ -82,6 +100,39 @@
 		}
 	</tbody>
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Tiêu đề modal -->
+			<div class="modal-header">
+				<h5 class="modal-title" id="customerModalLabel">Thông tin khách hàng</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<!-- Nội dung modal -->
+			<div class="modal-body">
+				<div id="modalCustomerImageWrapper" style="text-align: center;">
+					<img id="modalCustomerImage" src="" alt="Ảnh tài khoản khách hàng"
+						 style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 4px solid #ccc;" />
+				</div>
+
+				<p><strong>Tên khách hàng:</strong> <span id="modalCustomerName"></span></p>
+				<p><strong>Tuổi:</strong> <span id="modalAge"></span></p>
+				<p><strong>Email:</strong> <span id="modalEmail"></span></p>
+				<p><strong>Số điện thoại:</strong> <span id="modalPhone"></span></p>
+				<p><strong>Tài khoản:</strong> <span id="modalStatus"></span></p>
+
+			</div>
+			<!-- Footer modal -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <script>
 	//Lấy id khách hàng được chọn
@@ -112,25 +163,25 @@
 
 			fetchDelete('/api/admin/quan-li-khach-hang/delete', reqData,
 				(response) => {
-					if (response.success) {
-						showSuccess(response.message);
-						// Cập nhật giá trị IsLock
-						const iconCell = document.querySelector(`button[onclick="LockCustomerById(${id})"]`)
-							.closest('tr')
-							.querySelector('.is-lock');
-						if (iconCell) {
-							iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
-							iconCell.setAttribute('data-is-lock', 'true');
-						}
-
-						// Cập nhật icon của nút khóa
-						const lockButton = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
-						if (lockButton) {
-							lockButton.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
-						}
-					} else {
-						showError(response.message);
+					// Cập nhật giá trị IsLock
+					const iconCell = document.querySelector(`button[onclick="LockCustomerById(${id})"]`)
+						.closest('tr')
+						.querySelector('.is-lock');
+					if (iconCell) {
+						iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+						iconCell.setAttribute('data-is-lock', 'true');
 					}
+					// Cập nhật icon của nút khóa
+					const lockButton = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+					if (lockButton) {
+						lockButton.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+					}
+					setTimeout(() => {
+						showSuccess(response.message);
+					}, 500);
+				},
+				(response) => {
+					showError(response.message);
 				},
 				() => {
 					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
@@ -155,4 +206,87 @@
 			}
 		});
 	};
+
+	//Mở viewModal
+	const openModal = (id) => {
+		const row = document.querySelector(`tr[ondblclick="openModal(${id})"]`);
+		if (row) {
+			row.style.backgroundColor = "#f0f8ff"; // Màu nhạt báo hiệu
+			setTimeout(() => {
+				row.style.backgroundColor = ""; // Khôi phục màu ban đầu
+			}, 2000);
+		}
+		fetchGet(`/api/admin/quan-li-khach-hang/chi-tiet-khach-hang/${id}`,
+			(data) => {
+				console.log(data);
+				showModalWithData(data);
+			},
+			(error) => {
+				showError(error.message);
+			},
+			() => {
+				showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+			}
+		);
+	};
+
+	const showModalWithData = (data) => {
+		// Kiểm tra nếu data là mảng thì lấy phần tử đầu tiên
+		const customer = Array.isArray(data) ? data[0] : data;
+
+		// Xử lý giá trị images
+		let images;
+		try {
+			if (customer.images && customer.images.startsWith("[")) {
+				// Nếu là JSON hợp lệ (mảng), giải mã
+				images = JSON.parse(customer.images);
+			} else {
+				// Nếu không, coi chuỗi là tên ảnh
+				images = [customer.images];
+			}
+		} catch (error) {
+			console.error("Error parsing images JSON:", error);
+			images = ["no_img.png"]; // Sử dụng ảnh mặc định nếu lỗi
+		}
+		console.log("Images array:", images);
+
+		// Lấy hình ảnh đầu tiên
+		const firstImage = images[0] || "no_img.png";
+		console.log("First image:", firstImage);
+
+		// Cập nhật hình ảnh trong modal
+		const customerImage = document.getElementById("modalCustomerImage");
+		customerImage.src = `/images/customers/${firstImage}`;
+		customerImage.alt = customer.FullName;
+		console.log("Image URL:", customerImage.src);
+
+		// Tính toán tuổi từ ngày sinh
+		const birthDate = new Date(customer.birthDay); // Convert BirthDay sang kiểu Date
+		const today = new Date();
+		let age = today.getFullYear() - birthDate.getFullYear(); // Tính tuổi theo năm
+
+		// Kiểm tra nếu chưa qua sinh nhật trong năm nay
+		const monthDiff = today.getMonth() - birthDate.getMonth();
+		if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+			age--; // Giảm tuổi nếu chưa qua sinh nhật
+		}
+
+		// Hiển thị dữ liệu trong modal
+		document.getElementById('modalCustomerName').innerText = customer.fullName;
+		document.getElementById('modalAge').innerText = age;
+		document.getElementById('modalEmail').innerText = customer.email;
+		document.getElementById('modalPhone').innerText = customer.phoneNumber;
+		document.getElementById('modalStatus').innerText = customer.isLock ? "Đã khóa" : "Còn hoạt động";
+
+		// Hiển thị modal
+		$('#customerModal').modal('show');
+
+	};
+
+	// Ngăn chặn sự kiện double-click trên các nút và liên kết trong dòng
+	document.querySelectorAll('table tr td button, table tr td a').forEach(element => {
+		element.addEventListener('dblclick', (event) => {
+			event.stopPropagation();
+		});
+	});
 </script>

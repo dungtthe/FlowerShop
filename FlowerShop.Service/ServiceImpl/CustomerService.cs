@@ -6,6 +6,7 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,31 +28,15 @@ namespace FlowerShop.Service.ServiceImpl
 			_context = context;
 		}
 
-		/*public async Task<PopupViewModel> Delete(string id)
+		public async Task<AppUser> ChiTietKhachHang(string id)
 		{
-			try
+			var khachhang = await GetSingleById(id);
+			if (khachhang == null)
 			{
-				var customer = await _appUserRepository.FindByIdAsync(id);
-				if (customer == null)
-				{
-					return new PopupViewModel(PopupViewModel.ERROR, "Lỗi", ConstValues.CoLoiXayRa);
-				}
-
-				//Khóa tài khoản
-				customer.IsLock = true;
-				var rs = _appUserRepository.Update(customer);
-				if (rs == null)
-				{
-					return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
-				}
-				return new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Đã khóa tài khoản khách hàng thành công");
+				return new AppUser(); // Trả về danh sách rỗng
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-				return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Có lỗi xảy ra");
-			}
-		}*/
+			return khachhang;
+		}
 
 		public async Task<PopupViewModel> Delete(AppUser appUser)
 		{
@@ -100,6 +85,16 @@ namespace FlowerShop.Service.ServiceImpl
 
 		public async Task<AppUser> UpdateAsync(AppUser customer)
 		{
+			// Kiểm tra xem ảnh có phải là chuỗi hay không. Nếu là chuỗi thì chuyển thành mảng.
+			List<string> imageNames = new List<string>();
+			string imagesJson = string.Empty;
+			// Nếu supplier.Images là một chuỗi, chuyển thành mảng một phần tử
+			if (!string.IsNullOrEmpty(customer.Images))
+			{
+				imageNames.Add(customer.Images); // Thêm tên ảnh vào danh sách
+				imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
+				customer.Images = imagesJson;
+			}
 			var result = _appUserRepository.Update(customer);
 			if (result != null)
 			{

@@ -15,6 +15,8 @@ using static System.Net.Mime.MediaTypeNames;
 using FlowerShop.Common.ViewModels;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
+using FlowerShop.Common.Template;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -24,11 +26,13 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 	{
 		private readonly FlowerShopContext _context;
 		private readonly ISuppliersService _supplierService;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public SuppliersController(FlowerShopContext context, ISuppliersService suppliersService)
+		public SuppliersController(FlowerShopContext context, ISuppliersService suppliersService, IWebHostEnvironment webHostEnvironment)
 		{
 			_context = context;
 			_supplierService = suppliersService;
+			_webHostEnvironment = webHostEnvironment;
 		}
 
 		// GET: Admin/Suppliers
@@ -51,42 +55,62 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			return View(supplierList);
 		}
 
-		// GET: Admin/Suppliers/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null || _context.Suppliers == null)
-			{
-				return NotFound();
-			}
-
-			var supplier = await _context.Suppliers
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (supplier == null)
-			{
-				return NotFound();
-			}
-
-			return View(supplier);
-		}
-
-		// GET: Admin/Suppliers/Create
+		[HttpGet("create")]
 		public IActionResult Create()
 		{
-			return View();
+			return View(new SupplierViewModel());
 		}
 
 		// POST: Admin/Suppliers/Create
-		[HttpPost]
+		[HttpPost("create")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,CompanyName,TaxCode,Email,Phone,Type,Images,Description,Industry,Address,IsDelete")] Supplier supplier)
+		public async Task<IActionResult> Create([Bind("Id,CompanyName,TaxCode,Email,Phone,Type,Images,Description,Industry,Address,IsDelete")] SupplierViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
-				_context.Add(supplier);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				// Nếu có ảnh được chọn
+				if (Request.Form.Files.Count > 0)
+				{
+					var file = Request.Form.Files[0]; // Lấy file đầu tiên (nếu có)
+
+					// Tạo tên file
+					var fileName = Path.GetFileName(file.FileName);
+
+					// Tạo đường dẫn lưu file vào thư mục
+					var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "suppliers", fileName);
+
+					// Lưu file vào thư mục
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await file.CopyToAsync(stream);  // Lưu file vào thư mục
+					}
+					// Lưu tên file vào model (không lưu file lên server)
+					model.Images = fileName;
+				}
+
+				// Lưu thông tin nhà cung cấp vào cơ sở dữ liệu
+				var supplier = new Supplier
+				{
+					CompanyName = model.CompanyName,
+					TaxCode = model.TaxCode,
+					Email = model.Email,
+					Phone = model.Phone,
+					Description = model.Description,
+					Address = model.Address,
+					Images = model.Images, // Lưu tên file vào DB
+					IsDelete = model.IsDelete
+				};
+				var result = _supplierService.AddNewSupplier(supplier);
+				if (result != null)
+				{
+					TempData["SuccessMessage"] = "Nhà cung cấp đã được thêm thành công!";
+				}
+				else
+				{
+					TempData["ErrorMessage"] = "Có lỗi xảy ra khi thêm nhà cung cấp.";
+				}
 			}
-			return View(supplier);
+			return View(model);  // Trả về lại view nếu có lỗi
 		}
 
 		// GET: Admin/Suppliers/Edit/5
@@ -98,13 +122,30 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 			{
 				return Content(ConstValues.CoLoiXayRa);
 			}
+
+			// Giải mã chuỗi JSON của Images nếu nó là một chuỗi JSON
+			string image = string.Empty;
+			if (!string.IsNullOrEmpty(supplier.Images))
+			{
+				try
+				{
+					// Loại bỏ escape và dấu ngoặc vuông
+					image = supplier.Images.Replace("\"", "").Trim('[', ']');
+				}
+				catch (Exception ex)
+				{
+					image = string.Empty;
+					Console.WriteLine("Error while deserializing image JSON: " + ex.Message);
+				}
+			}
+
 			var supplierVM = new SupplierViewModel()
 			{
 				Id = supplier.Id,
 				CompanyName = supplier.CompanyName,
 				TaxCode = supplier.TaxCode,
 				Type = supplier.Type,
-				Images = supplier.Images,
+				Images = image,  // Chỉ lưu một ảnh duy nhất
 				Industry = supplier.Industry,
 				Address = supplier.Address,
 				IsDelete = supplier.IsDelete,
@@ -129,13 +170,48 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
+				// Nếu có ảnh được chọn
+				if (Request.Form.Files.Count > 0)
+				{
+					var file = Request.Form.Files[0]; // Lấy file đầu tiên (nếu có)
+
+					// Tạo tên file
+					var fileName = Path.GetFileName(file.FileName);
+
+					// Tạo đường dẫn lưu file vào thư mục
+					var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "suppliers", fileName);
+
+					// Lưu file vào thư mục
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await file.CopyToAsync(stream);  // Lưu file vào thư mục
+					}
+					// Lưu tên file vào model (không lưu file lên server)
+					supplierVM.Images = fileName;
+				}
+				else
+				{
+					string image = string.Empty;
+					if (!string.IsNullOrEmpty(supplier.Images))
+					{
+						try
+						{
+							// Loại bỏ escape và dấu ngoặc vuông
+							image = supplier.Images.Replace("\"", "").Trim('[', ']');
+						}
+						catch (Exception ex)
+						{
+							image = string.Empty;
+							Console.WriteLine("Error while deserializing image JSON: " + ex.Message);
+						}
+					}
+					supplierVM.Images = image;  // Giữ lại tên ảnh cũ
+				}
 				try
 				{
 					supplier.CompanyName = supplierVM.CompanyName;
 					supplier.TaxCode = supplierVM.TaxCode;
-					supplier.Type = supplierVM.Type;
 					supplier.Images = supplierVM.Images;
-					supplier.Industry = supplierVM?.Industry;
 					supplier.Address = supplierVM?.Address;
 					supplier.IsDelete = supplierVM.IsDelete;
 					supplier.Email = supplierVM.Email;
@@ -170,12 +246,12 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		public async Task<IActionResult> Delete(int id)
 		{
 			var supplier = await _supplierService.GetSingleById(id);
-            if (supplier == null)
-            {
-                return Content(ConstValues.CoLoiXayRa);
-            }
-            await _supplierService.Delete(id);
-            return RedirectToAction(nameof(Index));
+			if (supplier == null)
+			{
+				return Content(ConstValues.CoLoiXayRa);
+			}
+			await _supplierService.Delete(id);
+			return RedirectToAction(nameof(Index));
 		}
 
 		private bool SupplierExists(int id)

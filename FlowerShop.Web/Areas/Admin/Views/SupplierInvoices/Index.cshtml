@@ -1,9 +1,8 @@
-﻿@model IEnumerable<FlowerShop.DataAccess.Models.SaleInvoice>
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.SupplierInvoice>
 
 @{
-	ViewData["Title"] = "Chờ xác nhận";
+	ViewData["Title"] = "Hóa đơn nhập chờ xác nhận";
 }
-
 <style>
 	tbody tr {
 		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
@@ -14,11 +13,12 @@
 		}
 </style>
 
-<h1>Danh sách đơn hàng chờ xác nhận</h1>
-<div class="mb-3" style="position: relative; width: 440px;">
+<h1>Danh sách hóa đơn nhập hàng chờ xác nhận</h1>
+
+<div class="mb-3" style="position: relative; width: 460px;">
 	<input type="text" id="searchBox"
 		   class="form-control pr-5"
-		   placeholder="Nhập tên khách hàng hoặc mã đơn hàng để tìm kiếm"
+		   placeholder="Nhập tên nhà cung cấp hoặc mã đơn hàng để tìm kiếm"
 		   oninput="searchOrders()" />
 	<i class="fa fa-search" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); color: gray;"></i>
 </div>
@@ -30,13 +30,13 @@
 				Mã đơn hàng
 			</th>
 			<th>
-				Tên khách hàng
+				Tên nhà cung cấp
 			</th>
 			<th>
-				Ngày tạo hóa đơn
+				Ngày khởi tạo
 			</th>
 			<th>
-				Phương thức thanh toán
+				Tổng tiền
 			</th>
 			<th></th>
 		</tr>
@@ -44,37 +44,43 @@
 	<tbody>
 		@foreach (var item in Model)
 		{
+			// Lấy tổng tiền cho từng hóa đơn nhập
+			// Lấy tổng tiền từ ViewData theo mã hóa đơn
+			float tongTien = 0;
+			if (ViewData["InvoiceTotals"] != null && ((Dictionary<int, float>)ViewData["InvoiceTotals"]).ContainsKey(item.Id))
+			{
+				tongTien = ((Dictionary<int, float>)ViewData["InvoiceTotals"])[item.Id];
+			}
 			<tr id="hoadon-row-@item.Id" ondblclick="ShowOrderDetails(@item.Id)">
-				<td class="text-center" style="padding-right:60px">
+				<td class="text-center" style="padding-right:70px">
 					@Html.DisplayFor(modelItem => item.Id)
 				</td>
 				<td>
-					@Html.DisplayFor(modelItem => item.Customer.FullName)
+					@Html.DisplayFor(modelItem => item.Supplier.CompanyName)
 				</td>
 				<td>
-					@Html.DisplayFor(modelItem => item.CreateDay)
-				</td>
-
-				<td>
-					@Html.DisplayFor(modelItem => item.PaymentMethod.Name)
+					@item.CreateDay.ToString("dd/MM/yyyy")
 				</td>
 				<td>
+					@string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C}", tongTien)
+				</td>
+				<td class="text-center">
 					<!-- Nút xác nhận -->
 					<button onclick="ConfirmInvoiceById(@item.Id)"
 							class="btn btn-success btn-sm"
 							data-toggle="tooltip"
 							style="width: 95px;"
-							title="Xác nhận đơn hàng">
+							title="Xác nhận đơn nhập">
 						<i class="fa-solid fa-check"></i> Xác nhận
 					</button>
 					<!-- Khoảng cách giữa các nút -->
 					<span style="margin: 0 5px;"></span>
-					<!-- Nút húy hóa đơn -->
-					<button onclick="CancelInvoiceById(@item.Id)"
+					<!-- Nút húy  -->
+					<button onclick="Fail(@item.Id)"
 							class="btn btn-danger btn-sm"
 							data-toggle="tooltip"
 							style="width: 95px;"
-							title="Hủy đơn hàng">
+							title="Hủy đơn nhập">
 						<i class="fa-solid fa-trash"></i> Hủy
 					</button>
 				</td>
@@ -83,16 +89,16 @@
 	</tbody>
 </table>
 
-@await Html.PartialAsync("_OrderDetailsModal")
 @await Html.PartialAsync("_CancelOrderBox")
+@await Html.PartialAsync("_OrderDetailsModal")
 
 <script>
-	// Hàm xác nhận hóa đơn
-	const ConfirmInvoiceById = (id) => {
-		showConfirm("Xác nhận chuyển đơn hàng sang trạng thái đã xác nhận?", () => {
-			const reqData = { id: id };
 
-			fetchPost('/api/admin/quan-li-don-hang/cho-xac-nhan', reqData,
+	// Hoàn tất đơn nhập hàng
+	const ConfirmInvoiceById = (id) => {
+		showConfirm("Đơn nhập hàng này đã hoàn tất?", () => {
+			const reqData = { id: id };
+			fetchPost('/api/admin/quan-li-don-nhap/xac-nhan', reqData,
 				(response) => {
 					// Xóa dòng trong bảng
 					const row = document.getElementById('hoadon-row-' + id);
@@ -114,12 +120,13 @@
 		});
 	};
 
-	//Hủy đơn hàng
+	//Hủy đơn nhập hàng
 	let currentOrderIdToCancel = null;
-	const CancelInvoiceById = (id) => {
+	const Fail = (id) => {
 		// Lưu mã đơn hàng vào biến toàn cục
 		currentOrderIdToCancel = id;
-
+		document.getElementById('cancelOrderModalLabel').innerText = "Nhập lý do hủy đơn nhập";
+		document.getElementById('cancelReason').placeholder = "Lý do hủy..."
 		// Hiển thị modal yêu cầu nhập lý do hủy
 		$('#cancelOrderModal').modal('show');
 	};
@@ -127,13 +134,13 @@
 		const cancelReason = document.getElementById("cancelReason").value.trim();
 
 		if (!cancelReason) {
-			showError("Bạn phải nhập lý do hủy.");
+			showError("Bạn phải nhập lý hủy đơn nhập.");
 			return;
 		}
 
 		const reqData = { id: currentOrderIdToCancel, reason: cancelReason };
 
-		fetchPost('/api/admin/quan-li-don-hang/huy', reqData,
+		fetchPost('/api/admin/quan-li-don-nhap/huy', reqData,
 			(response) => {
 				const row = document.getElementById('hoadon-row-' + currentOrderIdToCancel);
 				if (row) {
@@ -153,7 +160,25 @@
 		);
 	};
 
-	//Hiển thị thông tin đơn hàng
+	//Tìm kiếm
+	const searchOrders = () => {
+		const query = document.getElementById("searchBox").value.toLowerCase(); // Lấy giá trị tìm kiếm và chuyển thành chữ thường
+		const rows = document.querySelectorAll("tbody tr"); // Lấy tất cả các dòng trong bảng
+
+		rows.forEach(row => {
+			const orderId = row.querySelector("td:nth-child(1)").innerText.toLowerCase(); // Lấy mã đơn hàng
+			const supplierName = row.querySelector("td:nth-child(2)").innerText.toLowerCase(); // Lấy tên
+
+			// Kiểm tra xem mã đơn hàng hoặc tên  có chứa chuỗi tìm kiếm hay không
+			if (orderId.includes(query) || supplierName.includes(query)) {
+				row.style.display = ""; // Hiển thị dòng
+			} else {
+				row.style.display = "none"; // Ẩn dòng
+			}
+		});
+	};
+
+	//Hiển thị thông tin đơn nhập hàng
 	function ShowOrderDetails(orderId) {
 		if (!orderId) {
 			showError("Không tìm thấy đơn hàng");
@@ -162,45 +187,48 @@
 		try {
 			// Lấy thông tin từ row được chọn (tr) thông qua orderId
 			const row = document.querySelector(`#hoadon-row-${orderId}`);
-			const customerName = row.querySelector('td:nth-child(2)').innerText; // Tên khách hàng
-			const createDate = row.querySelector('td:nth-child(3)').innerText;  // Ngày tạo hóa đơn
+			const supplierName = row.querySelector('td:nth-child(2)').innerText; // Tên nhà cung vấp
+			const createDate = row.querySelector('td:nth-child(3)').innerText;  // Ngày tạo đơn hàng
+			const tongTien = row.querySelector('td:nth-child(4)').innerText;  // Tổng tiền
 
 			// Đặt thông tin khách hàng và ngày tạo hóa đơn vào modal
-			document.getElementById("customerName").innerText = customerName;
+			document.getElementById("customerName").innerText = supplierName;
 			document.getElementById("createDate").innerText = createDate;
+			//Đổi thông tin
+			document.getElementById('orderDetailsModalLabel').innerText = "Chi Tiết Đơn Nhập Hàng";
+			document.getElementById('name').innerText = "Tên nhà cung cấp:";
+			document.getElementById('date').innerText = "Ngày tạo đơn nhập hàng:"
+			document.getElementById('orderTotal').innerText = tongTien;
 
-			fetchGet(`/api/admin/quan-li-don-hang/chi-tiet-don-hang/${orderId}`,
+			fetchGet(`/api/admin/quan-li-don-nhap/chi-tiet-don-nhap/${orderId}`,
 				(response) => {
+					console.log(response);
 					let tableBody = "";
-					let total = 0;
 					response.forEach(item => {
 						let thanhTien = item.unitPrice * item.quantity; // Thành tiền cho từng sản phẩm
-						total += thanhTien; // Cộng dồn tổng tiền
-
 						tableBody += `
-													<tr>
-														<td>${item.productId}</td>
-														<td>${item.product.title}</td>
-														<td>${item.quantity}</td>
-														<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-														<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-													</tr>
-												`;
+																		<tr>
+																			<td >${item.productItemId}</td>
+																			<td>${item.productItem.name}</td>
+																			<td>${item.quantity}</td>
+																			<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+																			<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+																		</tr>
+																		`;
 					});
 
 					// Cập nhật nội dung bảng và tổng cộng
 					document.querySelector("#orderDetailsTable tbody").innerHTML = tableBody;
-					document.getElementById("orderTotal").innerText = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-
-					// Hiển thị modal
 					$('#orderDetailsModal').modal('show');
 				},
-				(res) => {
-					showError(res.message);
+				(errorResponse) => {
+					console.error(errorResponse);
+					showError(errorResponse.message);
 				},
 				() => {
-					showError("Có lỗi khi kết nối đến server");
+					showError("Không thể kết nối tới server");
 				});
+
 			// Đổi màu của dòng khi nhấn double-click
 			const rowToHighlight = document.querySelector(`#hoadon-row-${orderId}`);
 			if (rowToHighlight) {
@@ -214,23 +242,5 @@
 			showError("Đã xảy ra lỗi khi lấy chi tiết đơn hàng.");
 		}
 	}
-
-	//Tìm kiếm đơn hàng
-	const searchOrders = () => {
-		const query = document.getElementById("searchBox").value.toLowerCase(); // Lấy giá trị tìm kiếm và chuyển thành chữ thường
-		const rows = document.querySelectorAll("tbody tr"); // Lấy tất cả các dòng trong bảng
-
-		rows.forEach(row => {
-			const orderId = row.querySelector("td:nth-child(1)").innerText.toLowerCase(); // Lấy mã đơn hàng
-			const customerName = row.querySelector("td:nth-child(2)").innerText.toLowerCase(); // Lấy tên khách hàng
-
-			// Kiểm tra xem mã đơn hàng hoặc tên khách hàng có chứa chuỗi tìm kiếm hay không
-			if (orderId.includes(query) || customerName.includes(query)) {
-				row.style.display = ""; // Hiển thị dòng
-			} else {
-				row.style.display = "none"; // Ẩn dòng
-			}
-		});
-	};
 
 </script>

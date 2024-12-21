@@ -26,17 +26,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.ChoXacNhan(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã xác nhận thành công!" });
+			return Ok(new { message = "Đơn hàng đã xác nhận thành công!" });
 		}
 
 		[HttpPost("da-xac-nhan")]
@@ -44,17 +44,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.DaXacNhan(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã qua giai đoạn chuẩn bị!" });
+			return Ok(new { message = "Đơn hàng đã qua giai đoạn chuẩn bị!" });
 		}
 
 		[HttpPost("dang-chuan-bi")]
@@ -62,17 +62,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.DangChuanBi(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã qua giai đoạn giao hàng!" });
+			return Ok(new { message = "Đơn hàng đã qua giai đoạn giao hàng!" });
 		}
 
 		[HttpPost("giao-thanh-cong")]
@@ -80,53 +80,55 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			await _saleInvoiceService.GiaoThanhCong(id ?? -1);
 
-			return Ok(new { success = true, message = "Đơn hàng đã giao thành công!" });
+			return Ok(new { message = "Đơn hàng đã giao thành công!" });
 		}
 
 		[HttpPost("giao-that-bai")]
-		public async Task<IActionResult> GiaoThatBai([FromBody] RequestDeleteByIdViewModel reqData)
+		public async Task<IActionResult> GiaoThatBai([FromBody] RequestDeletedOrder reqData)
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
+			string? reason = reqData.reason;
 			var order = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (order == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
-			await _saleInvoiceService.GiaoThatBai(id ?? -1);
+			await _saleInvoiceService.GiaoThatBai(id ?? -1, reason ?? "");
 
-			return Ok(new { success = true, message = "Đơn hàng giao không thành công!" });
+			return Ok(new { message = "Đơn hàng giao không thành công!" });
 		}
 
 		[HttpPost("huy")]
-		public async Task<IActionResult> Huy([FromBody] RequestDeleteByIdViewModel reqData)
+		public async Task<IActionResult> Huy([FromBody] RequestDeletedOrder reqData)
 		{
 			if (reqData == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 			int? id = reqData.Id;
+			string? reason = reqData.reason;
 			var product = await _saleInvoiceService.GetSingleById(id ?? -1);
 			if (product == null)
 			{
-				return Ok(new { success = false, message = "Không tìm thấy đơn hàng" });
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
-			await _saleInvoiceService.Huy(id ?? -1);
+			await _saleInvoiceService.Huy(id ?? -1, reason ?? "");
 
-			return Ok(new { success = true, message = "Đơn hàng đã hủy thành công!" });
+			return Ok(new { message = "Đơn hàng đã hủy thành công!" });
 		}
 
 		[HttpGet("chi-tiet-don-hang/{id}")]
@@ -134,16 +136,84 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		{
 			if (id <= 0)
 			{
-				return BadRequest("Id không được để trống.");
+				return BadRequest(new { message = "Không tìm thấy đơn hàng" });
 			}
 
 			var saleInvoiceDetail = await _saleInvoiceService.ChiTietDonHang(id);
 			if (saleInvoiceDetail == null || !saleInvoiceDetail.Any())
 			{
-				return NotFound("Không tìm thấy chi tiết đơn hàng.");
+				return NotFound(new { message = "Không tìm thấy chi tiết đơn hàng" });
 			}
 
 			return Ok(saleInvoiceDetail.ToList());
+		}
+
+		[HttpGet("doanh-thu-theo-ngay")]
+		public async Task<IActionResult> GetSalesDataByDateRange([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+		{
+			try
+			{
+				if (!startDate.HasValue || !endDate.HasValue)
+				{
+					return BadRequest(new { error = "Vui lòng cung cấp ngày bắt đầu và ngày kết thúc." });
+				}
+
+				var data = await _saleInvoiceService.GetSalesDataByDateRangeAsync(startDate, endDate);
+
+				if (data == null || !data.ContainsKey("labels") || !data.ContainsKey("values"))
+				{
+					return NotFound(new { message = "Không tìm thấy dữ liệu doanh thu trong khoảng thời gian được chọn." });
+				}
+
+				return Ok(data);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi khi gọi API GetSalesDataByDateRange: {ex.Message}");
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		[HttpGet("top-san-pham-ban-chay")]
+		public async Task<IActionResult> GetTopSellingProducts([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+		{
+			try
+			{
+				// Lấy dữ liệu từ service
+				var data = await _saleInvoiceService.GetTopSellingProductsAsync(startDate, endDate);
+				return Ok(data); // Trả về dữ liệu JSON
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi khi gọi API GetTopSellingProducts: {ex.Message}");
+				return StatusCode(500, new { error = ex.Message }); // Xử lý lỗi
+			}
+		}
+
+		[HttpGet("doanh-thu")]
+		public async Task<IActionResult> GetAllSale([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+		{
+			try
+			{
+				if (!startDate.HasValue || !endDate.HasValue)
+				{
+					return BadRequest(new { error = "Vui lòng cung cấp ngày bắt đầu và ngày kết thúc." });
+				}
+
+				var data = await _saleInvoiceService.GetSalesDataByDateRangeAsync(startDate, endDate);
+
+				if (data == null || !data.ContainsKey("labels") || !data.ContainsKey("values"))
+				{
+					return NotFound(new { message = "Không tìm thấy dữ liệu doanh thu trong khoảng thời gian được chọn." });
+				}
+
+				return Ok(data);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi khi gọi API GetSalesDataByDateRange: {ex.Message}");
+				return StatusCode(500, new { error = ex.Message });
+			}
 		}
 	}
 }

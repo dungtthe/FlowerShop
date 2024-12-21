@@ -1,0 +1,222 @@
+﻿<div class="container-fluid">
+
+	<!-- Page Heading -->
+	<div class="d-sm-flex align-items-center justify-content-between mb-4">
+		<h1 class="h3 mb-0 text-gray-800">Thống kê sản phẩm bán</h1>
+	</div>
+
+	<!-- Content Row -->
+	<div class="row">
+
+		<!-- Thu nhập tháng này -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-primary shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+								Tổng thu tháng này
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.TongDoanhThuThangNay VNĐ</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Đầu ra tháng này -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-success shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+								Tổng chi tháng này
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.TongChiThangNay VNĐ</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Doanh thu hôm nay -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-info shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+								Doanh thu hôm nay
+							</div>
+							<div class="row no-gutters align-items-center">
+								<div class="col-auto">
+									<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.TongDoanhThuHomNay VNĐ</div>
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Số lượng đơn hàng chờ xác nhận -->
+		<div class="col-xl-3 col-md-6 mb-4">
+			<div class="card border-left-warning shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+								Số đơn hàng chờ
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: 20px;">@ViewBag.SoDonHangCho </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--Biểu đồ-->
+
+	<div class="row">
+
+		<!-- Biểu đồ -->
+		<div class="col-xl-12 col-lg-12">
+			<div class="card shadow mb-4">
+				<!-- Card Header - Dropdown -->
+				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					<h6 class="m-0 font-weight-bold text-primary">Biểu đồ báo cáo sản phẩm đã bán</h6>
+					<div class="dropdown no-arrow"></div>
+				</div>
+				<!-- Card Body -->
+				<div class="card-body" style="height: 600px">
+					<div class="chart-area">
+						<div id="highchart-container" style="height: 400px;"></div>
+					</div>
+
+					<div style="margin-top: 90px;"></div>
+					<!-- Date Range and Button -->
+					<div class="row mt-3 d-flex justify-content-center">
+						<div class="col-md-4">
+							<label for="startDate" class="form-label">Ngày bắt đầu</label>
+							<input type="date" id="startDate" class="form-control">
+						</div>
+						<div class="col-md-4">
+							<label for="endDate" class="form-label">Ngày kết thúc</label>
+							<input type="date" id="endDate" class="form-control">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+
+	// Hàm lấy ngày đầu tháng
+	function getStartOfMonth() {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+	}
+
+	// Hàm lấy ngày cuối tháng
+	function getEndOfMonth() {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+	}
+
+	// Hàm gọi API để lấy dữ liệu
+	async function fetchProductSalesData(startDate, endDate) {
+		const url = `/api/admin/quan-li-don-hang/top-san-pham-ban-chay?startDate=${startDate}&endDate=${endDate}`;
+		const response = await fetch(url);
+		if (!response.ok) throw new Error('Lỗi khi tải dữ liệu sản phẩm bán chạy');
+		return await response.json();
+	}
+
+	// Cập nhật biểu đồ
+	async function updateChart() {
+		const startDateInput = document.getElementById('startDate');
+		const endDateInput = document.getElementById('endDate');
+
+		// Lấy giá trị ngày bắt đầu và ngày kết thúc
+		const startDate = startDateInput.value || getStartOfMonth();
+		const endDate = endDateInput.value || getEndOfMonth();
+
+		// Cập nhật giá trị mặc định nếu chưa có
+		if (!startDateInput.value) {
+			startDateInput.value = getStartOfMonth();
+		}
+		if (!endDateInput.value) {
+			endDateInput.value = getEndOfMonth();
+		}
+
+		try {
+			const formattedStartDate = new Date(startDate).toLocaleDateString('vi-VN');
+			const formattedEndDate = new Date(endDate).toLocaleDateString('vi-VN');
+			const salesData = await fetchProductSalesData(startDate, endDate);
+			if (salesData && salesData.labels && salesData.values) {
+				Highcharts.chart('highchart-container', {
+					chart: {
+						type: 'column',
+						height: 400,
+					},
+					title: {
+						text: `Top 10 sản phẩm bán chạy nhất từ ${formattedStartDate} -> ${formattedEndDate}`,
+					},
+					xAxis: {
+						categories: salesData.labels, // Tên sản phẩm
+						title: {
+							text: 'Tên sản phẩm',
+							style: {
+								fontWeight: 'bold', // Làm đậm chữ
+								fontSize: '16px', // Kích thước chữ
+								color: '#333333', // Màu chữ
+							},
+						},
+					},
+					yAxis: {
+						title: {
+							text: 'Số lượng bán',
+							style: {
+								fontWeight: 'bold', // Làm đậm chữ
+								fontSize: '16px', // Kích thước chữ
+								color: '#333333', // Màu chữ
+							},
+						},
+					},
+					tooltip: {
+						formatter: function () {
+							return `${this.y} sản phẩm`;
+						},
+					},
+					series: [
+						{
+							name: 'Số lượng bán',
+							data: salesData.values, // Số lượng bán
+						},
+					],
+				});
+			} else {
+				alert('Không có dữ liệu để hiển thị.');
+			}
+		} catch (error) {
+			console.error('Lỗi:', error);
+			alert('Không thể tải dữ liệu sản phẩm bán chạy.');
+		}
+	}
+
+	// Lắng nghe sự kiện thay đổi ngày
+	document.getElementById('startDate').addEventListener('change', updateChart);
+	document.getElementById('endDate').addEventListener('change', updateChart);
+
+	// Tải biểu đồ lần đầu
+	updateChart();
+
+</script>

@@ -1,5 +1,6 @@
 ﻿using FlowerShop.DataAccess.Models;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;  // Để sử dụng IFormFile cho việc tải ảnh lên
 
 namespace FlowerShop.Web.ViewModels
 {
@@ -12,37 +13,35 @@ namespace FlowerShop.Web.ViewModels
 		[Required(ErrorMessage = "Tên nhà cung cấp không được để trống")]
 		public string? CompanyName { get; set; }
 
+		[Required]
+		[MaxLength(100)]
+		public string? TaxCode { get; set; }
+
 		[Required(ErrorMessage = "Email không được để trống")]
 		[EmailAddress(ErrorMessage = "Email không đúng định dạng")]
 		public string? Email { get; set; }
 
 		[Required(ErrorMessage = "Số điện thoại không được để trống")]
-		[RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải chứa đúng 10 chữ số")]
+		[RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải chứa 10 số")]
 		public string? Phone { get; set; }
 
 		[Required(ErrorMessage = "Mô tả không được để trống")]
 		public string? Description { get; set; }
 
-		#endregion Hiển thị lên view danh sách
-
-		[Required]
-		[MaxLength(100)]
-		public string? TaxCode { get; set; }
-
-		public int Type { get; set; }
-
-		[Required]
-		[MaxLength(300)]
-		public string? Industry { get; set; }
-
-		[Required]
+		[Required(ErrorMessage = "Địa chỉ không được để trống")]
 		[MaxLength(500)]
 		public string? Address { get; set; }
 
-		[MaxLength(1500)]
-		public string? Images { get; set; }
+		#endregion Hiển thị lên view danh sách
 
-		[Required]
+		public int Type { get; set; }
+
+		[MaxLength(300)]
+		public string? Industry { get; set; }
+
+		[MaxLength(1500)]
+		public string? Images { get; set; } // Trường ảnh sử dụng IFormFile để nhận file từ form
+
 		public bool IsDelete { get; set; }
 	}
 }

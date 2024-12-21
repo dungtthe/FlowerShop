@@ -14,6 +14,7 @@ namespace FlowerShop.Web.ViewModels
 		public string? PhoneNumber { get; set; }
 
 		[DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+		[Required(ErrorMessage = "Ngày sinh không được để trống")]
 		public DateTime? BirthDay { set; get; }
 
 		[MaxLength(1500)]
