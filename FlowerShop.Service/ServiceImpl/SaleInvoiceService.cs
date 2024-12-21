@@ -344,5 +344,54 @@ namespace FlowerShop.Service.ServiceImpl
 				throw;
 			}
 		}
+
+		public async Task<Dictionary<string, object>> GetTopSellingProductsAsync(DateTime? startDate, DateTime? endDate)
+		{
+			try
+			{
+				// Lấy tất cả chi tiết hóa đơn bao gồm thông tin hóa đơn cha
+				var invoiceDetails = await _saleInvoiceDetailRepository.GetAllWithIncludeAsync(i => i.SaleInvoice, i => i.Product);
+
+				// Lọc chi tiết hóa đơn dựa trên trạng thái hóa đơn cha là GIAO_HANG_THANH_CONG
+				var filteredInvoiceDetails = invoiceDetails.Where(i => i.SaleInvoice?.Status == ConstStatusSaleInvoice.GIAO_HANG_THANH_CONG);
+
+				// Lọc theo ngày nếu có tham số
+				if (startDate.HasValue)
+				{
+					filteredInvoiceDetails = filteredInvoiceDetails.Where(i => i.SaleInvoice?.CreateDay >= startDate.Value);
+				}
+				if (endDate.HasValue)
+				{
+					filteredInvoiceDetails = filteredInvoiceDetails.Where(i => i.SaleInvoice?.CreateDay <= endDate.Value);
+				}
+
+				// Nhóm và tính tổng số lượng bán theo sản phẩm
+				var productSales = filteredInvoiceDetails
+					.GroupBy(d => d.Product.Title) // Nhóm theo tên sản phẩm
+					.Select(g => new
+					{
+						ProductName = g.Key,
+						TotalQuantity = g.Sum(d => d.Quantity) // Tổng số lượng bán của sản phẩm
+					})
+					.OrderByDescending(p => p.TotalQuantity) // Sắp xếp giảm dần theo số lượng
+					.Take(10) // Lấy top 10 sản phẩm
+					.ToList();
+
+				// Chuẩn bị dữ liệu trả về
+				var labels = productSales.Select(p => p.ProductName).ToList();
+				var values = productSales.Select(p => p.TotalQuantity).ToList();
+
+				return new Dictionary<string, object>
+				{
+					{ "labels", labels },
+					{ "values", values }
+				};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi trong Service GetTopSellingProductsAsync: {ex.Message}");
+				throw;
+			}
+		}
 	}
 }

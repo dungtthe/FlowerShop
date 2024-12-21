@@ -173,5 +173,21 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 				return StatusCode(500, new { error = ex.Message });
 			}
 		}
+
+		[HttpGet("top-san-pham-ban-chay")]
+		public async Task<IActionResult> GetTopSellingProducts([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+		{
+			try
+			{
+				// Lấy dữ liệu từ service
+				var data = await _saleInvoiceService.GetTopSellingProductsAsync(startDate, endDate);
+				return Ok(data); // Trả về dữ liệu JSON
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi khi gọi API GetTopSellingProducts: {ex.Message}");
+				return StatusCode(500, new { error = ex.Message }); // Xử lý lỗi
+			}
+		}
 	}
 }

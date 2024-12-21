@@ -58,5 +58,45 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 			return View();
 		}
+
+		[HttpGet("top-san-pham")]
+		public async Task<IActionResult> TopSanPham()
+		{
+			var tongDoanhThuThangNay = await _saleInvoiceService.TongDoanhThuThangNay();
+			var tongChiThangNay = await _supplierInvoiceService.TongChiThangNay();
+			var tongDoanhThuHomNay = await _saleInvoiceService.TongDoanhThuHomNay();
+			var soDonHangCho = await _saleInvoiceService.SoDonHangCho();
+
+			// Truyền dữ liệu sang View
+			if (tongDoanhThuThangNay == 0)
+			{
+				ViewBag.TongDoanhThuThangNay = 0;
+			}
+			else
+			{
+				ViewBag.TongDoanhThuThangNay = string.Format("{0:0,0}", tongDoanhThuThangNay).Replace(",", ".");
+			}
+
+			if (tongDoanhThuHomNay == 0)
+			{
+				ViewBag.TongDoanhThuHomNay = 0;
+			}
+			else
+			{
+				ViewBag.TongDoanhThuHomNay = string.Format("{0:0,0}", tongDoanhThuHomNay).Replace(",", ".");
+			}
+
+			if (tongChiThangNay == 0)
+			{
+				ViewBag.TongChiThangNay = 0;
+			}
+			else
+			{
+				ViewBag.TongChiThangNay = string.Format("{0:0,0}", tongChiThangNay).Replace(",", ".");
+			}
+			ViewBag.SoDonHangCho = soDonHangCho;
+
+			return View();
+		}
 	}
 }
