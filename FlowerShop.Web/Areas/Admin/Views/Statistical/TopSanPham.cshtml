@@ -158,6 +158,8 @@
 		}
 
 		try {
+			const formattedStartDate = new Date(startDate).toLocaleDateString('vi-VN');
+			const formattedEndDate = new Date(endDate).toLocaleDateString('vi-VN');
 			const salesData = await fetchProductSalesData(startDate, endDate);
 			if (salesData && salesData.labels && salesData.values) {
 				Highcharts.chart('highchart-container', {
@@ -166,7 +168,7 @@
 						height: 400,
 					},
 					title: {
-						text: 'Top 10 sản phẩm bán chạy nhất',
+						text: `Top 10 sản phẩm bán chạy nhất từ ${formattedStartDate} -> ${formattedEndDate}`,
 					},
 					xAxis: {
 						categories: salesData.labels, // Tên sản phẩm

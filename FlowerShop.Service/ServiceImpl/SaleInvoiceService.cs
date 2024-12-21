@@ -295,17 +295,17 @@ namespace FlowerShop.Service.ServiceImpl
 
 				// Danh sách ngày cần hiển thị: luôn bao gồm startDate và endDate
 				var labels = new HashSet<string>
-		{
-			startDate.Value.ToString("dd/MM/yyyy"),
-			endDate.Value.ToString("dd/MM/yyyy")
-		};
+				{
+					startDate.Value.ToString("dd/MM/yyyy"),
+					endDate.Value.ToString("dd/MM/yyyy")
+				};
 
 				var values = new List<double>();
 
 				// Thêm tối đa 3 ngày có doanh thu khác 0, ưu tiên ngày gần nhất
 				foreach (var day in dailySales.Keys.OrderBy(d => d))
 				{
-					if (labels.Count >= 5) break; // Bao gồm startDate, endDate và tối đa 3 ngày khác
+					if (labels.Count >= 7) break; // Bao gồm startDate, endDate và tối đa 5 ngày khác
 					labels.Add(day.ToString("dd/MM/yyyy"));
 				}
 
@@ -390,6 +390,73 @@ namespace FlowerShop.Service.ServiceImpl
 			catch (Exception ex)
 			{
 				Console.WriteLine($"Lỗi trong Service GetTopSellingProductsAsync: {ex.Message}");
+				throw;
+			}
+		}
+
+		public async Task<Dictionary<string, object>> GetAllSale(DateTime? startDate, DateTime? endDate)
+		{
+			try
+			{
+				var invoices = await _saleInvoiceRepository.GetAllAsync();
+
+				// Lọc các hóa đơn có trạng thái giao hàng thành công
+				var filteredInvoices = invoices.Where(i => i.Status == ConstStatusSaleInvoice.GIAO_HANG_THANH_CONG);
+
+				// Áp dụng bộ lọc ngày nếu có
+				if (startDate.HasValue)
+				{
+					filteredInvoices = filteredInvoices.Where(i => i.CreateDay.Date >= startDate.Value.Date);
+				}
+				if (endDate.HasValue)
+				{
+					filteredInvoices = filteredInvoices.Where(i => i.CreateDay.Date <= endDate.Value.Date);
+				}
+
+				// Nhóm doanh thu theo ngày
+				var dailySales = filteredInvoices
+					.GroupBy(i => i.CreateDay.Date)
+					.ToDictionary(g => g.Key, g => g.ToList());
+
+				// Danh sách tất cả các ngày trong khoảng từ startDate đến endDate
+				var allDates = Enumerable.Range(0, (endDate.Value.Date - startDate.Value.Date).Days + 1)
+					.Select(offset => startDate.Value.Date.AddDays(offset))
+					.ToList();
+
+				var labels = new List<string>();
+				var values = new List<double>();
+
+				foreach (var date in allDates)
+				{
+					labels.Add(date.ToString("dd/MM/yyyy")); // Thêm nhãn ngày
+
+					if (dailySales.ContainsKey(date))
+					{
+						// Tính tổng doanh thu của các hóa đơn trong ngày
+						double total = 0;
+						foreach (var invoice in dailySales[date])
+						{
+							total += await TongTienCuaMotDonHang(invoice.Id);
+						}
+						values.Add(total);
+					}
+					else
+					{
+						// Gán giá trị doanh thu là 0 nếu không có hóa đơn trong ngày
+						values.Add(0);
+					}
+				}
+
+				// Trả về dữ liệu dưới dạng dictionary
+				return new Dictionary<string, object>
+		{
+			{ "labels", labels },
+			{ "values", values }
+		};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi trong Service GetSalesDataByDateRangeAsync: {ex.Message}");
 				throw;
 			}
 		}

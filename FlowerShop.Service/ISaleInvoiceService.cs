@@ -53,5 +53,7 @@ namespace FlowerShop.Service
 		Task<Dictionary<string, object>> GetSalesDataByDateRangeAsync(DateTime? startDate, DateTime? endDate);
 
 		Task<Dictionary<string, object>> GetTopSellingProductsAsync(DateTime? startDate, DateTime? endDate);
+
+		Task<Dictionary<string, object>> GetAllSale(DateTime? startDate, DateTime? endDate);
 	}
 }

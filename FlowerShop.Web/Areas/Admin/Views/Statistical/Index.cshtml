@@ -91,9 +91,10 @@
 				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 					<h6 class="m-0 font-weight-bold text-primary">Biểu đồ báo cáo doanh thu</h6>
 					<div class="dropdown no-arrow"></div>
-					<a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+					<a href="#" id="generateReport" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
 						<i class="fas fa-download fa-sm text-white-50"></i> Tạo báo cáo
 					</a>
+
 				</div>
 				<!-- Card Body -->
 				<div class="card-body" style="height: 600px">
@@ -121,10 +122,27 @@
 
 </div>
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
 <script>
-	async function fetchMonthlySalesData(startDate = '', endDate = '') {
+	async function getSalesData(startDate = '', endDate = '') {
 		try {
 			const url = `/api/admin/quan-li-don-hang/doanh-thu-theo-ngay?startDate=${startDate}&endDate=${endDate}`;
+			const response = await fetch(url);
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || 'Lỗi khi tải dữ liệu doanh thu hàng tháng');
+			}
+			return await response.json(); // Dữ liệu JSON từ API
+		} catch (error) {
+			console.error("Lỗi khi gọi API:", error);
+			return null;
+		}
+	}
+
+	async function getAllSalesData(startDate = '', endDate = '') {
+		try {
+			const url = `/api/admin/quan-li-don-hang/doanh-thu?startDate=${startDate}&endDate=${endDate}`;
 			const response = await fetch(url);
 			if (!response.ok) {
 				const error = await response.json();
@@ -153,7 +171,7 @@
 			endDateInput.value = getEndOfMonth();
 		}
 
-		const salesData = await fetchMonthlySalesData(startDate, endDate);
+		const salesData = await getSalesData(startDate, endDate);
 
 		if (salesData && salesData.labels && salesData.values) {
 			Highcharts.chart('highchart-container', {
@@ -226,5 +244,65 @@
 
 	// Cập nhật biểu đồ ngay khi trang load
 	updateChart();
+
+	//Format ngày
+	function formatDate(dateInput) {
+		const date = new Date(dateInput);
+		return date.toLocaleDateString('vi-VN', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric'
+		});
+	}
+
+	//Tạo filexecel
+	document.getElementById('generateReport').addEventListener('click', async function () {
+		const startDateInput = document.getElementById('startDate').value || getStartOfMonth();
+		const endDateInput = document.getElementById('endDate').value || getEndOfMonth();
+
+		try {
+			// Gọi API lấy dữ liệu
+			const salesData = await getAllSalesData(startDateInput, endDateInput);
+
+			if (salesData && salesData.labels && salesData.values) {
+				// Chuẩn bị dữ liệu cho file Excel
+				const data = [];
+				let totalRevenue = 0;
+
+				const formattedStartDate = formatDate(startDateInput);
+				const formattedEndDate = formatDate(endDateInput);
+
+				// Dòng tiêu đề
+				data.push([`Báo cáo doanh thu từ ngày ${formattedStartDate} -> ${formattedEndDate}`]);
+				data.push(['Ngày', 'Doanh thu']);
+
+				// Thêm các ngày có doanh thu
+				salesData.labels.forEach((date, index) => {
+					const revenue = salesData.values[index];
+					if (revenue > 0) {
+						totalRevenue += revenue;
+						data.push([date, revenue]);
+					}
+
+				});
+
+				// Thêm tổng doanh thu
+				data.push(['Tổng cộng', totalRevenue]);
+
+				// Tạo workbook và worksheet
+				const worksheet = XLSX.utils.aoa_to_sheet(data);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, 'Doanh thu');
+
+				// Xuất file Excel
+				XLSX.writeFile(workbook, 'Báo cáo doanh thu.xlsx');
+			} else {
+				alert('Không có dữ liệu để tạo báo cáo.');
+			}
+		} catch (error) {
+			console.error('Lỗi khi tạo báo cáo:', error);
+			alert('Không thể tạo báo cáo. Vui lòng thử lại.');
+		}
+	});
 
 </script>
