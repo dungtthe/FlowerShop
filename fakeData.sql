@@ -750,8 +750,7 @@ INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) V
 INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
 (@ProductCamId, @CamId, 1, 0);
 
-
-
-
-
+--bảng tham số
+INSERT INTO ParameterConfigurations(AllowedFeedbackDay,ShippingCostPerKilometer) VALUES
+(7,5000);
 

@@ -16,5 +16,8 @@ namespace FlowerShop.DataAccess.Models
 
         [Required]
         public int AllowedFeedbackDay {  get; set; }//dùng để thiết lập số ngày được phép feedback, ví dụ = 7 thì chỉ được feedback trong vòng 7 ngày kể từ lúc giao hàng thành công
+
+        [Required]
+        public int ShippingCostPerKilometer { get; set; }//phí ship trên 1km (tính theo vnđ)
     }
 }
