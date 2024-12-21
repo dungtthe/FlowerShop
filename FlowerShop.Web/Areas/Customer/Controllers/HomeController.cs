@@ -26,13 +26,11 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
         public async Task<IActionResult> IndexAsync()
         {
             var topSellingProducts = await _productService.GetTopSellingProductsAsync();
-            var newProducts = (await _productService.GetNewProductsAsync(0, 10)).products;
-            var giftProducts = (await _productService.GetGiftCategoryProductsAsync(0, 10)).products;
+            var newProducts = await _productService.GetNewProductsAsync(0);
+            var giftProducts = await _productService.GetGiftCategoryProductsAsync(0, 10);
             ViewBag.topSellingProducts = topSellingProducts;
             ViewBag.newProducts = newProducts;
             ViewBag.giftProducts = giftProducts;
-
-
             return View();
 
             //try

@@ -1,8 +1,8 @@
 ﻿@using FlowerShop.DataAccess.Models;
 @{
     var topSellingProducts = ViewBag.topSellingProducts as IEnumerable<Product>;
-    var newProducts = ViewBag.newProducts as IEnumerable<Product>;
-    var giftProducts = ViewBag.giftProducts as IEnumerable<Product>;
+    var newProducts = (ValueTuple<IEnumerable<Product>, int, int>)ViewBag.newProducts;
+    var giftProducts = (ValueTuple<IEnumerable<Product>, int, int>)ViewBag.giftProducts;
 }
 
 
@@ -26,23 +26,23 @@
                 <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                     <div class="carousel-inner" role="listbox">
                         <div class="carousel-item active rounded">
-                            <img src="~/customer/img/hero-img-1.png"
-                                 class="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide">
+                            <img src="~/customer/img/hero-img-1.png" class="img-fluid w-100 h-100 bg-secondary rounded"
+                                alt="First slide">
                             <a href="#" class="btn px-4 py-2 text-white rounded">Hoa sinh nhật</a>
                         </div>
                         <div class="carousel-item rounded">
                             <img src="~/customer/img/hero-img-2.jpg" class="img-fluid w-100 h-100 rounded"
-                                 alt="Second slide">
+                                alt="Second slide">
                             <a href="#" class="btn px-4 py-2 text-white rounded">Hoa cưới</a>
                         </div>
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselId"
-                            data-bs-slide="prev">
+                        data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
                     <button class="carousel-control-next" type="button" data-bs-target="#carouselId"
-                            data-bs-slide="next">
+                        data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
@@ -84,15 +84,20 @@
             <h2>Sản phẩm mới</h2>
         </div>
         <div class="inner-products">
-            <div class="row">
-                @foreach (var item in newProducts)
+            <div id="row-newproducts" class="row">
+                @foreach (var item in newProducts.Item1)
                 {
                     await Html.RenderPartialAsync("_Product", item);
                 }
             </div>
-            <button class="button-view-more-products">
-                Xem thêm, còn 142 sản phẩm <span style="font-size: 12px;">▼</span>
-            </button>
+            @if (newProducts.Item3 > 0)
+            {
+                <button id="btnViewmoreProducts" onclick="HandleClickViewmoreProducts()" class="button-view-more-products">
+                    Xem thêm, còn @newProducts.Item3 sản phẩm <span style="font-size: 12px;">▼</span>
+                </button>
+            }
+            <input readonly hidden id="ipPagination-newProducts" data-pageindexcur="0"
+                data-remaining="@newProducts.Item3">
         </div>
 
     </div>
@@ -102,7 +107,7 @@
 <!-- quà tặng kèm  -->
 
 
-@if (giftProducts.Count() != 0)
+@if (giftProducts.Item1.Count() != 0)
 {
     <div class="section-products" style="margin-top: 50px;">
         <div class="container">
@@ -110,15 +115,21 @@
                 <h2>Quà tặng kèm</h2>
             </div>
             <div class="inner-products">
-                <div class="row">
-                    @foreach (var item in giftProducts)
+                <div id="row-giftproducts" class="row">
+                    @foreach (var item in giftProducts.Item1)
                     {
                         await Html.RenderPartialAsync("_Product", item);
                     }
                 </div>
-                <button class="button-view-more-products">
-                    Xem thêm, còn 142 sản phẩm <span style="font-size: 12px;">▼</span>
-                </button>
+                @if (giftProducts.Item3 > 0)
+                {
+                    <button id="btnViewmoreGiftProductsProducts" onclick="HandleClickViewmoreGiftProductsProducts()"
+                        class="button-view-more-products">
+                        Xem thêm, còn @giftProducts.Item3 sản phẩm <span style="font-size: 12px;">▼</span>
+                    </button>
+                }
+                <input readonly hidden id="ipPagination-giftProducts" data-pageindexcur="0"
+                    data-remaining="@giftProducts.Item3">
             </div>
 
         </div>
@@ -282,4 +293,152 @@
             }
         }
     });
+
+
+    const HandleClickViewmoreProducts = () => {
+        const elementInput = document.getElementById("ipPagination-newProducts");
+        const pageIndexCur = elementInput.getAttribute("data-pageindexcur");
+        const uri = "/api/product/newproducts?pageIndexCur=" + pageIndexCur;
+        let rowProducts = document.getElementById("row-newproducts");
+        fetchGet(
+            uri,
+            (data) => {
+                console.log(data);
+                elementInput.setAttribute("data-pageindexcur", data.pageIndexCur);
+                elementInput.setAttribute("data-remaining", data.remaining);
+                const btnViewmore = document.getElementById("btnViewmoreProducts");
+                btnViewmore.innerHTML = `Xem thêm, còn ${data.remaining} sản phẩm <span style="font-size: 12px;">▼</span>`;
+                if (data.remaining <= 0) {
+                    btnViewmore.style.display = "none";
+                }
+                for (const p of data.products) {
+                    let boxproduct;
+                    if (p.priceDefault > p.priceSale) {
+                        boxproduct = `
+                                        <div class="box-product col-custom">
+                                            <div class="inner-wrap">
+                                                <div class="inner-image" onClick="DetailProduct(${p.id})">
+                                                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                                                SALE
+                                                            </div>
+                                                            <img src="${p.image}" alt="ảnh sản phẩm" style="mix-blend-mode: multiply; !important">
+                                                        <div class="inner-icon" onclick="AddProductToCart(${p.id},1)">
+                                                            <i class="bi bi-cart-plus"></i>
+                                                        </div>
+                                                </div>
+                                                <div class="inner-content">
+                                                    <h3 class="inner-title">${p.title}</h3>
+                                                    <div class="inner-price">
+                                                            <p class="price-old">${convertToVietnameseDong(p.priceDefault)}</p>
+                                                        <p class="price-current">${convertToVietnameseDong(p.priceSale)}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        `;
+                    }
+                    else {
+                        boxproduct = `
+                                    <div class="box-product col-custom">
+                                    <div class="inner-wrap">
+                                        <div class="inner-image" onClick="DetailProduct(${p.id})">
+
+                                                    <img src="${p.image}" alt="ảnh sản phẩm" style="mix-blend-mode: multiply; !important">
+                                                <div class="inner-icon" onclick="AddProductToCart(${p.id},1)">
+                                                    <i class="bi bi-cart-plus"></i>
+                                                </div>
+                                        </div>
+                                        <div class="inner-content">
+                                            <h3 class="inner-title">${p.title}</h3>
+                                            <div class="inner-price">
+                                                <p class="price-current">${convertToVietnameseDong(p.priceSale)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    `;
+                    }
+                    rowProducts.innerHTML += boxproduct;
+                }
+
+            },
+            () => { },
+            () => { }
+        );
+    };
+
+
+
+
+    const HandleClickViewmoreGiftProductsProducts = () => {
+        const elementInput = document.getElementById("ipPagination-giftProducts");
+        const pageIndexCur = elementInput.getAttribute("data-pageindexcur");
+        const uri = "/api/product/giftproducts?pageIndexCur=" + pageIndexCur;
+        let rowProducts = document.getElementById("row-giftproducts");
+        fetchGet(
+            uri,
+            (data) => {
+                console.log(data);
+                elementInput.setAttribute("data-pageindexcur", data.pageIndexCur);
+                elementInput.setAttribute("data-remaining", data.remaining);
+                const btnViewmore = document.getElementById("btnViewmoreGiftProductsProducts");
+                btnViewmore.innerHTML = `Xem thêm, còn ${data.remaining} sản phẩm <span style="font-size: 12px;">▼</span>`;
+                if (data.remaining <= 0) {
+                    btnViewmore.style.display = "none";
+                }
+                for (const p of data.products) {
+                    let boxproduct;
+                    if (p.priceDefault > p.priceSale) {
+                        boxproduct = `
+                                        <div class="box-product col-custom">
+                                            <div class="inner-wrap">
+                                                <div class="inner-image" onClick="DetailProduct(${p.id})">
+                                                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                                                SALE
+                                                            </div>
+                                                            <img src="${p.image}" alt="ảnh sản phẩm" style="mix-blend-mode: multiply; !important">
+                                                        <div class="inner-icon" onclick="AddProductToCart(${p.id},1)">
+                                                            <i class="bi bi-cart-plus"></i>
+                                                        </div>
+                                                </div>
+                                                <div class="inner-content">
+                                                    <h3 class="inner-title">${p.title}</h3>
+                                                    <div class="inner-price">
+                                                            <p class="price-old">${convertToVietnameseDong(p.priceDefault)}</p>
+                                                        <p class="price-current">${convertToVietnameseDong(p.priceSale)}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        `;
+                    }
+                    else {
+                        boxproduct = `
+                                    <div class="box-product col-custom">
+                                    <div class="inner-wrap">
+                                        <div class="inner-image" onClick="DetailProduct(${p.id})">
+
+                                                    <img src="${p.image}" alt="ảnh sản phẩm" style="mix-blend-mode: multiply; !important">
+                                                <div class="inner-icon" onclick="AddProductToCart(${p.id},1)">
+                                                    <i class="bi bi-cart-plus"></i>
+                                                </div>
+                                        </div>
+                                        <div class="inner-content">
+                                            <h3 class="inner-title">${p.title}</h3>
+                                            <div class="inner-price">
+                                                <p class="price-current">${convertToVietnameseDong(p.priceSale)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    `;
+                    }
+                    rowProducts.innerHTML += boxproduct;
+                }
+
+            },
+            () => { },
+            () => { }
+        );
+    };
 </script>

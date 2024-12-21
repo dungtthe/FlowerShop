@@ -98,11 +98,15 @@ INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Ngày 
 
 -- quà tặng kèm
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Bánh Kem', 7, 1);
+DECLARE @BanhKemSellId INT = SCOPE_IDENTITY();
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Chocolate', 7, 1);
+DECLARE @ChocolateSellId INT = SCOPE_IDENTITY();
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Trái Cây', 7, 1);
+DECLARE @TraiCaySellId INT = SCOPE_IDENTITY();
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Gấu Bông', 7, 1);
+DECLARE @GauBongSellId INT = SCOPE_IDENTITY();
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell) VALUES (N'Nến Thơm', 7, 1);
-
+DECLARE @NenThomSellId INT = SCOPE_IDENTITY();
 
 -- danh mục trong kho, productitem
 -- HOA HỒNG
@@ -479,7 +483,7 @@ INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelet
 (N'Premium Chocolate Collection',
 N'Bộ sưu tập chocolate cao cấp Godiva và Lindor',
 1,
-'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12577_premium-collection.jpg", "no_img.png"]',
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/thumb/so-co-la-d-art/12752_chocolate-truffle-nau-9.jpg", "no_img.png"]',
 4, 0);
 DECLARE @ProductId4 INT = SCOPE_IDENTITY();
 
@@ -487,7 +491,7 @@ INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelet
 (N'Bunny Sweet Box',
 N'Set quà thỏ bông xinh xắn và Ferrero Rocher',
 1,
-'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12579_bunny-sweet.jpg", "no_img.png"]',
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/thumb/gau-bong/13043_bup-be-non-phu-thuy.jpg", "no_img.png"]',
 4, 0);
 DECLARE @ProductId5 INT = SCOPE_IDENTITY();
 
@@ -495,7 +499,7 @@ INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelet
 (N'Double Love Bears',
 N'Cặp gấu Teddy và Love siêu dễ thương',
 1,
-'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12580_love-bears.jpg", "no_img.png"]',
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/thumb/gau-bong/13273_mini-teddy-bear.jpg", "no_img.png"]',
 4, 0);
 DECLARE @ProductId6 INT = SCOPE_IDENTITY();
 
@@ -503,7 +507,7 @@ INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelet
 (N'Chocolate Paradise',
 N'Combo 3 loại chocolate cao cấp nhất',
 1,
-'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12581_choco-paradise.jpg", "no_img.png"]',
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/thumb/so-co-la-d-art/12893_chocolatle-big-box-36.jpg", "no_img.png"]',
 4, 0);
 DECLARE @ProductId7 INT = SCOPE_IDENTITY();
 
@@ -511,7 +515,7 @@ INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelet
 (N'Sweet Cake Duo',
 N'Bộ đôi bánh kem chocolate và vanilla',
 1,
-'["https://hoayeuthuong.com/hinh-hoa-tuoi/banh-kem/12582_sweet-duo.jpg", "no_img.png"]',
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/thumb/banh-kem-brodard/6862_banh-kem-sua-tuoi-20cm-m13.jpg", "no_img.png"]',
 4, 0);
 DECLARE @ProductId8 INT = SCOPE_IDENTITY();
 
@@ -519,15 +523,15 @@ INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelet
 (N'Love Bear Cake Set',
 N'Set quà gấu Love và bánh Red Velvet',
 1,
-'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12583_bear-cake.jpg", "no_img.png"]',
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/thumb/banh-kem-brodard/15518_banh-passio-cheese-mousse-16cm.jpg", "no_img.png"]',
 4, 0);
 DECLARE @ProductId9 INT = SCOPE_IDENTITY();
 
 INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
-(N'Ultimate Gift Box',
+(N'Cake White',
 N'Combo bánh kem, chocolate và gấu bông cao cấp',
 1,
-'["https://hoayeuthuong.com/hinh-hoa-tuoi/qua-tang/12584_ultimate-gift.jpg", "no_img.png"]',
+'["https://hoayeuthuong.com/hinh-hoa-tuoi/thumb/banh-kem-brodard/15516_banh-kem-trai-cay-sua-tuoi-20cm-m14.jpg", "no_img.png"]',
 4, 0);
 DECLARE @ProductId10 INT = SCOPE_IDENTITY();
 
@@ -543,17 +547,17 @@ INSERT INTO ProductPrices (ProductId, Price, Priority, StartDate, EndDate, IsDel
 
 -- Insert ProductCategories
 INSERT INTO ProductCategories (ProductId, CategoryId, IsDelete) VALUES
-(@ProductId4, 59, 0),
-(@ProductId5, 59, 0),
-(@ProductId5, 61, 0),
-(@ProductId6, 61, 0),
-(@ProductId7, 59, 0),
-(@ProductId8, 58, 0),
-(@ProductId9, 58, 0),
-(@ProductId9, 61, 0),
-(@ProductId10, 58, 0),
-(@ProductId10, 59, 0),
-(@ProductId10, 61, 0);
+(@ProductId4, @ChocolateSellId, 0),
+(@ProductId5, @ChocolateSellId, 0),
+(@ProductId5, @GauBongSellId , 0),
+(@ProductId6, @GauBongSellId , 0),
+(@ProductId7, @ChocolateSellId, 0),
+(@ProductId8, @BanhKemSellId , 0),
+(@ProductId9, @BanhKemSellId , 0),
+(@ProductId9, @GauBongSellId , 0),
+(@ProductId10, @BanhKemSellId , 0),
+(@ProductId10, @ChocolateSellId, 0),
+(@ProductId10, @GauBongSellId , 0);
 
 -- Insert ProductProductItems
 INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
@@ -573,3 +577,181 @@ INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) V
 (@ProductId10, @BanhKemChocolateId, 1, 0),
 (@ProductId10, @GodivaId, 1, 0),
 (@ProductId10, @TeddyId, 1, 0);
+
+
+
+
+-- Thêm danh mục TRÁI CÂY và NẾN THƠM trong kho
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
+VALUES (N'TRÁI CÂY', @QuaTangKem_KhoId, 0, 0);
+DECLARE @TraiCayKhoId INT = SCOPE_IDENTITY();
+
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
+VALUES (N'NẾN THƠM', @QuaTangKem_KhoId, 0, 0);
+DECLARE @NenThomKhoId INT = SCOPE_IDENTITY();
+
+
+-- Thêm sản phẩm vào kho Trái Cây
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Táo Đỏ', 120000, @TraiCayKhoId, 50, N'Táo đỏ nhập khẩu tươi ngon', 0);
+DECLARE @TaoDoId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Cam Vàng', 150000, @TraiCayKhoId, 40, N'Cam vàng thơm ngon, cung cấp vitamin C', 0);
+DECLARE @CamVangId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Nho Đen', 200000, @TraiCayKhoId, 30, N'Nho đen không hạt nhập khẩu', 0);
+DECLARE @NhoDenId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Dâu Tây', 250000, @TraiCayKhoId, 20, N'Dâu tây tươi Đà Lạt, đóng hộp đẹp mắt', 0);
+DECLARE @DauTayId INT = SCOPE_IDENTITY();
+
+
+-- Thêm sản phẩm vào kho Nến Thơm
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Nến Thơm Lavender', 120000, @NenThomKhoId, 50, N'Nến thơm hương Lavender thư giãn', 0);
+DECLARE @LavenderId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Nến Thơm Vani', 100000, @NenThomKhoId, 40, N'Nến thơm hương Vani ngọt ngào', 0);
+DECLARE @VaniId INT = SCOPE_IDENTITY();
+
+INSERT INTO ProductItems (Name, ImportPrice, CategoryId, Quantity, Description, IsDelete)
+VALUES
+(N'Nến Thơm Cam', 110000, @NenThomKhoId, 20, N'Nến thơm hương cam tươi mát', 0);
+DECLARE @CamId INT = SCOPE_IDENTITY();
+
+
+-- Sản phẩm để bán từ kho Trái Cây
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Hộp Táo Đỏ',
+N'Hộp quà trái cây với táo đỏ nhập khẩu tươi ngon',
+1,
+'["https://bizweb.dktcdn.net/100/107/356/products/ho-p-ta-o-do-ha-n-quo-c-samsung-1k.jpg?v=1598241579597", "no_img.png"]',
+4, 0);
+DECLARE @ProductTaoDoId INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Hộp Cam Vàng',
+N'Hộp quà trái cây với cam vàng thơm ngon, bổ dưỡng',
+1,
+'["https://www.lottemart.vn/media/catalog/product/cache/0x0/0/4/0400229220003-3.jpg.webp", "no_img.png"]',
+4, 0);
+DECLARE @ProductCamVangId INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Hộp Nho Đen',
+N'Hộp quà trái cây với nho đen không hạt nhập khẩu',
+1,
+'["https://www.lottemart.vn/media/catalog/product/cache/0x0/0/7/0770795264146-1.jpg.webp", "no_img.png"]',
+4, 0);
+DECLARE @ProductNhoDenId INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Hộp Dâu Tây',
+N'Hộp quà trái cây với dâu tây tươi từ Đà Lạt',
+1,
+'["https://dalatfarm.net/wp-content/uploads/2022/01/dau-nhat-mix-nhieu-loai.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductDauTayId INT = SCOPE_IDENTITY();
+
+
+
+-- Sản phẩm để bán từ kho Nến Thơm
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Nến Lavender',
+N'Nến thơm hương Lavender thư giãn, cao cấp',
+1,
+'["https://natudar.com/wp-content/uploads/2024/08/nen-thom-oai-huong-lavender-img-1.jpg", "no_img.png"]',
+4, 0);
+DECLARE @ProductLavenderId INT = SCOPE_IDENTITY();
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Nến Vani',
+N'Nến thơm hương Vani ngọt ngào, lãng mạn',
+1,
+'["https://file.hstatic.net/200000455983/file/huong-vani_5ce16635b8d7422ea5e6666b64f6ff5b_grande.png", "no_img.png"]',
+4, 0);
+DECLARE @ProductVaniId INT = SCOPE_IDENTITY();
+
+
+INSERT INTO Products (Title, Description, Quantity, Images, PackagingId, IsDelete) VALUES
+(N'Nến Cam',
+N'Nến thơm hương cam tươi mát, dễ chịu',
+1,
+'["https://bizweb.dktcdn.net/100/419/636/products/cam-que.jpg?v=1712983395237", "no_img.png"]',
+4, 0);
+DECLARE @ProductCamId INT = SCOPE_IDENTITY();
+
+
+
+-- Gán giá cho các sản phẩm Trái Cây
+INSERT INTO ProductPrices (ProductId, Price, Priority, StartDate, EndDate, IsDelete) VALUES
+(@ProductTaoDoId, 150000, 1, NULL, NULL, 0),
+(@ProductCamVangId, 180000, 1, NULL, NULL, 0),
+(@ProductNhoDenId, 200000, 1, NULL, NULL, 0),
+(@ProductDauTayId, 250000, 1, NULL, NULL, 0);
+
+-- Gán giá cho các sản phẩm Nến Thơm
+INSERT INTO ProductPrices (ProductId, Price, Priority, StartDate, EndDate, IsDelete) VALUES
+(@ProductLavenderId, 120000, 1, NULL, NULL, 0),
+(@ProductVaniId, 100000, 1, NULL, NULL, 0),
+(@ProductCamId, 110000, 1, NULL, NULL, 0);
+
+
+
+-- Gán sản phẩm vào danh mục Trái Cây
+INSERT INTO ProductCategories (ProductId, CategoryId, IsDelete) VALUES
+(@ProductTaoDoId, @TraiCaySellId, 0),
+(@ProductCamVangId, @TraiCaySellId, 0),
+(@ProductNhoDenId, @TraiCaySellId, 0),
+(@ProductDauTayId, @TraiCaySellId, 0);
+
+-- Gán sản phẩm vào danh mục Nến Thơm
+INSERT INTO ProductCategories (ProductId, CategoryId, IsDelete) VALUES
+(@ProductLavenderId, @NenThomSellId, 0),
+(@ProductVaniId, @NenThomSellId, 0),
+(@ProductCamId, @NenThomSellId, 0);
+
+-- Gán ProductItem cho Hộp Táo Đỏ
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductTaoDoId, @TaoDoId, 1, 0);
+
+-- Gán ProductItem cho Hộp Cam Vàng
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductCamVangId, @CamVangId, 1, 0);
+
+-- Gán ProductItem cho Hộp Nho Đen
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductNhoDenId, @NhoDenId, 1, 0);
+
+-- Gán ProductItem cho Hộp Dâu Tây
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductDauTayId, @DauTayId, 1, 0);
+
+-- Gán ProductItem cho Nến Lavender
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductLavenderId, @LavenderId, 1, 0);
+
+-- Gán ProductItem cho Nến Vani
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductVaniId, @VaniId, 1, 0);
+
+
+-- Gán ProductItem cho Nến Cam
+INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) VALUES
+(@ProductCamId, @CamId, 1, 0);
+
+
+
+
+
+
