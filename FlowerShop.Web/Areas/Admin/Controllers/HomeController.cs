@@ -27,7 +27,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             AppUser appUser = await _appUserService.GetAppUser(HttpContext);
 
             bool a= await  _appUserService.IsAdmin(HttpContext);
-            return View();
+            return RedirectToAction("Index", "Statistical");
         }
     }
 }
