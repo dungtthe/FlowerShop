@@ -1,52 +1,575 @@
-﻿@model FlowerShop.DataAccess.Models.ProductItem
-
+﻿@using Newtonsoft.Json;
+@using FlowerShop.Common.Helpers;
+@using FlowerShop.DataAccess.Models
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nhập kho";
+    var sttProductItemInStock = 1;
+    var productsItemInStock = ViewBag.productItemInStock as IEnumerable<ProductItem>;
+    var categoryInStock = ViewBag.categoryInStock as IEnumerable<Category>;
 }
 
-<h1>Create</h1>
+<style>
+    .box-input .box-item {
+        width: 600px;
+    }
 
-<h4>ProductItem</h4>
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #888 #e0e0e0;
+    }
+
+    .dropdown button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        width: 250px;
+    }
+
+    .control-label {
+        margin: 0;
+        text-align: center;
+    }
+
+    .section-search {
+        background-color: #C1CDC1;
+        height: 36px;
+        width: 350px;
+        position: relative;
+        left: 130px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-left: 10px;
+    }
+
+    .section-search .inner-wrap {
+        display: flex;
+        align-items: center;
+    }
+
+    .section-search .inner-icon {
+        margin-right: 10px;
+    }
+
+    .section-search input {
+        border: none;
+        background-color: #C1CDC1;
+        outline: none;
+    }
+
+    .image-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .product-image {
+        transition: 0.3s;
+    }
+
+    .image-container .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 0.25rem;
+    }
+
+    .image-container .overlay-top,
+    .image-container .overlay-bottom {
+        width: 100%;
+        height: 50%;
+        /* Mỗi phần chiếm 50% chiều cao */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .image-container .overlay-top {
+        background: rgba(0, 128, 0, 0.8);
+        color: white;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    .image-container .overlay-bottom {
+        background: rgba(255, 0, 0, 0.8);
+        color: white;
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }
+
+    .image-container:hover .product-image {
+        filter: brightness(0.7);
+    }
+
+    .image-container:hover .overlay {
+        opacity: 1;
+    }
+
+    table.table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table.table th,
+    table.table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    table.table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    input,
+    select {
+        border: 1px solid rgba(26, 26, 26, 0.1);
+        border-radius: 5px;
+    }
+</style>
+
+<h1>@ViewData["Title"]</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+    <div class="col-6">
+        <div class="inner-btn-excel" style="display: flex; flex-direction: row-reverse; padding-right: 50px;">
+            <button onclick="ImportFromExcel()"
+                style="border-radius: 5px; border: 0; padding: 8px; background-color: rgb(77, 129, 77); color: white;">
+                <i class="fa-solid fa-file-import"></i> Nhập hàng từ file Excel
+            </button>
+            <input type="file" id="uploadExcel" accept=".xlsx, .xls" style="display: none;">
+        </div>
+        <div class="inner-title" style="display: flex;">
+            <h4 style="margin-right: 10px;">Danh sách sản phẩm nhập</h4>
+            <button class="btn btn-info" onclick="AddNewRowProduct()" style="
+                                                    width: 30px; 
+                                                    height: 30px; 
+                                                    display: inline-flex; 
+                                                    justify-content: center; 
+                                                    align-items: center; 
+                ">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+        <div class="inner-products">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            STT
+                        </th>
+                        <th>
+                            Tên sản phẩm
+                        </th>
+                        <th>
+                            Danh mục
+                        </th>
+                        <th>
+                            Giá nhập
+                        </th>
+                        <th>
+                            Số lượng
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="list-product-import">
+
+                </tbody>
+
+            </table>
+        </div>
+        <div style="display: flex; flex-direction: row-reverse;">
+            <button class="btn btn-success" onclick="AcceptImportProducts()">Đồng ý</button>
+        </div>
+
+    </div>
+    <div class="col-6">
+
+        <div style="display: flex;">
+            <h3>Sản phẩm trong kho</h3>
+            <div class="section-search">
+                <div class="inner-wrap">
+                    <div class="inner-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div class="inner-input">
+                        <input oninput="SearchProductItem(this.value)" type="text" placeholder="Nhập nội dung tìm kiếm">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ImportPrice" class="control-label"></label>
-                <input asp-for="ImportPrice" class="form-control" />
-                <span asp-validation-for="ImportPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsDelete" /> @Html.DisplayNameFor(model => model.IsDelete)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
+        <div id="selectCategory" style="display: none;">
+            <select class="product-category">
+                @foreach (var item in categoryInStock)
+                {
+                    <option data-idcategory=@item.Id>@item.Name</option>
+                }
+            </select>
+        </div>
+
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        STT
+                    </th>
+                    <th>
+                        Tên sản phẩm
+                    </th>
+                    <th>
+                        Danh mục
+                    </th>
+                    <th>
+                        Giá nhập
+                    </th>
+                    <th>
+                        Số lượng tồn
+                    </th>
+                    <th>
+                        Hình ảnh
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in productsItemInStock)
+                {
+                    <tr data-id="@item.Id" id="product-row-@item.Id" class="product-row">
+                        <td>
+                            @(sttProductItemInStock++)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Category.Name)
+                        </td>
+                        <td>
+                            @{
+                                var priceConverted = Converter.ConvertToVietnameseDong(item.ImportPrice);
+                            }
+                            @Html.DisplayFor(modelItem => priceConverted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Quantity)
+                        </td>
+                        <td>
+                            @{
+                                string[] listImg = item.Images != null
+                                ? JsonConvert.DeserializeObject<string[]>(item.Images)
+                                : new string[] { "no_img.png" };
+
+                                var firstImg = listImg[0];
+                            }
+                            <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image"
+                                style="width: 70px; height: 70px; object-fit: cover;" />
+                        </td>
+                        <td>
+                            <button class="btn btn-info"
+                                onclick="AddProductFromStock('@item.Name', '@item.Category.Name',@item.ImportPrice, 1)">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        const AddNewRowProduct = () => {
+            const rowTable = document.getElementById("list-product-import");
+            const rows = rowTable.getElementsByClassName("product-row");
+            const elementSelectCategory = document.getElementById("selectCategory");
+            // Tạo một dòng mới (tr) và thêm vào bảng
+            const newRow = document.createElement("tr");
+            newRow.className = "product-row";
+
+            newRow.innerHTML = `
+                                                                                                                                                                                                                                                                                                                                                                                                                                <td>${rows.length + 1}
+                                                                                                                                                                                                                                                                                                                                                                                                                                <span style="color: red !important; font-size:12px;" class="errorSTT" class="text-danger"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <input class="product-name" type="text">
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <span style="color: red !important; font-size:12px;" class="errorProductName" class="text-danger"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                   ${elementSelectCategory.innerHTML}
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <span style="color: red !important; font-size:12px;" class="errorProductCategory" class="text-danger"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <input class="product-price" type="text" class="form-control price-input"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        value="${convertToVietnameseDong(0)}" onfocus="formatToRaw(this)"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        onblur="formatToCurrency(this)" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class="errorProductPrice" style="color: red !important; font-size:12px;" class="text-danger"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <input class="product-quantity" style="max-width: 50px;" type="number" value="1">
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <span class="errorProductQuantity" style="color: red !important; font-size:12px;" class="text-danger"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <button onclick="RemoveProduct(this)" class="btn btn-danger btn-sm">
+                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="fa-solid fa-trash"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                    <span style="color: red !important; font-size:12px;" class="errorIcon" class="text-danger"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                            `;
+
+            // Thêm dòng mới vào bảng mà không làm mất dữ liệu các dòng cũ
+            rowTable.appendChild(newRow);
+        }
+
+        const RemoveProduct = (element) => {
+            const trElement = element.closest('tr');
+            const rowTable = document.getElementById("list-product-import");
+            rowTable.removeChild(trElement);
+
+            //update stt
+            const tdsSTT = rowTable.querySelectorAll(".product-row td:nth-child(1)");
+            for (let i = 0; i < tdsSTT.length; i++) {
+                tdsSTT[i].innerText = i + 1;
+            }
+
+        };
+
+        // Chuyển về định dạng số gốc khi focus vào ô input
+        const formatToRaw = (input) => {
+            const value = input.value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
+            input.value = value;
+        }
+
+        // Định dạng lại theo kiểu tiền tệ khi mất focus
+        const formatToCurrency = (input) => {
+            const value = parseInt(input.value.replace(/\D/g, ''), 10); // Chuyển chuỗi thành số nguyên
+            if (isNaN(value)) {
+                input.value = ''; // Xóa giá trị nếu không hợp lệ
+            } else {
+                input.value = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+            }
+
+            if (input.value === null || input.value === '') {
+                showErrorForCreateProduct('ProductPrices', 'Giá bán không được để trống!');
+            } else {
+                clearErrorForCreateProduct('ProductPrices');
+            }
+        }
+
+
+        //import từ excel
+        // Hàm kích hoạt input file ẩn khi nhấn nút
+        const ImportFromExcel = () => {
+            document.getElementById("uploadExcel").click();
+        };
+
+        // Xử lý khi người dùng chọn file
+        document.getElementById("uploadExcel").addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                // alert("Vui lòng chọn một file Excel!");
+                return;
+            }
+
+            // Đọc file Excel
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Lấy sheet đầu tiên
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+
+                // Chuyển dữ liệu Excel thành mảng 2D
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                // Lọc các dòng có ít nhất 1 cột chứa text
+                const filteredData = jsonData.filter((row) => {
+                    return row.some((cell) => typeof cell === "string" && cell.trim() !== "");
+                });
+
+                HandlerImportFromExcel(filteredData);
+                // Đặt lại giá trị của input file
+                event.target.value = "";
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        const HandlerImportFromExcel = (data) => {
+            console.log(data);
+            const rowTable = document.getElementById("list-product-import");
+            rowTable.innerHTML = "";
+
+            //add vào bảng nhập
+            for (let i = 1; i < data.length; i++) {
+                AddProductToTable(data[i][0], data[i][1], data[i][2], data[i][3]);
+            }
+        }
+
+
+        const AddProductToTable = (name, category, price, quantity) => {
+            AddNewRowProduct();
+            const rowTable = document.getElementById("list-product-import");
+            const rows = rowTable.getElementsByClassName("product-row");
+            const elementRowEnd = rows[rows.length - 1];
+            const elementInputProductName = elementRowEnd.querySelector(".product-name");
+            const elementSelectProductCategory = elementRowEnd.querySelector(".product-category");
+            const elementInputProductPrice = elementRowEnd.querySelector(".product-price");
+            const elementInputProductQuantity = elementRowEnd.querySelector(".product-quantity");
+            // Set giá trị cho các input
+            elementInputProductName.value = name;
+            elementInputProductPrice.value = HandlerInputPrice(price);
+            elementInputProductQuantity.value = quantity;
+            // Kiểm tra và chọn category
+            let categoryFound = false;
+            for (let option of elementSelectProductCategory.options) {
+                if (category != null && option.textContent.trim().toLowerCase() === category.trim().toLowerCase()) {
+                    option.selected = true;
+                    categoryFound = true;
+                    break;
+                }
+            }
+            // Nếu không tìm thấy category, chọn "KHÔNG XÁC ĐỊNH"
+            if (!categoryFound) {
+                for (let option of elementSelectProductCategory.options) {
+                    if (option.textContent.trim().toLowerCase() === "không xác định") {
+                        option.selected = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        const HandlerInputPrice = (price) => {
+            if (typeof price === "number") {
+                return convertToVietnameseDong(price);
+            }
+            let result = "";
+            for (const c of price) {
+                // Kiểm tra nếu ký tự là số
+                if (!isNaN(c) && c !== " ") {
+                    result += c;
+                }
+            }
+            return convertToVietnameseDong(result);
+        }
+
+        const AddProductFromStock = (name, category, price, quantity) => {
+            let flag = false;
+            const rowTable = document.getElementById("list-product-import");
+            const rows = rowTable.getElementsByClassName("product-row");
+            for (let row of rows) {
+                const productName = row.querySelector(".product-name").value;
+                const productCategory = row.querySelector(".product-category").value;
+                const productPrice = row.querySelector(".product-price").value;
+                const productQuantity = row.querySelector(".product-quantity").value;
+
+
+                if (name.trim().toLowerCase() === productName.trim().toLowerCase() && productCategory.trim().toLowerCase() === category.trim().toLowerCase() && ConvertVietnameseDongToNumber(productPrice) === price) {
+                    row.querySelector(".product-quantity").value = parseInt(productQuantity) + 1;
+                    flag = true;
+                }
+            }
+            if (!flag) {
+                AddProductToTable(name, category, price, quantity);
+            }
+
+        }
+
+        const AcceptImportProducts = () => {
+            const rowTable = document.getElementById("list-product-import");
+            const rows = rowTable.getElementsByClassName("product-row");
+            let products = [];
+            let flag = false;
+            for (let row of rows) {
+                const name = row.querySelector(".product-name").value.trim();
+                const productCategory = row.querySelector(".product-category");
+                const selectedOption = productCategory.options[productCategory.selectedIndex];
+                const categoryId = parseInt(selectedOption.getAttribute("data-idcategory"));
+                const price = ConvertVietnameseDongToNumber(row.querySelector(".product-price").value.trim());
+                const quantity = parseInt(row.querySelector(".product-quantity").value.trim());
+
+                ClearErrorInSpan(row, 'ProductPrice');
+                ClearErrorInSpan(row, 'ProductQuantity');
+                ClearErrorInSpan(row, 'ProductName');
+                ClearErrorInSpan(row, 'ProductCategory');
+                ClearErrorInSpan(row, 'STT');
+                ClearErrorInSpan(row, 'Icon');
+                if (price <= 0) {
+                    ShowErrorInSpan(row, 'ProductPrice', "Giá bán không hợp lệ");
+                    flag = true;
+                }
+                if (quantity <= 0) {
+                    ShowErrorInSpan(row, 'ProductQuantity', "Số lượng không hợp lệ");
+                    flag = true;
+                }
+                if (name === null || name.trim() === "") {
+                    ShowErrorInSpan(row, 'ProductName', "Tên không được để trống");
+                    flag = true;
+                }
+                products.push({
+                    name,
+                    categoryId,
+                    price,
+                    quantity,
+                });
+            }
+            if (flag) {
+                return;
+            }
+            console.log(JSON.stringify(products));
+
+            fetchPost('/api/admin/quan-li-kho/import', products,
+                (rs) => {
+                    showSuccess(rs.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }, (rs) => {
+                    showErrorHTML(rs.message);
+                },
+                () => {
+                    showError('Có lỗi xảy ra');
+                });
+        };
+
+
+        // Hiển thị lỗi cho các trường không hợp lệ
+        const ShowErrorInSpan = (element, className, message) => {
+            const errorSpan = element.querySelector(`.error${className}`);
+            errorSpan.innerText = message;
+        };
+
+        // Xóa lỗi khi trường hợp lệ
+        const ClearErrorInSpan = (element, className) => {
+            const errorSpan = element.querySelector(`.error${className}`);
+            errorSpan.innerHTML = '&nbsp;';  // Sử dụng &nbsp; để chèn khoảng trắng mà không làm thẻ rỗng
+        };
+
+    </script>
 }

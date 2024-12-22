@@ -754,3 +754,7 @@ INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) V
 INSERT INTO ParameterConfigurations(AllowedFeedbackDay,ShippingCostPerKilometer) VALUES
 (7,5000);
 
+
+-- danh mục trong kho không xác định
+INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
+VALUES (N'KHÔNG XÁC ĐỊNH', NULL, 0, 0);

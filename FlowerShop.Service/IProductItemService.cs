@@ -1,4 +1,5 @@
-﻿using FlowerShop.DataAccess.Models;
+﻿using FlowerShop.Common.Template;
+using FlowerShop.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace FlowerShop.Service
         Task<ProductItem> UpdateAsync(ProductItem productItem);
         Task<ProductItem> FindOneWithIncludeByIdAsync(int id);
         Task DeleteAsync(int id);
-
         Task<ProductItem> FindOneWithoutIncludeByIdAsync(int id);
+        Task<ResponeMessage> ImportProducts(List<ProductItem> products);
     }
 }

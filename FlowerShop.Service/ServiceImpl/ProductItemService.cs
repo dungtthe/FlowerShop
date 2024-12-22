@@ -48,7 +48,7 @@ namespace FlowerShop.Service.ServiceImpl
             {
                 return null;
             }
-            var productItem = await _productItemRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id&&!p.IsDelete, p => p.Category);
+            var productItem = await _productItemRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == id && !p.IsDelete, p => p.Category);
             return productItem;
         }
 
@@ -69,6 +69,49 @@ namespace FlowerShop.Service.ServiceImpl
                 }
             }
             return rs;
+        }
+
+        public async Task<ResponeMessage> ImportProducts(List<ProductItem> products)
+        {
+            #region check sự hợp lệ của data
+            foreach (var product in products)
+            {
+                if (product.Quantity <= 0)
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, "Số lượng không hợp lệ");
+                }
+                if (product.ImportPrice <= 0)
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, "Giá nhập không hợp lệ");
+                }
+                if (string.IsNullOrEmpty(product.Name))
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, "Giá bán không được để trống");
+                }
+                var cate = await _categoryRepository.GetSingleByIdAsync(product.CategoryId);
+                if (cate == null || cate.IsCategorySell)
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, "Danh mục không hợp lệ");
+                }
+            }
+            #endregion
+
+            var productsInStock = await _productItemRepository.GetAllAsync();
+
+            foreach (var product in products)
+            {
+                var pStock = productsInStock.Where(p=> (p.Name.Trim().ToLower()==product.Name.Trim().ToLower()) && p.CategoryId==product.CategoryId && p.ImportPrice==product.ImportPrice).FirstOrDefault();
+                if (pStock == null)
+                {
+                    await _productItemRepository.AddAsync(product);
+                }
+                else
+                {
+                    pStock.Quantity += product.Quantity;
+                }
+            }
+            await _unitOfWork.Commit();
+            return new ResponeMessage(ResponeMessage.SUCCESS, "Nhập kho thành công");
         }
     }
 }

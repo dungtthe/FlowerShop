@@ -14,6 +14,8 @@ using FlowerShop.Common.MyConst;
 using AutoMapper;
 using FlowerShop.Common.ViewModels;
 using Newtonsoft.Json;
+using FlowerShop.Service.ServiceImpl;
+using FlowerShop.Web.Mappings;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -48,10 +50,19 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             return View(productItemsVM);
         }
 
-
-        public IActionResult Create()
+        [HttpGet("nhap-kho")]
+        public async Task<IActionResult> Create()
         {
-            // ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            var productsItem = await _productItemService.GetProductsItemAsync();
+            var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c =>!c.IsCategorySell);
+
+            if (categories == null || productsItem == null)
+            {
+                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Có lỗi xảy ra!"));
+                return RedirectToAction("Index");
+            }
+            ViewBag.productItemInStock = productsItem;    
+            ViewBag.categoryInStock = categories;   
             return View();
         }
 
