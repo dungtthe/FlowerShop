@@ -1,0 +1,184 @@
+﻿@model IEnumerable<FlowerShop.DataAccess.Models.ParameterConfiguration>
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+	<h1 class="h3 mb-0 text-gray-800">Quản lý tham số</h1>
+</div>
+
+<div class="row">
+	<div class="col-xl-12 col-lg-12">
+		<div class="card shadow mb-4">
+			<div class="card-body">
+				<table class="table table-bordered mt-3">
+					<tbody>
+						@foreach (var item in Model)
+						{
+							<tr>
+								<th>Số ngày tối đa để gửi Feedback</th>
+								<td>
+									<span class="view-mode feedback-day-view">@item.AllowedFeedbackDay</span>
+									<input type="number" class="form-control edit-mode feedback-day" style="display: none;" value="@item.AllowedFeedbackDay" />
+									<span class="error-message text-danger feedback-day-error" style="display: none;">Giá trị không được nhỏ hơn 0!</span>
+								</td>
+							</tr>
+							<tr>
+								<th>Phí ship trên 1 km</th>
+								<td>
+									<span class="view-mode shipping-cost-view">@item.ShippingCostPerKilometer.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</span>
+									<input type="number" class="form-control edit-mode shipping-cost" style="display: none;" value="@item.ShippingCostPerKilometer" />
+									<span class="error-message text-danger shipping-cost-error" style="display: none;">Giá trị không được nhỏ hơn 0!</span>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+				<!-- Nút sửa -->
+				<button id="editButton" class="btn btn-success btn-sm"
+						data-toggle="tooltip"
+						style="width: 95px;"
+						title="Sửa tham số">
+					<i class="fas fa-edit"></i> Sửa
+				</button>
+				<!-- Nút lưu -->
+				<button id="saveButton" class="btn btn-primary btn-sm" style="display: none; width: 95px;"
+						data-toggle="tooltip" title="Lưu thay đổi">
+					<i class="fas fa-save"></i> Lưu
+				</button>
+				<button id="cancelButton" class="btn btn-secondary btn-sm" style="display: none; width: 95px;"
+						data-toggle="tooltip" title="Hủy thay đổi">
+					<i class="fas fa-times"></i> Hủy
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const editButton = document.getElementById('editButton');
+		const saveButton = document.getElementById('saveButton');
+		const cancelButton = document.getElementById('cancelButton');
+		const viewModes = document.querySelectorAll('.view-mode');
+		const editModes = document.querySelectorAll('.edit-mode');
+		const shippingCostInput = document.querySelector('.edit-mode.shipping-cost');
+		const feedbackDayInput = document.querySelector('.edit-mode.feedback-day');
+		const shippingCostError = document.querySelector('.shipping-cost-error');
+		const feedbackDayError = document.querySelector('.feedback-day-error');
+
+		// Lưu giá trị ban đầu để khôi phục khi nhấn nút Hủy
+		let initialFeedbackDay = feedbackDayInput.value;
+		let initialShippingCost = shippingCostInput.value;
+
+		// Hàm kiểm tra lỗi
+		function validateInputs() {
+			let isValid = true;
+
+			// Kiểm tra giá trị số ngày feedback
+			if (feedbackDayInput.value < 0) {
+				feedbackDayError.style.display = 'block';
+				isValid = false;
+			} else {
+				feedbackDayError.style.display = 'none';
+			}
+
+			// Kiểm tra giá trị phí ship
+			if (shippingCostInput.value < 0) {
+				shippingCostError.style.display = 'block';
+				isValid = false;
+			} else {
+				shippingCostError.style.display = 'none';
+			}
+
+			// Bật hoặc tắt nút lưu
+			saveButton.disabled = !isValid;
+		}
+
+		shippingCostInput.addEventListener('input', validateInputs);
+		feedbackDayInput.addEventListener('input', validateInputs);
+
+		// Xử lý sự kiện nhấn nút sửa
+		editButton.addEventListener('click', function () {
+			viewModes.forEach(el => el.style.display = 'none'); // Ẩn chế độ xem
+			editModes.forEach(el => el.style.display = 'block'); // Hiển thị chế độ chỉnh sửa
+			editButton.style.display = 'none'; // Ẩn nút sửa
+			saveButton.style.display = 'inline-block'; // Hiển thị nút lưu
+			cancelButton.style.display = 'inline-block'; // Hiển thị nút hủy
+		});
+
+		// Xử lý sự kiện nhấn nút Hủy
+		cancelButton.addEventListener('click', function () {
+			// Khôi phục giá trị ban đầu
+			feedbackDayInput.value = initialFeedbackDay;
+			shippingCostInput.value = initialShippingCost;
+
+			// Ẩn lỗi nếu có
+			feedbackDayError.style.display = 'none';
+			shippingCostError.style.display = 'none';
+
+			// Chuyển lại chế độ xem
+			viewModes.forEach(el => el.style.display = 'block');
+			editModes.forEach(el => el.style.display = 'none');
+			editButton.style.display = 'inline-block';
+			saveButton.style.display = 'none';
+			cancelButton.style.display = 'none';
+		});
+
+		// Xử lý sự kiện nhấn nút lưu
+		saveButton.addEventListener('click', function () {
+			// Lấy tất cả các trường input
+			const feedbackDayInput = document.querySelector('.edit-mode.feedback-day');
+			const shippingCostInput = document.querySelector('.edit-mode.shipping-cost');
+
+			if (!feedbackDayInput || !shippingCostInput) {
+				alert('Không thể tìm thấy các trường chỉnh sửa. Vui lòng kiểm tra lại!');
+				return;
+			}
+
+			// Lấy giá trị từ các ô input để update giao diện
+			const newFeedbackDay = feedbackDayInput.value;
+			const newShippingCost = Number(shippingCostInput.value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+			//Lấy giá trị từ các ơ input để update dữ liệu
+			const newFeedbackDayValue = parseInt(feedbackDayInput.value, 10);
+			const newShippingCostValue = parseInt(shippingCostInput.value, 10);
+
+			const requestData = {
+				AllowedFeedbackDay: newFeedbackDayValue,
+				ShippingCostPerKilometer: newShippingCostValue,
+			};
+			fetchPost(
+				"/api/admin/quan-li-tham-so/luu",
+				requestData,
+				(data) => {
+					// Cập nhật giao diện hiển thị
+					const feedbackDayView = document.querySelector('.view-mode.feedback-day-view');
+					const shippingCostView = document.querySelector('.view-mode.shipping-cost-view');
+
+					if (feedbackDayView) feedbackDayView.textContent = newFeedbackDay;
+					if (shippingCostView) shippingCostView.textContent = newShippingCost;
+
+					// Chuyển lại chế độ xem
+					viewModes.forEach(el => el.style.display = 'block');
+					editModes.forEach(el => el.style.display = 'none');
+					editButton.style.display = 'inline-block';
+					saveButton.style.display = 'none';
+					cancelButton.style.display = 'none';
+
+					setTimeout(() => {
+						showSuccess(data.message);
+					}, 500);
+				},
+				(data) => {
+					showError("Giá trị không hợp lệ");
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+
+			);
+
+			// Gửi API để lưu thay đổi nếu cần
+			console.log('Lưu thay đổi:', { feedbackDay: newFeedbackDay, shippingCost: newShippingCost });
+		});
+
+	});
+</script>
