@@ -48,6 +48,11 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="~/customer/css/bootstrap.min.css" rel="stylesheet">
 
+    <!--Chatbot-->
+    <link rel="stylesheet" href="./assets/css/chat.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./assets/css/typing.css">
+
     <!-- Template Stylesheet -->
     <link href="~/customer/css/style.css" rel="stylesheet">
     <link href="~/customer/css/mystyle.css" rel="stylesheet">
@@ -279,7 +284,10 @@
     <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top">
         <i class="fa fa-arrow-up"></i>
     </a>
-
+    <div id="chatbox-container">
+        <!-- Chatbox UI được nhúng ở đây -->
+        @Html.Partial("_ChatBot")
+    </div>
 
     <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
@@ -288,6 +296,7 @@
     <script src="~/customer/lib/waypoints/waypoints.min.js"></script>
     <script src="~/customer/lib/lightbox/js/lightbox.min.js"></script>
     <script src="~/customer/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="~/customer/chatbox/app.js"></script>
     @await Html.PartialAsync("_MessageBox")
     <script src="~/customer/js/main.js"></script>
     <script src="~/customer/js/myjs.js"></script>
@@ -295,6 +304,27 @@
     <script src="~/js/httpHandle.js"></script>
 
     @RenderSection("Scripts", required: false)
+  
 </body>
 
 </html>
+<style>
+
+    /* Định vị chatbox */
+    #chatbox-container {
+        position: fixed;
+        bottom: 80px; /* Đặt phía trên nút cuộn */
+        right: 20px; /* Khoảng cách từ cạnh phải màn hình */
+        z-index: 1100; /* Chatbox cao hơn nút cuộn */
+        width: 400px;
+        height: 570px;
+        padding: 0; /* Xóa padding thừa */
+        margin: 0; /* Xóa margin thừa */
+        background-color: transparent; /* Màu nền chatbox */
+       
+        border-radius: 8px; /* Bo tròn góc */
+        overflow: hidden; /* Ẩn nội dung thừa */
+    }
+
+      
+</style>

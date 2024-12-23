@@ -1,0 +1,332 @@
+﻿<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    *, html {
+        --primaryGradient: linear-gradient(93.12deg, #681c1c 0.52%, #681c1c 100%);
+        --secondaryGradient: linear-gradient(268.91deg, #681c1c -2.14%, #681c1c 99.69%);
+        --primaryBoxShadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+        --secondaryBoxShadow: 0px -10px 15px rgba(0, 0, 0, 0.1);
+        --light: 300;
+        --regular: 400;
+        --semiBold: 600;
+        --extraLight: 300;
+        --italic: 300;
+        --primary: #681c1c;
+    }
+
+    body {
+        font-family: 'Nunito', sans-serif;
+        font-weight: 400;
+        font-size: 100%;
+        background: #F1F1F1;
+    }
+  
+
+    .chatbox__support {
+        background: #f9f9f9;
+        height: 500px;
+        width: 350px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 70px;
+    }
+
+    .chatbox__header {
+        background: var(--primaryGradient);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 15px 20px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        box-shadow: var(--primaryBoxShadow);
+    }
+
+    .chatbox__image--header {
+        margin-right: 10px;
+    }
+
+    .chatbox__heading--header {
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .chatbox__description--header {
+        font-size: .9rem;
+        color: white;
+    }
+
+    .chatbox__messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 20px;
+    }
+
+    .messages__item {
+        margin-top: 10px;
+        padding: 8px 12px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+
+    .messages__item--visitor {
+        background: #E0E0E0;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        margin-right: auto;
+        width: fit-content;
+        color: black;
+    }
+
+    .messages__item--operator {
+        background: var(--primary);
+        color: white;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-left-radius: 20px;
+        margin-left: auto;
+        width: fit-content;
+    }
+
+   .messages__item--typing {
+    will-change: transform;
+    width: auto;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 15px 20px;
+    display: table;
+    margin-right: auto;
+    position: relative;
+    animation: 2s bulge infinite ease-out;
+}
+
+        .messages__item--typing::before,
+        .messages__item--typing::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: -2px;
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+        }
+
+        .messages__item--typing::after {
+            height: 10px;
+            width: 10px;
+            left: -10px;
+            bottom: -10px;
+        }
+
+    span.messages__dot {
+        height: 8px;
+        width: 8px;
+        float: left;
+        margin: 0 1px;
+        background-color: #9E9EA1;
+        display: block;
+        border-radius: 50%;
+        opacity: 0.4;
+        transition: opacity 0.5s ease-in-out; /* Thêm hiệu ứng chuyển đổi cho opacity */
+    }
+
+    .messages__item--typing:hover span.messages__dot {
+        opacity: 1; /* Khi hover, opacity sẽ chuyển thành 1 */
+        transform: scale(1.1); /* Phóng to dấu chấm */
+    }
+
+  
+
+
+
+    .chatbox__footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        background: var(--secondaryGradient);
+        box-shadow: var(--secondaryBoxShadow);
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+        .chatbox__footer input {
+            border: none;
+            padding: 10px 10px;
+            border-radius: 30px;
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+    .chatbox__send--footer {
+        color: white;
+        cursor: pointer;
+    }
+
+    .chatbox__button {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+
+        .chatbox__button button {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            outline: none;
+            border-radius: 50%;
+            cursor: pointer;
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--primaryBoxShadow);
+        }
+</style>
+
+<div class="container">
+    <div class="chatbox">
+        <div class="chatbox__support">
+            <div class="chatbox__header">
+                <div class="chatbox__image--header">
+                    <img src="@Url.Content("~/customer/chatbox/images/image.png")" alt="image">
+                </div>
+                <div class="chatbox__content--header">
+                    <h4 class="chatbox__heading--header">Chat support</h4>
+                    <p class="chatbox__description--header">Bạn cần hỗ trợ mua hoa? Hãy nêu vấn đề của bạn với tôi</p>
+                </div>
+            </div>
+            <div class="chatbox__messages">
+                <div>
+                    <div class="messages__item messages__item--visitor">
+                        Bạn cần hỗ trợ gì không?
+                    </div>
+                    <div class="messages__item messages__item--operator">
+                        Tôi muốn mua hoa
+                    </div>
+                    <div class="messages__item messages__item--visitor">
+                        Bạn muốn chọn hoa như thế nào?
+                    </div>
+                    <div class="messages__item messages__item--operator">
+                        Hôm nay 20/11 thì tôi nên chọn hoa như thế nào?
+                    </div>
+                    <div class="messages__item messages__item--typing">
+                        <span class="messages__dot"></span>
+                        <span class="messages__dot"></span>
+                        <span class="messages__dot"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="chatbox__footer">
+                <input type="text" placeholder="Write a message...">
+                <p class="chatbox__send--footer">Send</p>
+            </div>
+        </div>
+        <div class="chatbox__button">
+            <button>
+                <img src="@Url.Content("~/customer/chatbox/images/icons/chatbox-icon.svg")" alt="image">
+            </button>
+            
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatButton = document.querySelector('.chatbox__button');
+        const chatContent = document.querySelector('.chatbox__support');
+        const inputField = document.querySelector('.chatbox__footer input');
+        const sendButton = document.querySelector('.chatbox__send--footer');
+        const messagesContainer = document.querySelector('.chatbox__messages div');
+
+        // Gán trạng thái hiển thị ban đầu là tắt
+        let isChatboxVisible = false;
+
+        // Thêm sự kiện click cho nút chatbox
+        chatButton.addEventListener('click', () => {
+            isChatboxVisible = !isChatboxVisible; // Thay đổi trạng thái hiển thị
+
+            if (isChatboxVisible) {
+                chatContent.style.display = 'flex'; // Hiển thị khung chatbox
+            } else {
+                chatContent.style.display = 'none'; // Ẩn khung chatbox
+            }
+        });
+
+        // Đảm bảo chatbox ban đầu được ẩn
+        chatContent.style.display = 'none';
+
+        // Hàm hiển thị tin nhắn trong khung chat
+        const addMessage = (message, sender = 'visitor') => {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('messages__item', `messages__item--${sender}`);
+            messageElement.textContent = message;
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Tự động cuộn xuống cuối
+        };
+
+        // Gửi tin nhắn tới API chatbot
+        const sendMessageToChatbot = (message) => {
+            const uri = `/api/chatbot`;
+            const requestBody = JSON.stringify({ message });
+
+            fetch(uri, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: requestBody
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Lỗi kết nối đến chatbot API');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data && data.response) {
+                        addMessage(data.response, 'operator'); // Hiển thị phản hồi từ chatbot
+                    } else {
+                        addMessage('Không nhận được phản hồi từ chatbot.', 'operator');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Lỗi:', error);
+                    addMessage('Xin lỗi, tôi không thể phản hồi lúc này.', 'operator');
+                });
+        };
+
+        // Xử lý sự kiện gửi tin nhắn
+        sendButton.addEventListener('click', () => {
+            const userMessage = inputField.value.trim();
+            if (userMessage) {
+                addMessage(userMessage, 'visitor'); // Hiển thị tin nhắn của người dùng
+                inputField.value = ''; // Xóa nội dung ô nhập
+                sendMessageToChatbot(userMessage); // Gửi tin nhắn đến API chatbot
+            }
+        });
+
+        // Xử lý sự kiện nhấn Enter trong ô nhập
+        inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendButton.click();
+            }
+        });
+    });
+</script>
