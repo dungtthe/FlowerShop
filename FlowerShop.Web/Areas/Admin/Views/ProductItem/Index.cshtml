@@ -1,9 +1,13 @@
 ﻿@model IEnumerable<FlowerShop.Web.ViewModels.ProductItemViewModel>
 @using Newtonsoft.Json;
 @using FlowerShop.Common.Helpers;
+@using FlowerShop.DataAccess.Models
+
 @{
     ViewData["Title"] = "Danh sách sản phẩm trong kho";
     int stt = 1;
+    var categoryInStock = ViewBag.categoryInStock as IEnumerable<Category>;
+
 }
 
 <h3>@ViewData["Title"]</h3>
@@ -13,9 +17,7 @@
     .section-search {
         background-color: #C1CDC1;
         height: 36px;
-        width: 500px;
-        position: relative;
-        left: 1100px;
+        width: 400px;
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -36,16 +38,29 @@
         border: none;
         background-color: #C1CDC1;
         outline: none;
+        width: 350px;
     }
 </style>
 
-<div class="section-search">
-    <div class="inner-wrap">
-        <div class="inner-icon">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </div>
-        <div class="inner-input">
-            <input oninput="SearchProductItem(this.value)" type="text" placeholder="Nhập nội dung tìm kiếm">
+<div class="section-filter" style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="section-filter-by-category">
+        <select onchange="HanlderFilterProductItem()" style="border: 0.5px solid #C1CDC1; border-radius: 5px;">
+            <option data-idcategory="-1">Tất cả</option>
+            @foreach (var item in categoryInStock)
+            {
+                <option data-idcategory=@item.Id>@item.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="section-search">
+        <div class="inner-wrap">
+            <div class=" inner-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="inner-input">
+                <input oninput="HanlderFilterProductItem()" type="text" placeholder="Nhập nội dung tìm kiếm">
+            </div>
         </div>
     </div>
 </div>
@@ -77,7 +92,7 @@
     <tbody id="product-table-body">
         @foreach (var item in Model)
         {
-            <tr id="product-row-@item.Id" class="product-row">
+            <tr id="product-row-@item.Id" data-idcategory="@item.CategoryId" class="product-row">
                 <td>
                     @(stt++)
                 </td>
@@ -164,19 +179,33 @@
     }
 
 
-    //tìm kiếm sản phẩm 
-    const SearchProductItem = (noidung) => {
-        const searchTerm = noidung.toLowerCase();
-        const rows = document.querySelectorAll('#product-table-body .product-row');
-        rows.forEach(row => {
-            const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Lấy tên sản phẩm (cột 2)
 
+
+    const HanlderFilterProductItem = () => {
+        // filter theo selectbox
+        const selectBox = document.querySelector(".section-filter-by-category select");
+        const selectedOption = selectBox.options[selectBox.selectedIndex];
+        const selectedDataId = selectedOption.getAttribute('data-idcategory'); // Lấy giá trị của attribute data-idcategory
+        //lấy giá trị ô input tìm kiếm
+        const elementInput = document.querySelector(".section-search input");
+        const searchTerm = elementInput.value.toLowerCase();
+        const rows = document.querySelectorAll('#product-table-body .product-row');
+        for (const row of rows) {
+            const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Lấy tên sản phẩm (cột 2)
+            const categoryId = row.getAttribute("data-idcategory");
             if (productName.includes(searchTerm)) {
                 row.style.display = '';
+                if (selectedDataId !== "-1") {
+                    if (selectedDataId === categoryId) {
+                        row.style.display = '';
+                    }
+                    else {
+                        row.style.display = 'none';
+                    }
+                }
             } else {
                 row.style.display = 'none';
             }
-        });
+        }
     }
-
 </script>

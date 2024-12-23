@@ -1,11 +1,58 @@
 ﻿@model IEnumerable<FlowerShop.Web.ViewModels.ProductViewModel>
 @using Newtonsoft.Json;
 @using FlowerShop.Common.Helpers;
+@using FlowerShop.DataAccess.Models
+
 @{
     ViewData["Title"] = "Danh sách sản phẩm bán";
+    var categories = ViewBag.categories as IEnumerable<Category>;
+
 }
+<style>
+    .section-search {
+        background-color: #C1CDC1;
+        height: 36px;
+        width: 400px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-left: 10px;
+    }
+
+    .section-search .inner-wrap {
+        display: flex;
+        align-items: center;
+    }
+
+    .section-search .inner-icon {
+        margin-right: 10px;
+    }
+
+    .section-search input {
+        border: none;
+        background-color: #C1CDC1;
+        outline: none;
+        width: 350px;
+    }
+</style>
 
 <h1>@ViewData["Title"]</h1>
+
+<div class="section-filter" style="display: flex; justify-content: space-between; align-items: center;">
+    <div></div>>
+
+    <div class="section-search">
+        <div class="inner-wrap">
+            <div class=" inner-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="inner-input">
+                <input oninput="HanlderFilterProductItem()" type="text" placeholder="Nhập nội dung tìm kiếm">
+            </div>
+        </div>
+    </div>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -21,10 +68,10 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="product-table-body">
         @foreach (var item in Model)
         {
-            <tr>
+            <tr class="product-row">
                 <td>
                     @Html.DisplayFor(modelItem => item.Title)
                 </td>
@@ -36,16 +83,44 @@
 
                         var firstImg = listImg[0];
                     }
-                    <img src="@Url.Content("~/images/products/" + firstImg)" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                    @if (firstImg.Contains("http"))
+                    {
+                        <img src="@firstImg" alt="ảnh sản phẩm" style="width: 70px; height: 70px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <img src="@Url.Content("~/images/products/" + firstImg)" alt="ảnh sản phẩm"
+                            style="width: 70px; height: 70px; object-fit: cover;" />
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Packaging.Name)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-area="Admin" asp-controller="Product" asp-route-id="@item.Id"><i class="fa-solid fa-circle-info"></i></a> |
-                    <a asp-action="Delete" asp-area="Admin" asp-controller="Product" asp-route-id="@item.Id"><i class="fa-solid fa-trash" style="color:red;"></i></a>
+                    <a asp-action="Edit" asp-area="Admin" asp-controller="Product" asp-route-id="@item.Id"><i
+                            class="fa-solid fa-circle-info"></i></a> |
+                    <a asp-action="Delete" asp-area="Admin" asp-controller="Product" asp-route-id="@item.Id"><i
+                            class="fa-solid fa-trash" style="color:red;"></i></a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+
+<script>
+    const HanlderFilterProductItem = () => {
+        //lấy giá trị ô input tìm kiếm
+        const elementInput = document.querySelector(".section-search input");
+        const searchTerm = elementInput.value.toLowerCase();
+        const rows = document.querySelectorAll('#product-table-body .product-row');
+        for (const row of rows) {
+            const productName = row.querySelector('td:nth-child(1)').textContent.toLowerCase(); // Lấy title
+            if (productName.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+</script>

@@ -32,6 +32,8 @@ namespace FlowerShop.Web.ViewModels
 
         public bool IsDelete { get; set; }
 
+
+
         public ICollection<ProductPrice>? ProductPrices { get; set; }
         public ICollection<ProductProductItem>? ProductProductItems { get; set; }
         public ICollection<ProductCategory>? ProductCategories { get; set; }

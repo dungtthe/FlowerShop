@@ -6,7 +6,7 @@
     ViewData["Title"] = "Thêm sản phẩm để bán";
 
     var ProductsItem = ViewBag.ProductsItem as IEnumerable<ProductItem>;
-
+    var categoryInStock = ViewBag.categoryInStock as IEnumerable<Category>;
     var stt = 1;
 }
 
@@ -39,8 +39,6 @@
         background-color: #C1CDC1;
         height: 36px;
         width: 350px;
-        position: relative;
-        left: 130px;
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -158,13 +156,25 @@
 
         <div style="display: flex;">
             <h3>Sản phẩm trong kho</h3>
+        </div>
+
+        <div class="section-filter" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="section-filter-by-category">
+                <select onchange="HanlderFilterProductItem()" style="border: 0.5px solid #C1CDC1; border-radius: 5px;">
+                    <option data-idcategory="-1">Tất cả</option>
+                    @foreach (var item in categoryInStock)
+                    {
+                        <option data-idcategory=@item.Id>@item.Name</option>
+                    }
+                </select>
+            </div>
             <div class="section-search">
                 <div class="inner-wrap">
                     <div class="inner-icon">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </div>
                     <div class="inner-input">
-                        <input oninput="SearchProductItem(this.value)" type="text" placeholder="Nhập nội dung tìm kiếm">
+                        <input oninput="HanlderFilterProductItem()" type="text" placeholder="Nhập nội dung tìm kiếm">
                     </div>
                 </div>
             </div>
@@ -195,7 +205,7 @@
             <tbody id="product-table-body">
                 @foreach (var item in ProductsItem)
                 {
-                    <tr data-id="@item.Id" id="product-row-@item.Id" class="product-row">
+                    <tr data-id="@item.Id" id="product-row-@item.Id" class="product-row" data-idcategory="@item.CategoryId">
                         <td>
                             @(stt++)
                         </td>
@@ -297,29 +307,29 @@
                 totalAmount += totalPrice; // Cộng dồn vào tổng tiền
 
                 row.innerHTML = `
-                                                                                                                                                                            <td>${index + 1}</td>
-                                                                                                                                                                            <td>${product.name}</td>
-                                                                                                                                                                            <td>${product.price}</td>
-                                                                                                                                                                            <td>
-                                                                                                                                                                                <input type="number"
-                                                                                                                                                                                       id="quantityInput-${product.id}"
-                                                                                                                                                                                       class="form-control form-control-sm"
-                                                                                                                                                                                       min="1"
-                                                                                                                                                                                       max="${product.maxQuantity}"
-                                                                                                                                                                                       value="${product.quantity}"
-                                                                                                                                                                                       onchange="updateQuantity(${product.id}, this.value)" />
-                                                                                                                                                                                <span id="error-${product.id}" class="text-danger small"></span>
-                                                                                                                                                                            </td>
-                                                                                                                                                                            <td>${totalPrice.toLocaleString()} VND</td>
-                                                                                                                                                                            <td>
-                                                                                                                                                                                <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
-                                                                                                                                                                            </td>
-                                                                                                                                                                            <td>
-                                                                                                                                                                                <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
-                                                                                                                                                                                    <i class="fa-solid fa-trash"></i>
-                                                                                                                                                                                </button>
-                                                                                                                                                                            </td>
-                                                                                                                                                                        `;
+                                                                                                                                                                                                                                <td>${index + 1}</td>
+                                                                                                                                                                                                                                <td>${product.name}</td>
+                                                                                                                                                                                                                                <td>${product.price}</td>
+                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                    <input type="number"
+                                                                                                                                                                                                                                           id="quantityInput-${product.id}"
+                                                                                                                                                                                                                                           class="form-control form-control-sm"
+                                                                                                                                                                                                                                           min="1"
+                                                                                                                                                                                                                                           max="${product.maxQuantity}"
+                                                                                                                                                                                                                                           value="${product.quantity}"
+                                                                                                                                                                                                                                           onchange="updateQuantity(${product.id}, this.value)" />
+                                                                                                                                                                                                                                    <span id="error-${product.id}" class="text-danger small"></span>
+                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                <td>${totalPrice.toLocaleString()} VND</td>
+                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                    <img src="${product.image}" alt="Product Image" style="width: 70px; height: 70px; object-fit: cover;" />
+                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                                <td>
+                                                                                                                                                                                                                                    <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">
+                                                                                                                                                                                                                                        <i class="fa-solid fa-trash"></i>
+                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                </td>
+                                                                                                                                                                                                                            `;
                 tableBody.appendChild(row);
             });
 
@@ -518,19 +528,32 @@
         };
 
 
-        const SearchProductItem = (noidung) => {
-            const searchTerm = noidung.toLowerCase();
+        const HanlderFilterProductItem = () => {
+            // filter theo selectbox
+            const selectBox = document.querySelector(".section-filter-by-category select");
+            const selectedOption = selectBox.options[selectBox.selectedIndex];
+            const selectedDataId = selectedOption.getAttribute('data-idcategory'); // Lấy giá trị của attribute data-idcategory
+            //lấy giá trị ô input tìm kiếm
+            const elementInput = document.querySelector(".section-search input");
+            const searchTerm = elementInput.value.toLowerCase();
             const rows = document.querySelectorAll('#product-table-body .product-row');
-            rows.forEach(row => {
+            for (const row of rows) {
                 const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Lấy tên sản phẩm (cột 2)
-
+                const categoryId = row.getAttribute("data-idcategory");
                 if (productName.includes(searchTerm)) {
                     row.style.display = '';
+                    if (selectedDataId !== "-1") {
+                        if (selectedDataId === categoryId) {
+                            row.style.display = '';
+                        }
+                        else {
+                            row.style.display = 'none';
+                        }
+                    }
                 } else {
                     row.style.display = 'none';
                 }
-            });
+            }
         }
-
     </script>
 }

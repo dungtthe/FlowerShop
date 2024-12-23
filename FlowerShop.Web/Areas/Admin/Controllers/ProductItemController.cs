@@ -39,15 +39,17 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var productItems = await _productItemService.GetProductsItemAsync();
+			var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c => !c.IsCategorySell);
 
-            var productItemsVM = new List<ProductItemViewModel>();
+			var productItemsVM = new List<ProductItemViewModel>();
             foreach (var item in productItems)
             {
                 var productItem = _mapper.Map<ProductItemViewModel>(item);
                 productItemsVM.Add(productItem);
             }
+			ViewBag.categoryInStock = categories;
 
-            return View(productItemsVM);
+			return View(productItemsVM);
         }
 
         [HttpGet("nhap-kho")]

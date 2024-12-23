@@ -41,7 +41,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var products = await _productService.GetProductsForIndexInAdminAsync();
-            if (products == null)
+			var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c => c.IsCategorySell);
+
+			if (products == null)
             {
                 return NotFound();
             }
@@ -52,7 +54,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 var productVM = _mapper.Map<ProductViewModel>(item);
                 productsVM.Add(productVM);
             }
-            return View(productsVM);
+			ViewBag.categories = categories;
+
+			return View(productsVM);
         }
 
 
@@ -62,7 +66,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             var productsItem = await _productItemService.GetProductsItemAsync();
             var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c => c.IsCategorySell);
             var packagings = await _packagingService.GetAllPackagingAsync();
-            if (productsItem == null || categories == null)
+            var categoriesInStock = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c => !c.IsCategorySell);
+
+            if (productsItem == null || categories == null || categoriesInStock == null)
             {
                 TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Có lỗi xảy ra!"));
                 return RedirectToAction("Index");
@@ -70,26 +76,30 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             ViewBag.ProductsItem = productsItem;
             ViewBag.categories = categories;
             ViewBag.packagings = new SelectList(packagings, "Id", "Name");
+            ViewBag.categoryInStock = categoriesInStock;
+
             return View();
         }
 
-    
+
         [HttpGet("edit")]
         public async Task<IActionResult> Edit(int? id)
         {
+            var categoriesInStock = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c => !c.IsCategorySell);
+
             var product = await _productService.FindOneByIdAsync(id ?? -1);
             var productsItem = await _productItemService.GetProductsItemAsync();
             var categories = (await _categoryService.GetCategoriesWithoutSubCategories()).Where(c => c.IsCategorySell);
             var packagings = await _packagingService.GetAllPackagingAsync();
 
-            if (product == null )
+			if (product == null)
             {
                 TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy sản phẩm!"));
                 return RedirectToAction("Index");
             }
 
 
-            if (categories == null || productsItem ==null || categories==null || packagings==null)
+            if (categories == null || productsItem == null || categories == null || packagings == null || categoriesInStock == null)
             {
                 TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Có lỗi xảy ra!"));
                 return RedirectToAction("Index");
@@ -99,12 +109,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
 
             ViewBag.packagings = new SelectList(packagings, "Id", "Name");
-
-
-
-
-
-            return View(editProductViewModel);
+            ViewBag.categoryInStock = categoriesInStock;
+			ViewBag.ProductsItem = productsItem;
+			return View(editProductViewModel);
 
         }
 
