@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlowerShop.Common.MyConst;
 
 namespace FlowerShop.Service.ServiceImpl
 {
@@ -17,12 +18,16 @@ namespace FlowerShop.Service.ServiceImpl
         private readonly IProductItemRepository _productItemRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IUnitOfWork _unitOfWork;
+		private readonly ISupplierInvoiceRepository _supplierInvoiceRepository;
+        private readonly ISupplierInvoiceDetailRepository _supplierInvoiceDetailRepository;
 
-        public ProductItemService(IProductItemRepository productItemRepository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+        public ProductItemService(IProductItemRepository productItemRepository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork,ISupplierInvoiceRepository supplierInvoiceRepository , ISupplierInvoiceDetailRepository supplierInvoiceDetailRepository)
         {
             _productItemRepository = productItemRepository;
             _categoryRepository = categoryRepository;
             _unitOfWork = unitOfWork;
+            _supplierInvoiceRepository = supplierInvoiceRepository;
+            _supplierInvoiceDetailRepository = supplierInvoiceDetailRepository;
         }
 
         public async Task DeleteAsync(int id)
@@ -94,9 +99,22 @@ namespace FlowerShop.Service.ServiceImpl
                     return new ResponeMessage(ResponeMessage.ERROR, "Danh mục không hợp lệ");
                 }
             }
-            #endregion
+			#endregion
+			//add hóa đơn nhập
+			var supplierInvoice = new SupplierInvoice()
+			{
+				CreateDay = DateTime.Now,
+				SupplierId = 1,
+				IsDelete = false,
+				Note = "Không có gì hihi",
+				Status = ConstStatusSupplierInvoice.HOAN_TAT,
 
-            var productsInStock = await _productItemRepository.GetAllAsync();
+			};
+
+			await _supplierInvoiceRepository.AddAsync(supplierInvoice);
+
+			//add vào kho
+			var productsInStock = await _productItemRepository.GetAllAsync();
 
             foreach (var product in products)
             {
@@ -104,11 +122,29 @@ namespace FlowerShop.Service.ServiceImpl
                 if (pStock == null)
                 {
                     await _productItemRepository.AddAsync(product);
+                    //add chi tiết hóa đơn nhập
+                    var sDetail = new SupplierInvoiceDetail()
+                    {
+                        SupplierInvoice = supplierInvoice,
+                        ProductItem = product,
+                        Quantity = product.Quantity,
+                        UnitPrice=product.ImportPrice,
+                    };
+                    await _supplierInvoiceDetailRepository.AddAsync(sDetail);
                 }
                 else
                 {
                     pStock.Quantity += product.Quantity;
-                }
+					//add chi tiết hóa đơn nhập
+					var sDetail = new SupplierInvoiceDetail()
+					{
+						SupplierInvoice = supplierInvoice,
+						ProductItem = pStock,
+						Quantity = product.Quantity,
+						UnitPrice = product.ImportPrice,
+					};
+					await _supplierInvoiceDetailRepository.AddAsync(sDetail);
+				}
             }
             await _unitOfWork.Commit();
             return new ResponeMessage(ResponeMessage.SUCCESS, "Nhập kho thành công");
