@@ -22,25 +22,23 @@
             </div>
             <div class="form-group">
                 <div class="dropdown">
-                    <button class="btn dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Danh mục con
                     </button>
                     <div class="dropdown-menu dropdown-checkbox" aria-labelledby="dropdownMenuButton">
                         @foreach (var subCategory in Model.SubCategories)
                         {
                             <label class="dropdown-item">
-                                <input type="checkbox" class="mr-2" name="SelectedSubCategories" value="@subCategory.Id" checked /> @subCategory.Name
+                                <input type="checkbox" class="mr-2" name="SelectedSubCategories" value="@subCategory.Id"
+                                    checked /> @subCategory.Name
                             </label>
                         }
                     </div>
                 </div>
             </div>
 
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsCategorySell" /> @Html.DisplayNameFor(model => model.IsCategorySell)
-                </label>
-            </div>
+
             <div class="form-group">
                 <input type="submit" value="Lưu" class="btn btn-primary" />
             </div>

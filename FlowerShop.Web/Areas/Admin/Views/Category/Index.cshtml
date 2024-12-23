@@ -4,7 +4,8 @@
 <h2>Danh sách danh mục</h2>
 
 <!-- Thêm thanh filter -->
-<select id="filter" onchange="filterCategories(event)" class="form-select mb-3" style="width: 200px;">
+<select id="filter" onchange="FilterCategories(this)" class="form-select mb-3"
+    style="width: 200px; border: 0.5px solid #C1CDC1; border-radius: 5px;">
     <option value="all">Tất cả</option>
     <option value="inStock">Trong kho</option>
     <option value="forSale">Để bán</option>
@@ -22,15 +23,18 @@
         @foreach (var category in Model.Where(c => c.ParentCategoryId == null))
         {
             <!-- Hiển thị danh mục cha -->
-            <tr class="parent-category" data-status="@category.IsCategorySell" onclick="toggleSubCategories(@category.Id)">
+            <tr class="parent-category" onclick="toggleSubCategories(@category.Id)"
+                data-type="@(category.IsCategorySell ? "forSale" : "inStock")">
                 <td>@category.Name</td>
                 <td>@(category.IsCategorySell ? "Để bán" : "Trong kho")</td>
                 <td>
                     <div class="d-flex align-items-center gap-2">
-                        <a href="@Url.Action("Edit", "Category", new { id = category.Id })" class="btn btn-link btn-sm d-flex align-items-center justify-content-center">
+                        <a href="@Url.Action("Edit", "Category", new { id = category.Id })"
+                            class="btn btn-link btn-sm d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-pencil" style="color: #FFCC99;"></i>
                         </a>
-                        <button onclick="RemoveCategory(@category.Id)" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
+                        <button onclick="RemoveCategory(@category.Id)"
+                            class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
@@ -43,15 +47,18 @@
             {
                 @foreach (var subCategory in category.SubCategories)
                 {
-                    <tr class="sub-category" data-status="@subCategory.IsCategorySell" data-parent="@category.Id" style="display: none;">
+                    <tr class="sub-category" data-parent="@category.Id" style="display: none;"
+                        data-type="@(category.IsCategorySell ? "forSale" : "inStock")">
                         <td style="padding-left: 30px;">↳ @subCategory.Name</td>
                         <td>@(subCategory.IsCategorySell ? "Để bán" : "Trong kho")</td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <a href="@Url.Action("Edit", "Category", new { id = subCategory.Id })" class="btn btn-link btn-sm d-flex align-items-center justify-content-center">
+                                <a href="@Url.Action("Edit", "Category", new { id = subCategory.Id })"
+                                    class="btn btn-link btn-sm d-flex align-items-center justify-content-center">
                                     <i class="fa-solid fa-pencil" style="color: #FFCC99;"></i>
                                 </a>
-                                <button onclick="RemoveCategory(@subCategory.Id)" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
+                                <button onclick="RemoveCategory(@subCategory.Id)"
+                                    class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -60,6 +67,7 @@
                 }
 
             }
+
         }
     </tbody>
 </table>
@@ -72,39 +80,6 @@
             row.style.display = row.style.display === "none" ? "table-row" : "none";
         });
     }
-
-    // Hàm lọc danh mục
-    function filterCategories(e) {
-        let choice = e.target.value;
-        const rows = document.querySelectorAll("tr.parent-category, tr.sub-category");
-
-        if (choice === "all") {
-            rows.forEach(row => {
-                if (row.classList.contains("sub-category")) {
-                    row.style.display = "none"; // Ẩn danh mục con mặc định
-                } else {
-                    row.style.display = "table-row";
-                }
-            });
-        } else if (choice === "inStock") {
-            rows.forEach(row => {
-                if (row.getAttribute("data-status") === "0") {
-                    row.style.display = "table-row";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        } else if (choice === "forSale") {
-            rows.forEach(row => {
-                if (row.getAttribute("data-status") === "1") {
-                    row.style.display = "table-row";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
-    }
-
 
     const RemoveCategory = (id) => {
         showConfirm("Bạn có muốn xóa danh mục này không?", () => {
@@ -124,12 +99,29 @@
         });
     }
 
-
-
-    // Khởi tạo: đặt giá trị filter mặc định và áp dụng lọc
-    window.onload = () => {
-        const filterSelect = document.getElementById("filter");
-        filterSelect.value = "all";
-        filterCategories({ target: filterSelect });
-    };
+    const FilterCategories = (selectBox) => {
+        const selectedOption = selectBox.options[selectBox.selectedIndex];
+        const selectValue = selectedOption.value;
+        // console.log(selectValue);
+        const rowsParent = document.querySelectorAll(".parent-category");
+        for (let row of rowsParent) {
+            const type = row.getAttribute("data-type");
+            if (type === selectValue || selectValue === "all") {
+                row.style.display = '';
+            }
+            else {
+                row.style.display = 'none';
+            }
+        }
+        const rowsSub = document.querySelectorAll(".sub-category");
+        for (let row of rowsParent) {
+            const type = row.getAttribute("data-type");
+            if (type === selectValue || selectValue === "all") {
+                row.style.display = '';
+            }
+            else {
+                row.style.display = 'none';
+            }
+        }
+    }
 </script>
