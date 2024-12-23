@@ -1,5 +1,7 @@
 //thêm 1 sản phẩm vào giỏ hàng
 const AddProductToCart = (productId, quantity) => {
+  // Ngăn chặn sự kiện click lan tới các phần tử cha
+  event.stopPropagation();
   const uri = `/api/cart/add?id=${productId}&quantity=${quantity}`;
   fetchGet(
     uri,
