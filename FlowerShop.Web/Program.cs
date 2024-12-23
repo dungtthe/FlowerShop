@@ -143,6 +143,13 @@ app.UseEndpoints(endpoints =>
 	// Đăng ký cho API Controllers
 	endpoints.MapControllers();
 
+	// Đăng ký cho area CHATBOT
+	endpoints.MapAreaControllerRoute(
+		name: "chatbot_area",
+		areaName: "CHATBOT",
+		pattern: "CHATBOT/{controller=Home}/{action=Index}/{id?}"
+	);
+
 	// Đăng ký cho area CUSTOMER
 	endpoints.MapAreaControllerRoute(
 		name: "customer_area",
