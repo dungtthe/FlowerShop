@@ -36,4 +36,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\ChatBot\Data\" />
+    <Folder Include="Areas\ChatBot\Models\" />
+    <Folder Include="Areas\ChatBot\Views\" />
+  </ItemGroup>
+
 </Project>

@@ -5,7 +5,8 @@
         padding: 0;
     }
 
-    *, html {
+    *,
+    html {
         --primaryGradient: linear-gradient(93.12deg, #681c1c 0.52%, #681c1c 100%);
         --secondaryGradient: linear-gradient(268.91deg, #681c1c -2.14%, #681c1c 99.69%);
         --primaryBoxShadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
@@ -24,7 +25,7 @@
         font-size: 100%;
         background: #F1F1F1;
     }
-  
+
 
     .chatbox__support {
         background: #f9f9f9;
@@ -98,36 +99,36 @@
         width: fit-content;
     }
 
-   .messages__item--typing {
-    will-change: transform;
-    width: auto;
-    border-top-right-radius: 20px;
-    border-top-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    padding: 15px 20px;
-    display: table;
-    margin-right: auto;
-    position: relative;
-    animation: 2s bulge infinite ease-out;
-}
+    .messages__item--typing {
+        will-change: transform;
+        width: auto;
+        border-top-right-radius: 20px;
+        border-top-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding: 15px 20px;
+        display: table;
+        margin-right: auto;
+        position: relative;
+        animation: 2s bulge infinite ease-out;
+    }
 
-        .messages__item--typing::before,
-        .messages__item--typing::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: -2px;
-            height: 10px;
-            width: 10px;
-            border-radius: 50%;
-        }
+    .messages__item--typing::before,
+    .messages__item--typing::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: -2px;
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+    }
 
-        .messages__item--typing::after {
-            height: 10px;
-            width: 10px;
-            left: -10px;
-            bottom: -10px;
-        }
+    .messages__item--typing::after {
+        height: 10px;
+        width: 10px;
+        left: -10px;
+        bottom: -10px;
+    }
 
     span.messages__dot {
         height: 8px;
@@ -138,15 +139,18 @@
         display: block;
         border-radius: 50%;
         opacity: 0.4;
-        transition: opacity 0.5s ease-in-out; /* Thêm hiệu ứng chuyển đổi cho opacity */
+        transition: opacity 0.5s ease-in-out;
+        /* Thêm hiệu ứng chuyển đổi cho opacity */
     }
 
     .messages__item--typing:hover span.messages__dot {
-        opacity: 1; /* Khi hover, opacity sẽ chuyển thành 1 */
-        transform: scale(1.1); /* Phóng to dấu chấm */
+        opacity: 1;
+        /* Khi hover, opacity sẽ chuyển thành 1 */
+        transform: scale(1.1);
+        /* Phóng to dấu chấm */
     }
 
-  
+
 
 
 
@@ -162,13 +166,13 @@
         border-bottom-left-radius: 10px;
     }
 
-        .chatbox__footer input {
-            border: none;
-            padding: 10px 10px;
-            border-radius: 30px;
-            flex-grow: 1;
-            margin-right: 10px;
-        }
+    .chatbox__footer input {
+        border: none;
+        padding: 10px 10px;
+        border-radius: 30px;
+        flex-grow: 1;
+        margin-right: 10px;
+    }
 
     .chatbox__send--footer {
         color: white;
@@ -181,21 +185,21 @@
         right: 10px;
     }
 
-        .chatbox__button button {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: none;
-            outline: none;
-            border-radius: 50%;
-            cursor: pointer;
-            color: white;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--primaryBoxShadow);
-        }
+    .chatbox__button button {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border: none;
+        outline: none;
+        border-radius: 50%;
+        cursor: pointer;
+        color: white;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--primaryBoxShadow);
+    }
 </style>
 
 <div class="container">
@@ -233,14 +237,14 @@
             </div>
             <div class="chatbox__footer">
                 <input type="text" placeholder="Write a message...">
-                <p class="chatbox__send--footer">Send</p>
+                <p onclick="SendMessageToChatbot()" class="chatbox__send--footer">Send</p>
             </div>
         </div>
         <div class="chatbox__button">
             <button>
                 <img src="@Url.Content("~/customer/chatbox/images/icons/chatbox-icon.svg")" alt="image">
             </button>
-            
+
         </div>
     </div>
 </div>
@@ -251,7 +255,6 @@
         const chatButton = document.querySelector('.chatbox__button');
         const chatContent = document.querySelector('.chatbox__support');
         const inputField = document.querySelector('.chatbox__footer input');
-        const sendButton = document.querySelector('.chatbox__send--footer');
         const messagesContainer = document.querySelector('.chatbox__messages div');
 
         // Gán trạng thái hiển thị ban đầu là tắt
@@ -271,55 +274,8 @@
         // Đảm bảo chatbox ban đầu được ẩn
         chatContent.style.display = 'none';
 
-        // Hàm hiển thị tin nhắn trong khung chat
-        const addMessage = (message, sender = 'visitor') => {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('messages__item', `messages__item--${sender}`);
-            messageElement.textContent = message;
-            messagesContainer.appendChild(messageElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Tự động cuộn xuống cuối
-        };
 
-        // Gửi tin nhắn tới API chatbot
-        const sendMessageToChatbot = (message) => {
-            const uri = `/api/chatbot`;
-            const requestBody = JSON.stringify({ message });
 
-            fetch(uri, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: requestBody
-            })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error('Lỗi kết nối đến chatbot API');
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    if (data && data.response) {
-                        addMessage(data.response, 'operator'); // Hiển thị phản hồi từ chatbot
-                    } else {
-                        addMessage('Không nhận được phản hồi từ chatbot.', 'operator');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Lỗi:', error);
-                    addMessage('Xin lỗi, tôi không thể phản hồi lúc này.', 'operator');
-                });
-        };
-
-        // Xử lý sự kiện gửi tin nhắn
-        sendButton.addEventListener('click', () => {
-            const userMessage = inputField.value.trim();
-            if (userMessage) {
-                addMessage(userMessage, 'visitor'); // Hiển thị tin nhắn của người dùng
-                inputField.value = ''; // Xóa nội dung ô nhập
-                sendMessageToChatbot(userMessage); // Gửi tin nhắn đến API chatbot
-            }
-        });
 
         // Xử lý sự kiện nhấn Enter trong ô nhập
         inputField.addEventListener('keypress', (e) => {
@@ -329,4 +285,39 @@
             }
         });
     });
+
+    // Hàm hiển thị tin nhắn trong khung chat
+    const addMessage = (message, sender = 'visitor') => {
+        const messagesContainer = document.querySelector('.chatbox__messages div');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('messages__item', `messages__item--${sender}`);
+        messageElement.textContent = message;
+        messagesContainer.appendChild(messageElement);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Tự động cuộn xuống cuối
+    };
+
+    const SendMessageToChatbot = () => {
+        const message = document.querySelector(".chatbox__footer input").value;
+        console.log(message);
+
+        const uri = "/api/chatbot/chat";
+        fetchPost(
+            uri,
+            message,
+            //susscess
+            (data) => {
+                console.log(data.message);
+                addMessage(data.message, 'visitor');
+            },
+            //fail
+            (data) => {
+                addMessage(data.message, 'visitor');
+            },
+            //excep
+            () => {
+                //addMessage('Xin lỗi, tôi không thể phản hồi lúc này.', 'operator');
+                console.log("chạy vào exception");
+            }
+        );
+    }
 </script>
