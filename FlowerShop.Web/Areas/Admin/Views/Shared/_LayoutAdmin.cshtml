@@ -1,4 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@inject FlowerShop.Service.IAppUserService AppUserService
+
+@{
+	var userInformation = AppUserService.GetAppUser(ViewContext.HttpContext).Result;
+	var fullName = userInformation?.FullName ?? "Khách";
+	var avatar = userInformation?.Images ?? "account_default.png";
+	string image = string.Empty;
+	if (!string.IsNullOrEmpty(avatar))
+	{
+		image = avatar.Replace("\"", "").Trim('[', ']');
+	}
+	else
+	{
+		image = "account_default.png";
+	}
+	var x = 0;
+	var src = "/images/users/";
+}
+
+<!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,7 +54,8 @@
 		<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
 			<!-- Sidebar - Brand -->
-			<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+			<a class="sidebar-brand d-flex align-items-center justify-content-center"
+			   asp-area="Admin" asp-controller="Statistical" asp-action="Index">
 				<div class="sidebar-brand-icon">
 					<img src="/admin/img/admin_logo.png" alt="Logo" style="width: 70px; height: 70px; object-fit: cover;">
 				</div>
@@ -81,7 +101,7 @@
 			<!-- Nav Item - Quản lý danh mục -->
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyDanhMuc"
-				aria-expanded="true" aria-controls="collapseQuanLyDanhMuc">
+				   aria-expanded="true" aria-controls="collapseQuanLyDanhMuc">
 					<i class="fas fa-th-list"></i>
 					<span>Quản lý danh mục</span>
 				</a>
@@ -92,12 +112,11 @@
 							<i></i> Danh sách danh mục
 						</a>
 						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Category" asp-action="Create">
-							<i ></i> Thêm danh mục
+							<i></i> Thêm danh mục
 						</a>
 					</div>
 				</div>
 			</li>
-
 
 			<!-- Nav Item - Quản lý sản phẩm bán -->
 			<li class="nav-item">
@@ -115,7 +134,7 @@
 			</li>
 			<!-- Nav Item - Quản lý cách đóng gói -->
 			<li class="nav-item">
-					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyCachDongGoi">
+				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyCachDongGoi">
 					<i class="fas fa-box"></i>
 					<span>Quản lý cách đóng gói</span>
 				</a>
@@ -144,7 +163,7 @@
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyHoaDonNhap"
 				   aria-expanded="true" aria-controls="collapseQuanLyHoaDonNhap">
 					<i class="fas fa-file-invoice"></i>
-					<span >Quản lý hóa đơn nhập</span>
+					<span>Quản lý hóa đơn nhập</span>
 				</a>
 				<div id="collapseQuanLyHoaDonNhap" class="collapse" aria-labelledby="headingUtilities"
 					 data-parent="#accordionSidebar">
@@ -227,7 +246,7 @@
 				<div id="collapseQuanLyKhachHang" class="collapse" aria-labelledby="headingUtilities"
 					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-					<h6 class="collapse-header text-primary">Thao tác</h6>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
 						<a class="collapse-item" asp-area="Admin" asp-controller="Customer" asp-action="Index">
 							Xem danh
 							sách
@@ -283,7 +302,7 @@
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePhuongThucThanhToan"
 				   aria-expanded="true" aria-controls="collapsePhuongThucThanhToan">
-						<i class="fas fa-credit-card"></i>
+					<i class="fas fa-credit-card"></i>
 					<span>Phương thức thanh toán</span>
 				</a>
 				<div id="collapsePhuongThucThanhToan" class="collapse" aria-labelledby="headingUtilities"
@@ -483,28 +502,26 @@
 						<li class="nav-item dropdown no-arrow">
 							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
 							   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
-								<img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+								<span class="mr-2 d-none d-lg-inline text-gray-600 small">
+									@fullName
+								</span>
+								<img class="img-profile rounded-circle" src="@($"{src}{image}")">
 							</a>
 							<!-- Dropdown - User Information -->
 							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
 								 aria-labelledby="userDropdown">
-								<a class="dropdown-item" href="#">
+								<a class="dropdown-item" asp-area="Admin" asp-controller="Account" asp-action="Index">
 									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-									Profile
-								</a>
-								<a class="dropdown-item" href="#">
-									<i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-									Settings
+									Thông tin tài khoản
 								</a>
 								<a class="dropdown-item" href="#">
 									<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-									Activity Log
+									Đổi mật khẩu
 								</a>
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
 									<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-									Logout
+									Đăng xuất
 								</a>
 							</div>
 						</li>
@@ -557,7 +574,7 @@
 				<div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
 				<div class="modal-footer">
 					<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-					<a class="btn btn-primary" href="login.html">Logout</a>
+					<a class="btn btn-primary" href="login.html">Đăng xuất</a>
 				</div>
 			</div>
 		</div>

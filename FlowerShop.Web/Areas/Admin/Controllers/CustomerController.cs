@@ -108,7 +108,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 					var fileName = Path.GetFileName(file.FileName);
 
 					// Tạo đường dẫn lưu file vào thư mục
-					var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "customers", fileName);
+					var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "users", fileName);
 
 					// Lưu file vào thư mục
 					using (var stream = new FileStream(filePath, FileMode.Create))
