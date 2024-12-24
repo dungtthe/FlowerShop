@@ -70,6 +70,7 @@
         flex: 1;
         overflow-y: auto;
         padding: 10px 20px;
+        max-height: 300px;
     }
 
     .messages__item {
@@ -177,6 +178,7 @@
     .chatbox__send--footer {
         color: white;
         cursor: pointer;
+        margin-top: 15px;
     }
 
     .chatbox__button {
@@ -219,20 +221,8 @@
                     <div class="messages__item messages__item--visitor">
                         Bạn cần hỗ trợ gì không?
                     </div>
-                    <div class="messages__item messages__item--operator">
-                        Tôi muốn mua hoa
-                    </div>
-                    <div class="messages__item messages__item--visitor">
-                        Bạn muốn chọn hoa như thế nào?
-                    </div>
-                    <div class="messages__item messages__item--operator">
-                        Hôm nay 20/11 thì tôi nên chọn hoa như thế nào?
-                    </div>
-                    <div class="messages__item messages__item--typing">
-                        <span class="messages__dot"></span>
-                        <span class="messages__dot"></span>
-                        <span class="messages__dot"></span>
-                    </div>
+                  
+                   
                 </div>
             </div>
             <div class="chatbox__footer">
@@ -274,18 +264,18 @@
         // Đảm bảo chatbox ban đầu được ẩn
         chatContent.style.display = 'none';
 
-
-
-
         // Xử lý sự kiện nhấn Enter trong ô nhập
         inputField.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                sendButton.click();
+                SendMessageToChatbot();
             }
         });
     });
-
+    const scrollToBottom = () => {
+        const messagesContainer = document.querySelector('.chatbox__messages div');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Cuộn xuống cuối
+    };
     // Hàm hiển thị tin nhắn trong khung chat
     const addMessage = (message, sender = 'visitor') => {
         const messagesContainer = document.querySelector('.chatbox__messages div');
@@ -293,12 +283,20 @@
         messageElement.classList.add('messages__item', `messages__item--${sender}`);
         messageElement.textContent = message;
         messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Tự động cuộn xuống cuối
+        
+        scrollToBottom();
+        //messagesContainer.scrollTop = messagesContainer.scrollHeight; // Tự động cuộn xuống cuối
     };
 
     const SendMessageToChatbot = () => {
+        const inputField = document.querySelector(".chatbox__footer input"); // Khai báo biến inputField
         const message = document.querySelector(".chatbox__footer input").value;
         console.log(message);
+        if (message === '') return; // Không xử lý nếu tin nhắn trống
+
+        // Hiển thị tin nhắn người dùng trong khung chat
+        addMessage(message, 'operator')
+        inputField.value = '';
 
         const uri = "/api/chatbot/chat";
         fetchPost(
@@ -308,15 +306,18 @@
             (data) => {
                 console.log(data.message);
                 addMessage(data.message, 'visitor');
+                
             },
             //fail
             (data) => {
                 addMessage(data.message, 'visitor');
+                
             },
             //excep
             () => {
                 //addMessage('Xin lỗi, tôi không thể phản hồi lúc này.', 'operator');
                 console.log("chạy vào exception");
+                
             }
         );
     }
