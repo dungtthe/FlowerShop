@@ -14,12 +14,11 @@
 
 	<!-- Custom fonts for this template-->
 	<link href="~/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-	<link
-		href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-		rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+		  rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-		integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-		crossorigin="anonymous" referrerpolicy="no-referrer" />
+		  integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+		  crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<!-- Custom styles for this template-->
 	<link href="~/admin/css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="~/admin/css/mystyle.css" rel="stylesheet">
@@ -37,119 +36,99 @@
 
 			<!-- Sidebar - Brand -->
 			<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-				<div class="sidebar-brand-icon rotate-n-15">
-					<i class="fas fa-laugh-wink"></i>
+				<div class="sidebar-brand-icon">
+					<img src="/admin/img/admin_logo.png" alt="Logo" style="width: 70px; height: 70px; object-fit: cover;">
 				</div>
-				<div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+				<div class="sidebar-brand-text mx-3 text-uppercase" style="font-size: 14px; font-weight: bold;">Hệ thống cửa hàng bán hoa</div>
 			</a>
 
 			<!-- Divider -->
 			@* <hr class="sidebar-divider my-0"> *@
 
 			<!-- Nav Item - Dashboard -->
-			<li class="nav-item active">
-				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBaoCaoThongKe">
-					<i class="fas fa-fw fa-tachometer-alt"></i>
+			<li class="nav-item">
+				<a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseBaoCaoThongKe">
+					<i class="fas fa-chart-bar"></i>
 					<span>Báo cáo và thống kê</span>
 				</a>
-				<div id="collapseBaoCaoThongKe" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+				<div id="collapseBaoCaoThongKe" class="collapse">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical" asp-action="Index">Doanh
-							thu</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical"
-							asp-action="TopSanPham">Sản phẩm bán chạy</a>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical" asp-action="Index">Doanh thu</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical" asp-action="TopSanPham">Sản phẩm bán chạy</a>
 					</div>
 				</div>
-
 			</li>
 
 			<!-- Divider -->
 			<hr class="sidebar-divider">
 			<!-- sidebar-heading Quản lý sản phẩm -->
-			<div class="sidebar-heading">
-				Quản lý sản phẩm
-			</div>
+			<div class="sidebar-heading">Quản lý sản phẩm</div>
 			<!-- Nav Item - Quản lý kho -->
 			<li class="nav-item">
-				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyKho"
-					aria-expanded="true" aria-controls="collapseQuanLyKho">
-					<i class="fas fa-fw fa-wrench"></i>
+				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyKho">
+					<i class="fas fa-box"></i>
 					<span>Quản lý kho</span>
 				</a>
-				<div id="collapseQuanLyKho" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+				<div id="collapseQuanLyKho" class="collapse">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Index">Danh
-							sách sản phẩm</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Create">Nhập
-							hàng</a>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Index">Danh sách sản phẩm</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Create">Nhập hàng</a>
 					</div>
 				</div>
 			</li>
 			<!-- Nav Item - Quản lý danh mục -->
 			<li class="nav-item">
-				<a class="nav-link collapsed" data-toggle="collapse" data-target="#collapseQuanLyDanhMuc"
-					aria-expanded="true" aria-controls="collapseQuanLyDanhMuc">
-					<i class="fas fa-fw fa-wrench"></i>
+				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyDanhMuc"
+				aria-expanded="true" aria-controls="collapseQuanLyDanhMuc">
+					<i class="fas fa-th-list"></i>
 					<span>Quản lý danh mục</span>
 				</a>
-				<div id="collapseQuanLyDanhMuc" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
-					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Category" asp-action="Index">
-							Danh sách
-							danh mục
+				<div id="collapseQuanLyDanhMuc" class="collapse">
+					<div class="bg-light py-2 collapse-inner rounded">
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Category" asp-action="Index">
+							<i></i> Danh sách danh mục
 						</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Category" asp-action="Create">
-							Thêm
-							danh mục
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Category" asp-action="Create">
+							<i ></i> Thêm danh mục
 						</a>
 					</div>
 				</div>
 			</li>
 
+
 			<!-- Nav Item - Quản lý sản phẩm bán -->
 			<li class="nav-item">
-				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLySanPhamBan"
-					aria-expanded="true" aria-controls="collapseQuanLySanPhamBan">
-					<i class="fas fa-fw fa-wrench"></i>
+				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLySanPhamBan">
+					<i class="fas fa-tags"></i>
 					<span>Quản lý sản phẩm bán</span>
 				</a>
-				<div id="collapseQuanLySanPhamBan" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+				<div id="collapseQuanLySanPhamBan" class="collapse">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Index">
-							Danh sách
-							sản phẩm
-						</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Create">
-							Thêm sản
-							phẩm
-						</a>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Danh sách sản phẩm</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Create">Thêm sản phẩm</a>
 					</div>
 				</div>
 			</li>
 			<!-- Nav Item - Quản lý cách đóng gói -->
 			<li class="nav-item">
-				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyCachDongGoi"
-				   aria-expanded="true" aria-controls="collapseQuanLyCachDongGoi">
-					<i class="fas fa-fw fa-wrench"></i>
+					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyCachDongGoi">
+					<i class="fas fa-box"></i>
 					<span>Quản lý cách đóng gói</span>
 				</a>
 				<div id="collapseQuanLyCachDongGoi" class="collapse" aria-labelledby="headingUtilities"
 					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Packaging" asp-action="Index">
-							Danh
-							sách
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Packaging" asp-action="Index">
+							<i></i> Danh sách đóng gói
 						</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Packaging" asp-action="Create">Thêm</a>
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Packaging" asp-action="Create">
+							<i></i> Thêm cách đóng gói
+						</a>
 					</div>
 				</div>
 			</li>
@@ -163,20 +142,20 @@
 			<!-- Nav Item - Quản lý hóa đơn nhập -->
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyHoaDonNhap"
-					aria-expanded="true" aria-controls="collapseQuanLyHoaDonNhap">
-					<i class="fas fa-fw fa-wrench"></i>
-					<span>Quản lý hóa đơn nhập</span>
+				   aria-expanded="true" aria-controls="collapseQuanLyHoaDonNhap">
+					<i class="fas fa-file-invoice"></i>
+					<span >Quản lý hóa đơn nhập</span>
 				</a>
 				<div id="collapseQuanLyHoaDonNhap" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
 						<a class="collapse-item" asp-area="Admin" asp-action="Index"
-							asp-controller="SupplierInvoices">Chờ xác nhận</a>
+						   asp-controller="SupplierInvoices">Chờ xác nhận</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="SuccessSupplierInvoice"
-							asp-controller="SupplierInvoices">Hoàn tất</a>
+						   asp-controller="SupplierInvoices">Hoàn tất</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="CancelledSupplierInvoice"
-							asp-controller="SupplierInvoices">Đã hủy</a>
+						   asp-controller="SupplierInvoices">Đã hủy</a>
 					</div>
 				</div>
 			</li>
@@ -184,28 +163,30 @@
 			<!-- Nav Item - Quản lý hóa đơn bán (đơn hàng)-->
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyHoaDonBan"
-					aria-expanded="true" aria-controls="collapseQuanLyHoaDonBan">
-					<i class="fas fa-fw fa-wrench"></i>
+				   aria-expanded="true" aria-controls="collapseQuanLyHoaDonBan">
+					<i class="fas fa-receipt"></i>
 					<span>Quản lý đơn hàng</span>
 				</a>
 				<div id="collapseQuanLyHoaDonBan" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-action="Index" asp-controller="SaleInvoice">Chờ
-							xác nhận</a>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item" asp-area="Admin" asp-action="Index" asp-controller="SaleInvoice">
+							Chờ
+							xác nhận
+						</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="OrderConfirmed"
-							asp-controller="SaleInvoice">Đã xác nhận</a>
+						   asp-controller="SaleInvoice">Đã xác nhận</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="OrderPrepared"
-							asp-controller="SaleInvoice">Đang chuẩn bị</a>
+						   asp-controller="SaleInvoice">Đang chuẩn bị</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="OrderDelivery"
-							asp-controller="SaleInvoice">Đang giao hàng</a>
+						   asp-controller="SaleInvoice">Đang giao hàng</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="SuccessDeliveryOrder"
-							asp-controller="SaleInvoice">Giao hàng thành công</a>
+						   asp-controller="SaleInvoice">Giao hàng thành công</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="FailDeliveryOrder"
-							asp-controller="SaleInvoice">Giao hàng thất bại</a>
+						   asp-controller="SaleInvoice">Giao hàng thất bại</a>
 						<a class="collapse-item" asp-area="Admin" asp-action="OrderCancelled"
-							asp-controller="SaleInvoice">Đã hủy</a>
+						   asp-controller="SaleInvoice">Đã hủy</a>
 					</div>
 				</div>
 			</li>
@@ -219,16 +200,18 @@
 			<!-- Nav Item - Quản lý nhân viên -->
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyNhanVien"
-					aria-expanded="true" aria-controls="collapseQuanLyNhanVien">
-					<i class="fas fa-fw fa-wrench"></i>
+				   aria-expanded="true" aria-controls="collapseQuanLyNhanVien">
+					<i class="fas fa-users"></i>
 					<span>Quản lý nhân viên</span>
 				</a>
 				<div id="collapseQuanLyNhanVien" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="AppUser" asp-action="Index">Xem danh
-							sách</a>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item" asp-area="Admin" asp-controller="AppUser" asp-action="Index">
+							Xem danh
+							sách
+						</a>
 
 					</div>
 				</div>
@@ -237,13 +220,14 @@
 			<!-- Nav Item - Quản lý khách hàng-->
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyKhachHang"
-					aria-expanded="true" aria-controls="collapseQuanLyKhachHang">
-					<i class="fas fa-fw fa-wrench"></i>
+				   aria-expanded="true" aria-controls="collapseQuanLyKhachHang">
+					<i class="fas fa-user"></i>
 					<span>Quản lý khách hàng</span>
 				</a>
 				<div id="collapseQuanLyKhachHang" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
+					<h6 class="collapse-header text-primary">Thao tác</h6>
 						<a class="collapse-item" asp-area="Admin" asp-controller="Customer" asp-action="Index">
 							Xem danh
 							sách
@@ -254,18 +238,22 @@
 			<!-- Nav Item - Quản lý nhà cung cấp-->
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuanLyNhaCungCap"
-					aria-expanded="true" aria-controls="collapseQuanLyNhaCungCap">
-					<i class="fas fa-fw fa-wrench"></i>
+				   aria-expanded="true" aria-controls="collapseQuanLyNhaCungCap">
+					<i class="fas fa-handshake"></i>
 					<span>Quản lý nhà cung cấp</span>
 				</a>
 				<div id="collapseQuanLyNhaCungCap" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Suppliers" asp-action="Index"> Xem
-							danh sách</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Suppliers" asp-action="Create">Thêm
-							nhà cung cấp</a>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Suppliers" asp-action="Index">
+							Xem
+							danh sách
+						</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Suppliers" asp-action="Create">
+							Thêm
+							nhà cung cấp
+						</a>
 					</div>
 				</div>
 			</li>
@@ -279,14 +267,14 @@
 			<!-- Nav Item - bảng tham số -->
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThietLapQuyDinh"
-					aria-expanded="true" aria-controls="collapseThietLapQuyDinh">
+				   aria-expanded="true" aria-controls="collapseThietLapQuyDinh">
 					<i class="fas fa-fw fa-wrench"></i>
 					<span>Quản lý tham số</span>
 				</a>
 				<div id="collapseThietLapQuyDinh" class="collapse" aria-labelledby="headingUtilities"
-					data-parent="#accordionSidebar">
+					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
 						<a class="collapse-item" asp-area="Admin" asp-controller="Parameter" asp-action="Index">Xem danh sách</a>
 					</div>
 				</div>
@@ -295,13 +283,13 @@
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePhuongThucThanhToan"
 				   aria-expanded="true" aria-controls="collapsePhuongThucThanhToan">
-					<i class="fas fa-fw fa-wrench"></i>
+						<i class="fas fa-credit-card"></i>
 					<span>Phương thức thanh toán</span>
 				</a>
 				<div id="collapsePhuongThucThanhToan" class="collapse" aria-labelledby="headingUtilities"
 					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<h6 class="collapse-header">Thao tác</h6>
+						<h6 class="collapse-header text-primary">Thao tác</h6>
 						<a class="collapse-item" asp-area="Admin" asp-controller="PaymentMethod" asp-action="Index">
 							Xem
 							danh sách
@@ -346,17 +334,17 @@
 						<!-- Nav Item - Search Dropdown (Visible Only XS) -->
 						<li class="nav-item dropdown no-arrow d-sm-none">
 							<a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="fas fa-search fa-fw"></i>
 							</a>
 							<!-- Dropdown - Messages -->
 							<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-								aria-labelledby="searchDropdown">
+								 aria-labelledby="searchDropdown">
 								<form class="form-inline mr-auto w-100 navbar-search">
 									<div class="input-group">
 										<input type="text" class="form-control bg-light border-0 small"
-											placeholder="Search for..." aria-label="Search"
-											aria-describedby="basic-addon2">
+											   placeholder="Search for..." aria-label="Search"
+											   aria-describedby="basic-addon2">
 										<div class="input-group-append">
 											<button class="btn btn-primary" type="button">
 												<i class="fas fa-search fa-sm"></i>
@@ -370,14 +358,14 @@
 						<!-- Nav Item - Alerts -->
 						<li class="nav-item dropdown no-arrow mx-1">
 							<a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="fas fa-bell fa-fw"></i>
 								<!-- Counter - Alerts -->
 								<span class="badge badge-danger badge-counter">3+</span>
 							</a>
 							<!-- Dropdown - Alerts -->
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-								aria-labelledby="alertsDropdown">
+								 aria-labelledby="alertsDropdown">
 								<h6 class="dropdown-header">
 									Alerts Center
 								</h6>
@@ -421,14 +409,14 @@
 						<!-- Nav Item - Messages -->
 						<li class="nav-item dropdown no-arrow mx-1">
 							<a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="fas fa-envelope fa-fw"></i>
 								<!-- Counter - Messages -->
 								<span class="badge badge-danger badge-counter">7</span>
 							</a>
 							<!-- Dropdown - Messages -->
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-								aria-labelledby="messagesDropdown">
+								 aria-labelledby="messagesDropdown">
 								<h6 class="dropdown-header">
 									Message Center
 								</h6>
@@ -474,7 +462,7 @@
 								<a class="dropdown-item d-flex align-items-center" href="#">
 									<div class="dropdown-list-image mr-3">
 										<img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
-											alt="...">
+											 alt="...">
 										<div class="status-indicator bg-success"></div>
 									</div>
 									<div>
@@ -494,13 +482,13 @@
 						<!-- Nav Item - User Information -->
 						<li class="nav-item dropdown no-arrow">
 							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
 								<img class="img-profile rounded-circle" src="img/undraw_profile.svg">
 							</a>
 							<!-- Dropdown - User Information -->
 							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-								aria-labelledby="userDropdown">
+								 aria-labelledby="userDropdown">
 								<a class="dropdown-item" href="#">
 									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
 									Profile
@@ -557,7 +545,7 @@
 
 	<!-- Logout Modal-->
 	<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-		aria-hidden="true">
+		 aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
