@@ -11,10 +11,13 @@ namespace FlowerShop.Service
     public interface IAppUserService
     {
         Task<bool> LoginAsync(string username, string password, bool isPersistent);
-        Task<AppUser> GetAppUser(HttpContext context);
-       // Task<ICollection<string>> GetRolesName(HttpContext context);
-       Task<bool> IsAdmin(HttpContext context);
-       Task<bool> IsCustomer(HttpContext context);
-       Task<bool> IsStaff(HttpContext context);
+        Task<AppUser> GetAppUserByContextAsync(HttpContext context);
+        Task<AppUser> GetUserByIdAsync(string id);
+        Task<AppUser> GetUserByEmailAsync(string email);
+        Task<AppUser> GetUserByUserNameAsync(string userName);
+
+		Task<bool?> IsAdminAsync(string id);
+		Task<bool?> IsStaffAsync(string id);
+		Task<bool?> IsCustomerAsync(string id);
     }
 }

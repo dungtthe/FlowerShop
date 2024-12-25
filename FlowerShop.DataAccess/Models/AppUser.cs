@@ -42,5 +42,8 @@ namespace FlowerShop.DataAccess.Models
 
 		[InverseProperty("Staff")]
 		public ICollection<Conversation>? StaffConversations { get; set; }
+
+		[NotMapped] // Không ánh xạ vào cơ sở dữ liệu
+		public ICollection<string> ?RolesName { get; set; }
 	}
 }

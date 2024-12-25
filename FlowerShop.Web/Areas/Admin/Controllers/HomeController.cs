@@ -23,10 +23,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [Route("")]
         [Route("home")]
         public async Task< IActionResult> Index()
-    {
-            AppUser appUser = await _appUserService.GetAppUser(HttpContext);
+        {
+            AppUser appUser = await _appUserService.GetAppUserByContextAsync(HttpContext);
 
-            bool a= await  _appUserService.IsAdmin(HttpContext);
             return RedirectToAction("Index", "Statistical");
         }
     }

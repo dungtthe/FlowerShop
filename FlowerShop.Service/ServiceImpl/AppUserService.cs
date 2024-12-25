@@ -1,5 +1,6 @@
 ﻿using FlowerShop.Common.MyConst;
 using FlowerShop.DataAccess.Models;
+using FlowerShop.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -10,71 +11,139 @@ using System.Threading.Tasks;
 
 namespace FlowerShop.Service.ServiceImpl
 {
-    public class AppUserService : IAppUserService
-    {
+	public class AppUserService : IAppUserService
+	{
+		private readonly SignInManager<AppUser> _signInManager;
+		private readonly UserManager<AppUser> _userManager;
+		public AppUserService(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
+		{
+			_signInManager = signInManager;
+			_userManager = userManager;
+		}
 
-        SignInManager<AppUser> _signInManager;
-        UserManager<AppUser> _userManager;
-        public AppUserService(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
-        {
-            _signInManager = signInManager;
-            _userManager = userManager;
-        }
+		public async Task<AppUser> GetAppUserByContextAsync(HttpContext context)
+		{
+			return await _userManager.GetUserAsync(context.User);
+		}
 
-        public async Task<AppUser> GetAppUser(HttpContext context)
-        {
-            return await _userManager.GetUserAsync(context.User);
-        }
+		public async Task<AppUser> GetUserByEmailAsync(string email)
+		{
+			var appUser = await _userManager.FindByEmailAsync(email);
+			if (appUser != null)
+			{
+				appUser.RolesName = await _userManager.GetRolesAsync(appUser);
+				if (appUser.RolesName == null || !appUser.RolesName.Any())
+				{
+					appUser = null;
+				}
+			}
 
-        public async Task<bool> IsAdmin(HttpContext context)
-        {
-            var roles= await GetRolesName(context);
-            foreach (var role in roles)
-            {
-                if (role.Equals(ConstRole.ADMIN))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+			return appUser;
+		}
 
-        public async Task<bool> IsCustomer(HttpContext context)
-        {
-            var roles = await GetRolesName(context);
-            foreach (var role in roles)
-            {
-                if (role.Equals(ConstRole.CUSTOMER))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+		public async Task<AppUser> GetUserByIdAsync(string id)
+		{
+			var appUser = await _userManager.FindByIdAsync(id);
+			if (appUser != null)
+			{
+				appUser.RolesName= await _userManager.GetRolesAsync(appUser);
+				if(appUser.RolesName==null || !appUser.RolesName.Any())
+				{
+					appUser = null;
+				}
+			}
 
-        public async Task<bool> IsStaff(HttpContext context)
-        {
-            var roles = await GetRolesName(context);
-            foreach (var role in roles)
-            {
-                if (role.Equals(ConstRole.STAFF))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+			return appUser;
+		}
 
-        public async Task<bool> LoginAsync(string username, string password, bool isPersistent)
-        {
-            var result = await _signInManager.PasswordSignInAsync(username, password, isPersistent, false);
-            return result.Succeeded;
-        }
+		public async Task<AppUser> GetUserByUserNameAsync(string userName)
+		{
+			var appUser = await _userManager.FindByNameAsync(userName);
+			if (appUser != null)
+			{
+				appUser.RolesName = await _userManager.GetRolesAsync(appUser);
+				if (appUser.RolesName == null || !appUser.RolesName.Any())
+				{
+					appUser = null;
+				}
+			}
 
-        private async Task<ICollection<string>> GetRolesName(HttpContext context)
-        {
-            return await _userManager.GetRolesAsync(await GetAppUser(context));
-        }
+			return appUser;
+		}
 
-    }
+		public async Task<bool?> IsAdminAsync(string id)
+		{
+			var appUser = await GetUserByIdAsync(id);
+			if (appUser != null)
+			{
+				appUser.RolesName = await _userManager.GetRolesAsync(appUser);
+				if (appUser.RolesName == null || !appUser.RolesName.Any())
+				{
+					return null;
+				}
+
+				if (appUser.RolesName.Contains(ConstRole.ADMIN))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			return null;
+		}
+
+		public async Task<bool?> IsCustomerAsync(string id)
+		{
+			var appUser = await GetUserByIdAsync(id);
+			if (appUser != null)
+			{
+				appUser.RolesName = await _userManager.GetRolesAsync(appUser);
+				if (appUser.RolesName == null || !appUser.RolesName.Any())
+				{
+					return null;
+				}
+
+				if (appUser.RolesName.Contains(ConstRole.CUSTOMER))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			return null;
+		}
+
+		public async Task<bool?> IsStaffAsync(string id)
+		{
+			var appUser = await GetUserByIdAsync(id);
+			if (appUser != null)
+			{
+				appUser.RolesName = await _userManager.GetRolesAsync(appUser);
+				if (appUser.RolesName == null || !appUser.RolesName.Any())
+				{
+					return null;
+				}
+
+				if (appUser.RolesName.Contains(ConstRole.STAFF))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			return null;
+		}
+
+		public async Task<bool> LoginAsync(string username, string password, bool isPersistent)
+		{
+			var result = await _signInManager.PasswordSignInAsync(username, password, isPersistent, false);
+			return result.Succeeded;
+		}
+	}
 }

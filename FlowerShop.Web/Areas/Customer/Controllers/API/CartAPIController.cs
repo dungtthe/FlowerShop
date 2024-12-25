@@ -24,7 +24,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers.API
         [HttpGet("add")]
         public async Task<IActionResult> AddProductToCartAsync(int id, int quantity)
         {
-            var appUser = await _appUserService.GetAppUser(HttpContext);
+            var appUser = await _appUserService.GetAppUserByContextAsync(HttpContext);
             var rsp = await _cartService.AddProductToCartAsync(appUser, id, quantity);
 
             if (rsp.Id == ResponeMessage.NOT_FOUND)
@@ -43,7 +43,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers.API
         [HttpGet("delete")]
         public async Task<IActionResult> DeleteProductFromCartAsync(int id)
         {
-            var appUser = await _appUserService.GetAppUser(HttpContext);
+            var appUser = await _appUserService.GetAppUserByContextAsync(HttpContext);
             var rsp = await _cartService.DeleteProductFromCartAsync(appUser, id);
 
             if (rsp.Id != ResponeMessage.NOT_FOUND)

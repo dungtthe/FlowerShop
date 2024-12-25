@@ -3,7 +3,7 @@
 @inject IAppUserService _appUserService
 @inject ICartService _cartService
 @{
-    var appUser = await _appUserService.GetAppUser(Context.Request.HttpContext);
+    var appUser = await _appUserService.GetAppUserByContextAsync(Context.Request.HttpContext);
     Cart cartUser = null;
     if (appUser != null)
     {

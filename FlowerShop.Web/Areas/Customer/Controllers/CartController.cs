@@ -28,7 +28,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
         public async Task<IActionResult> CartDetailAsync()
         {
             ViewBag.tilePage = "Thông tin giỏ hàng";
-            var appUser = await _appUserService.GetAppUser(HttpContext);
+            var appUser = await _appUserService.GetAppUserByContextAsync(HttpContext);
             var cart = await _cartService.GetCartByUserIdAsync(appUser.Id);
 
             if (appUser == null || cart == null || cart.CartDetails == null)
