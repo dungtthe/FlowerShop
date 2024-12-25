@@ -176,6 +176,18 @@
 </div>
 
 <script>
+	let selectedImageBytes = null;//bổ trợ lưu ảnh
+	const convertFileToByteArray = (file, callback) => {
+		const reader = new FileReader();
+		reader.onload = function (event) {
+			const arrayBuffer = event.target.result;
+			const byteArray = new Uint8Array(arrayBuffer);
+			callback(byteArray); // Trả về mảng byte qua callback
+		};
+		reader.readAsArrayBuffer(file); // Đọc file dưới dạng ArrayBuffer
+	}
+
+
 	let initialImageName = "no_img.png"; // Tên ảnh mặc định ban đầu (cập nhật khi tải trang)
 	let originalValues = [];
 	let originalAvatar = document.getElementById("profileImage").src;
@@ -223,6 +235,10 @@
 			const reader = new FileReader();
 			reader.onload = function (e) {
 				document.getElementById("profileImage").src = e.target.result; // Cập nhật ảnh
+				convertFileToByteArray(file, (byteArray) => {
+					selectedImageBytes = byteArray; // Lưu mảng byte vào biến toàn cục
+					//console.log("Mảng byte đã lưu:", selectedImageBytes);
+				});
 			};
 			reader.readAsDataURL(file);
 		} else {
@@ -276,6 +292,8 @@
 		document.getElementById("saveButton").disabled = !isValid;
 	}
 
+
+
 	function saveChanges() {
 		if (validateInputs()) return;
 		const updatedUser = {
@@ -283,19 +301,29 @@
 			BirthDay: document.querySelector(".edit-mode[name='BirthDay']").value,
 			Email: document.querySelector(".edit-mode[name='Email']").value,
 			PhoneNumber: document.querySelector(".edit-mode[name='PhoneNumber']").value,
+			BytesImage: null
 		};
+		let bytesArray = null;
 		const profileImageInput = document.getElementById("profileImageInput");
 		if (profileImageInput.files[0]) {
-			updatedUser.Image = profileImageInput.files[0].name; // Lấy tên tệp ảnh
+			//updatedUser.Image = profileImageInput.files[0].name; // Lấy tên tệp ảnh
+			bytesArray = selectedImageBytes;
 		} else {
-			updatedUser.Image = initialImageName; // Nếu không có tệp, đặt giá trị mặc định
+			//	updatedUser.Image = initialImageName; // Nếu không có tệp, đặt giá trị mặc định
 		}
 		console.log("Thông tin người dùng cần lưu:", updatedUser);
 
+		if (bytesArray != null) {
+			updatedUser.BytesImage = "";
+			for (const item of bytesArray) {
+				updatedUser.BytesImage += item + ",";
+			}
+		}
 		// Gửi yêu cầu cập nhật thông tin qua API
 		fetchPost(
-			`/api/admin/quan-li-tai-khoan/cap-nhat-thong-tin?images=${updatedUser.Image}`,
-			updatedUser,
+			`/api/admin/quan-li-tai-khoan/cap-nhat-thong-tin`,
+			updatedUser
+			,
 			(data) => {
 				document.getElementById("viewFullName").textContent = updatedUser.FullName;
 				document.getElementById("viewBirthDay").textContent = new Date(updatedUser.BirthDay).toLocaleDateString('vi-VN');
