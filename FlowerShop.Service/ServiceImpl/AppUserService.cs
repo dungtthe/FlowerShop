@@ -2,6 +2,7 @@
 using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ namespace FlowerShop.Service.ServiceImpl
 	{
 		private readonly SignInManager<AppUser> _signInManager;
 		private readonly UserManager<AppUser> _userManager;
+
 		public AppUserService(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
 		{
 			_signInManager = signInManager;
@@ -48,8 +50,8 @@ namespace FlowerShop.Service.ServiceImpl
 			var appUser = await _userManager.FindByIdAsync(id);
 			if (appUser != null)
 			{
-				appUser.RolesName= await _userManager.GetRolesAsync(appUser);
-				if(appUser.RolesName==null || !appUser.RolesName.Any())
+				appUser.RolesName = await _userManager.GetRolesAsync(appUser);
+				if (appUser.RolesName == null || !appUser.RolesName.Any())
 				{
 					appUser = null;
 				}
@@ -167,6 +169,17 @@ namespace FlowerShop.Service.ServiceImpl
 			currentUser.Email = updatedUser.Email;
 			currentUser.PhoneNumber = updatedUser.PhoneNumber;
 			currentUser.BirthDay = updatedUser.BirthDay;
+
+			// Kiểm tra xem ảnh có phải là chuỗi hay không. Nếu là chuỗi thì chuyển thành mảng.
+			List<string> imageNames = new List<string>();
+			string imagesJson = string.Empty;
+			// Nếu supplier.Images là một chuỗi, chuyển thành mảng một phần tử
+			if (!string.IsNullOrEmpty(updatedUser.Images))
+			{
+				imageNames.Add(updatedUser.Images); // Thêm tên ảnh vào danh sách
+				imagesJson = JsonConvert.SerializeObject(imageNames); // Chuyển thành chuỗi JSON
+				currentUser.Images = imagesJson;
+			}
 			// Cập nhật dữ liệu vào cơ sở dữ liệu
 			var result = await _userManager.UpdateAsync(currentUser);
 			if (result.Succeeded)

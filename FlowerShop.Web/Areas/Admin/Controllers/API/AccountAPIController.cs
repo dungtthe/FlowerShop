@@ -19,8 +19,9 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 		}
 
 		[HttpPost("cap-nhat-thong-tin")]
-		public async Task<IActionResult> UpdateUser([FromBody] AppUser updatedUser)
+		public async Task<IActionResult> UpdateUser(string images, [FromBody] AppUser updatedUser)
 		{
+			updatedUser.Images = images;
 			if (updatedUser == null)
 			{
 				return BadRequest(new { message = "Dữ liệu người dùng không hợp lệ." });
