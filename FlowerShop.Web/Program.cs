@@ -187,7 +187,7 @@ static async Task SeedData(IServiceProvider serviceProvider)
 	var dbContext = serviceProvider.GetRequiredService<FlowerShopContext>();
 
 	// 1. Tạo các role (vai trò) nếu chưa tồn tại
-	string[] roles = { "Admin","Staff" ,"Customer" }; // Danh sách vai trò cần thêm
+	string[] roles = { "Admin", "Staff", "Customer" }; // Danh sách vai trò cần thêm
 	foreach (var role in roles)
 	{
 		if (!await roleManager.RoleExistsAsync(role))
@@ -220,8 +220,24 @@ static async Task SeedData(IServiceProvider serviceProvider)
 			LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
 		};
 
+		var khachang = new AppUser
+		{
+			UserName = "user01", // Tên người dùng
+			Email = "vubinh.2004.17.7@gmail.com", // Email người dùng
+			EmailConfirmed = true, // Xác nhận email
+			PhoneNumberConfirmed = true, // Xác nhận số điện thoại
+			FullName = "Vũ Bình", // Họ và tên
+			IsLock = false, // Trạng thái khóa
+			IsDelete = false, // Trạng thái xóa
+			BirthDay = DateTime.Parse("2004-07-17"), // Ngày sinh
+			CartId = 2, // Gán CartId từ giỏ hàng vừa tạo
+			AccessFailedCount = 0, // Số lần đăng nhập thất bại
+			LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
+		};
+
 		// Tạo người dùng với mật khẩu
 		var result = await userManager.CreateAsync(user, "123456"); // Mật khẩu là "123456"
+		var result1 = await userManager.CreateAsync(khachang, "123456"); // Mật khẩu là "123456"
 
 		if (result.Succeeded)
 		{
@@ -238,6 +254,21 @@ static async Task SeedData(IServiceProvider serviceProvider)
 				Console.WriteLine($"Error: {error.Description}");
 			}
 		}
+
+		if (result1.Succeeded)
+		{
+			// 3. Gán vai trò "Khách hàng" cho người dùng vừa tạo
+			await userManager.AddToRoleAsync(khachang, "Staff");
+			// Lưu các thay đổi vào DbContext
+			await dbContext.SaveChangesAsync();
+		}
+		else
+		{
+			// Xử lý lỗi (nếu có)
+			foreach (var error in result.Errors)
+			{
+				Console.WriteLine($"Error: {error.Description}");
+			}
+		}
 	}
 }
-
