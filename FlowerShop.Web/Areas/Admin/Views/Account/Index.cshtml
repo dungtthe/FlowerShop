@@ -187,7 +187,6 @@
 		reader.readAsArrayBuffer(file); // Đọc file dưới dạng ArrayBuffer
 	}
 
-
 	let initialImageName = "no_img.png"; // Tên ảnh mặc định ban đầu (cập nhật khi tải trang)
 	let originalValues = [];
 	let originalAvatar = document.getElementById("profileImage").src;
@@ -292,8 +291,6 @@
 		document.getElementById("saveButton").disabled = !isValid;
 	}
 
-
-
 	function saveChanges() {
 		if (validateInputs()) return;
 		const updatedUser = {
@@ -344,7 +341,7 @@
 				}, 500);
 			},
 			(error) => {
-				showError("Thông tin không đầy đủ: " + error.message);
+				showError(error.message);
 			},
 			() => {
 				showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
