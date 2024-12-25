@@ -228,3 +228,8 @@
     border-bottom: 1px solid #681c1c;
     padding-bottom: 15px;
 }
+
+
+#link-login {
+    cursor: pointer;
+}
