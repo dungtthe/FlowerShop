@@ -4,9 +4,8 @@
 @{
 	var userInformation = AppUserService.GetAppUserByContextAsync(ViewContext.HttpContext).Result;
 	var fullName = userInformation?.FullName ?? "Khách";
-	var avatar = userInformation?.Images ?? "no-img.png";
 	string[] listImg = userInformation.Images != null
-	? JsonConvert.DeserializeObject<string[]>(Model.Images)
+	? JsonConvert.DeserializeObject<string[]>(userInformation.Images)
 	: new string[] { "no_img.png" };
 
 	var firstImg = listImg[0];
