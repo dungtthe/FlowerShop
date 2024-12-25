@@ -1,17 +1,6 @@
 ﻿	@model FlowerShop.DataAccess.Models.AppUser
-@{
-	var avatar = Model?.Images ?? "account_default.png";
-	string image = string.Empty;
-	if (!string.IsNullOrEmpty(avatar))
-	{
-		image = avatar.Replace("\"", "").Trim('[', ']');
-	}
-	else
-	{
-		image = "account_default.png";
-	}
-	var src = "/images/users/";
-}
+	@using Newtonsoft.Json;
+
 <style>
 	.img-thumbnail {
 		box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -99,8 +88,15 @@
 
 <div class="row align-items-center ">
 	<div class="col-lg-4 text-center d-flex flex-column align-items-center">
+		@{
+			string[] listImg = Model.Images != null
+			? JsonConvert.DeserializeObject<string[]>(Model.Images)
+			: new string[] { "no_img.png" };
+
+			var firstImg = listImg[0];
+		}
 		<label for="profileImageInput" class="image-wrapper">
-			<img id="profileImage" src="@($"{src}{image}")" class="img-thumbnail rounded-circle" alt="Avatar">
+			<img id="profileImage" src="@Url.Content("~/images/users/" + firstImg)" class="img-thumbnail rounded-circle" alt="Avatar">
 		</label>
 		<!-- Nút thay đổi ảnh -->
 		<button id="changeImageButton" class="btn btn-primary mt-3" style="display: none;">Thay đổi ảnh</button>
@@ -163,6 +159,7 @@
 </div>
 
 <script>
+
 	document.addEventListener("DOMContentLoaded", function () {
 		const userInfoBody = document.getElementById("userInfoBody");
 		const editButton = document.getElementById("editButton");
