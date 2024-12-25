@@ -50,24 +50,28 @@ namespace FlowerShop.DataAccess.Infrastructure
             dbSet.Remove(entity);
             return true;
         }
-        public async Task<T?> GetSingleByIdAsync(int id)
+
+		//trả về null nếu không tìm thấy
+		public async Task<T?> GetSingleByIdAsync(int id)
         {
             return await dbSet.FindAsync(id);
         }
 
+        //trả về list empty nếu k có bản ghi nào
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await dbSet.ToListAsync();
         }
 
 
-        //không có kết quả nào thỏa mãn thì nó trả về empty list thay vì null
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+		//trả về list empty nếu k có bản ghi nào
+		public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
             return await dbSet.Where(predicate).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
+		//trả về list empty nếu k có bản ghi nào
+		public async Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = dbSet;
             foreach (var include in includes)
@@ -77,7 +81,9 @@ namespace FlowerShop.DataAccess.Infrastructure
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> FindWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+
+		//trả về list empty nếu k có bản ghi nào
+		public async Task<IEnumerable<T>> FindWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = dbSet;
             foreach (var include in includes)
@@ -87,18 +93,22 @@ namespace FlowerShop.DataAccess.Infrastructure
             return await query.Where(predicate).ToListAsync();
         }
 
-        public async Task<T?> SingleOrDefaultWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+
+		//trả về null nếu không tìm thấy
+		public async Task<T?> SingleOrDefaultWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = dbSet;
             foreach (var include in includes)
             {
                 query = query.Include(include);
             }
-            return await query.SingleOrDefaultAsync(predicate);
+            return await query.FirstOrDefaultAsync(predicate);
         }
 
 
-        public async Task<(IEnumerable<T> Items, int Total, int Remaining)> GetMultiPagingAsync(Expression<Func<T, bool>>? predicate = null, int pageIndex = 0, int pageSize = 10, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, params Expression<Func<T, object>>[] includes)
+
+		//trả về list empty nếu k có bản ghi nào
+		public async Task<(IEnumerable<T> Items, int Total, int Remaining)> GetMultiPagingAsync(Expression<Func<T, bool>>? predicate = null, int pageIndex = 0, int pageSize = 10, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, params Expression<Func<T, object>>[] includes)
         {
             int skipCount = pageIndex * pageSize;
 

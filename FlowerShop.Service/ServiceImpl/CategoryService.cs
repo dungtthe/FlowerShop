@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Net.WebSockets;
 
 namespace FlowerShop.Service.ServiceImpl
 {
@@ -215,6 +216,36 @@ namespace FlowerShop.Service.ServiceImpl
         {
             return await _categoryRepository.GetAllAsync();
         }
-    }
+
+	
+
+		public async Task<ResponeMessage> UpdateAsync(int categoryId, string nameCategory, int parrentCategoryId, List<int> selectedSubCategories)
+		{
+            var category = await _categoryRepository.GetSingleByIdAsync(categoryId);
+            if (category == null)
+            {
+                return new ResponeMessage(ResponeMessage.ERROR,"Không tìm thấy danh mục");
+            }
+
+            //update tên
+            category.Name = nameCategory;
+
+            //update danh mục
+            if (parrentCategoryId == 0)
+            {
+                category.ParentCategory = null;
+			}
+            else
+            {
+                var parentCate = (await _categoryRepository.GetAllAsync()).Where(c=>c.ParentCategoryId== categoryId);
+                if(parentCate.Any())
+                {
+					return new ResponeMessage(ResponeMessage.ERROR, "Hệ thống phân cấp tối đa là 2. Danh mục hiện tại đang có danh mục con khác");
+				}
+            }
+            return null;
+
+		}
+	}
 
 }

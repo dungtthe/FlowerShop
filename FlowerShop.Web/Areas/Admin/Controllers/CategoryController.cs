@@ -148,7 +148,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 
             category.Name = categoryVM.Name;
             category.ParentCategoryId = (categoryVM.ParentCategoryId == 0) ? null : categoryVM.ParentCategoryId;
-            category.IsCategorySell = categoryVM.IsCategorySell;
 
             await _categoryService.Update(category, categoryVM.SelectedSubCategories);
             TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Sửa thông tin danh mục thành công!"));

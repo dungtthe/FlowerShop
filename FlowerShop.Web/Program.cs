@@ -179,37 +179,65 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
 static async Task SeedData(IServiceProvider serviceProvider)
 {
+	// Lấy các dịch vụ cần thiết từ serviceProvider
 	var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
+	var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 	var dbContext = serviceProvider.GetRequiredService<FlowerShopContext>();
 
-	if (userManager.Users.All(u => u.UserName != "1"))
+	// 1. Tạo các role (vai trò) nếu chưa tồn tại
+	string[] roles = { "Admin","Staff" ,"Customer" }; // Danh sách vai trò cần thêm
+	foreach (var role in roles)
+	{
+		if (!await roleManager.RoleExistsAsync(role))
+		{
+			await roleManager.CreateAsync(new IdentityRole(role));
+		}
+	}
+
+	// 2. Kiểm tra và tạo người dùng
+	if (userManager.Users.All(u => u.UserName != "Admin"))
 	{
 		// Tạo Cart trước
 		var cart = new Cart();
-		dbContext.Carts.Add(cart);
-		await dbContext.SaveChangesAsync(); // Lưu để lấy CartId
+		dbContext.Carts.Add(cart); // Thêm giỏ hàng vào DbContext
+		await dbContext.SaveChangesAsync(); // Lưu để lấy Id
 
-		// Tạo AppUser và điền đầy đủ các thuộc tính bắt buộc
+		// Tạo AppUser và gán CartId
 		var user = new AppUser
 		{
-			UserName = "1",
-			Email = "example@example.com",
-			EmailConfirmed = true,
-			PhoneNumberConfirmed = true,
-			FullName = "Sample User", // Thuộc tính bắt buộc
-			IsLock = false, // Thuộc tính bắt buộc
-			IsDelete = false, // Thuộc tính bắt buộc
-			BirthDay = DateTime.Parse("2000-01-01"),
-			CartId = cart.Id, // Gán CartId đã tạo, thuộc tính bắt buộc
-			AccessFailedCount = 0, // Gán giá trị 0 cho AccessFailedCount để tránh null
-			LockoutEnabled = false,
+			UserName = "admin", // Tên người dùng
+			Email = "dungtienthe1920@gmail.com", // Email người dùng
+			EmailConfirmed = true, // Xác nhận email
+			PhoneNumberConfirmed = true, // Xác nhận số điện thoại
+			FullName = "Dung Ne", // Họ và tên
+			IsLock = false, // Trạng thái khóa
+			IsDelete = false, // Trạng thái xóa
+			BirthDay = DateTime.Parse("2003-04-30"), // Ngày sinh
+			CartId = cart.Id, // Gán CartId từ giỏ hàng vừa tạo
+			AccessFailedCount = 0, // Số lần đăng nhập thất bại
+			LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
 		};
 
-		// Tạo người dùng với UserManager
-		var flag = await userManager.CreateAsync(user, "1");
-		await dbContext.SaveChangesAsync();
+		// Tạo người dùng với mật khẩu
+		var result = await userManager.CreateAsync(user, "123456"); // Mật khẩu là "123456"
+
+		if (result.Succeeded)
+		{
+			// 3. Gán vai trò "Admin" cho người dùng vừa tạo
+			await userManager.AddToRoleAsync(user, "Admin");
+			// Lưu các thay đổi vào DbContext
+			await dbContext.SaveChangesAsync();
+		}
+		else
+		{
+			// Xử lý lỗi (nếu có)
+			foreach (var error in result.Errors)
+			{
+				Console.WriteLine($"Error: {error.Description}");
+			}
+		}
 	}
 }
+

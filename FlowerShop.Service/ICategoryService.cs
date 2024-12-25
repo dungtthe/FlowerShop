@@ -20,8 +20,8 @@ namespace FlowerShop.Service
         Task<IEnumerable<Category>> GetCategoriesWithoutSubCategories();
         Task<Category?> FindOneWithoutIncludeByIdAsync(int id);
         Task<bool> IsDescendantAsync(int childCategoryId, int parentCategoryId);
-
         Task<Category> GetCategoryByIdAsync(int categoryId);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
+        Task<ResponeMessage> UpdateAsync(int categoryId,string nameCategory,int parrentCategoryId, List<int> selectedSubCategories);
     }
 }
