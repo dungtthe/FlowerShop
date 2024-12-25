@@ -1,7 +1,8 @@
 ﻿@model FlowerShop.Web.ViewModels.CategoryViewModel
-
+@using FlowerShop.DataAccess.Models;
 @{
     ViewData["Title"] = "Sửa thông tin danh mục";
+    SelectList categories = ViewBag.Categories as SelectList;
 }
 <h1>Sửa thông tin danh mục</h1>
 <hr />
@@ -15,28 +16,37 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ParentCategoryId" class="control-label"></label>
-                <select asp-for="ParentCategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
-                <span asp-validation-for="ParentCategoryId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="dropdown">
-                    <button class="btn dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Danh mục con
-                    </button>
-                    <div class="dropdown-menu dropdown-checkbox" aria-labelledby="dropdownMenuButton">
-                        @foreach (var subCategory in Model.SubCategories)
-                        {
-                            <label class="dropdown-item">
-                                <input type="checkbox" class="mr-2" name="SelectedSubCategories" value="@subCategory.Id"
-                                    checked /> @subCategory.Name
-                            </label>
-                        }
+
+            @if (categories.Count() > 1)
+            {
+                <div class="form-group">
+                    <label asp-for="ParentCategoryId" class="control-label"></label>
+                    <select asp-for="ParentCategoryId" class="form-control" asp-items="@categories"></select>
+                    <span asp-validation-for="ParentCategoryId" class="text-danger"></span>
+                </div>
+            }
+
+
+            @if (Model.SubCategories.Any())
+            {
+                <div class="form-group">
+                    <div class="dropdown">
+                        <button class="btn dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Danh mục con
+                        </button>
+                        <div class="dropdown-menu dropdown-checkbox" aria-labelledby="dropdownMenuButton">
+                            @foreach (var subCategory in Model.SubCategories)
+                            {
+                                <label class="dropdown-item">
+                                    <input type="checkbox" class="mr-2" name="SelectedSubCategories" value="@subCategory.Id"
+                                           checked /> @subCategory.Name
+                                </label>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
 
 
             <div class="form-group">

@@ -413,20 +413,18 @@ VALUES
 
 
 -- Thêm danh mục trong kho cho quà tặng 
-INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
-VALUES (N'QUÀ TẶNG KÈM-KHO', NULL, 0, 0);
-DECLARE @QuaTangKem_KhoId INT = SCOPE_IDENTITY();
+
 
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
-VALUES (N'BÁNH KEM', @QuaTangKem_KhoId, 0, 0);
+VALUES (N'BÁNH KEM', null, 0, 0);
 DECLARE @BanhKemId INT = SCOPE_IDENTITY();
 
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
-VALUES (N'CHOCOLATE', @QuaTangKem_KhoId, 0, 0);
+VALUES (N'CHOCOLATE', null, 0, 0);
 DECLARE @ChocolateId INT = SCOPE_IDENTITY();
 
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
-VALUES (N'GẤU BÔNG', @QuaTangKem_KhoId, 0, 0);
+VALUES (N'GẤU BÔNG',null, 0, 0);
 DECLARE @GauBongId INT = SCOPE_IDENTITY();
 
 -- Thêm ProductItems cho từng loại
@@ -583,11 +581,11 @@ INSERT INTO ProductProductItems (ProductId, ProductItemId, Quantity, IsDelete) V
 
 -- Thêm danh mục TRÁI CÂY và NẾN THƠM trong kho
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
-VALUES (N'TRÁI CÂY', @QuaTangKem_KhoId, 0, 0);
+VALUES (N'TRÁI CÂY', null, 0, 0);
 DECLARE @TraiCayKhoId INT = SCOPE_IDENTITY();
 
 INSERT INTO Categories (Name, ParentCategoryId, IsCategorySell, IsDelete)
-VALUES (N'NẾN THƠM', @QuaTangKem_KhoId, 0, 0);
+VALUES (N'NẾN THƠM', null, 0, 0);
 DECLARE @NenThomKhoId INT = SCOPE_IDENTITY();
 
 
