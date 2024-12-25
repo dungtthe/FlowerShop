@@ -38,5 +38,7 @@ namespace FlowerShop.DataAccess.Models
 
 		[MaxLength(2000)]
 		public string? Note {  get; set; }
+		[Required]
+		public bool IsPaid {  get; set; }
 	}
 }
