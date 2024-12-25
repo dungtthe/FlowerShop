@@ -1,0 +1,317 @@
+﻿	@model FlowerShop.DataAccess.Models.AppUser
+	@using Newtonsoft.Json;
+
+<style>
+	.img-thumbnail {
+		box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+		width: auto;
+		object-fit: cover; /* Đảm bảo ảnh không bị méo */
+		display: block;
+		margin: 0 auto;
+	}
+
+	.card {
+		box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
+	.card-header {
+		background-color: #007bff;
+		color: white;
+		font-weight: bold;
+	}
+
+	.btn {
+		margin-right: 10px;
+	}
+
+	.form-group {
+		display: flex;
+		align-items: center;
+		margin-bottom: 15px;
+	}
+
+		.form-group label {
+			width: 140px; /* Chiều rộng nhãn */
+			margin-right: 10px;
+		}
+
+	.input-container {
+		flex-grow: 1;
+	}
+
+		.input-container span,
+		.input-container input {
+			width: 100%;
+		}
+
+		.input-container input {
+			margin-bottom: 0;
+		}
+
+	.image-wrapper {
+		display: inline-block;
+		width: 150px; /* Kích thước khung */
+		height: 150px; /* Kích thước khung */
+		border: 5px solid #007bff; /* Độ dày và màu khung */
+		border-radius: 50%; /* Làm tròn hoàn toàn */
+		overflow: hidden; /* Cắt hình ảnh nếu vượt quá khung */
+		box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+		cursor: pointer; /* Thay đổi con trỏ thành biểu tượng tay */
+		margin-bottom: 10px; /* Khoảng cách giữa ảnh và nút */
+	}
+
+	#changeImageButton {
+		width: 150px; /* Kích thước nút khớp với kích thước ảnh */
+		text-align: center;
+	}
+
+	.image-wrapper img {
+		width: 100%; /* Đảm bảo ảnh vừa khung */
+		height: 100%; /* Đảm bảo ảnh vừa khung */
+		object-fit: cover; /* Đảm bảo ảnh không bị méo */
+	}
+
+	.col-lg-4 {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start; /* Đảm bảo nút luôn nằm phía dưới avatar */
+	}
+
+</style>
+
+<div class="card shadow mb-4">
+	<div class="card-body">
+		<h2 class="text-left" style="margin: 0">Thông tin tài khoản</h2>
+	</div>
+</div>
+
+<div class="row align-items-center ">
+	<div class="col-lg-4 text-center d-flex flex-column align-items-center">
+		@{
+			string[] listImg = Model.Images != null
+			? JsonConvert.DeserializeObject<string[]>(Model.Images)
+			: new string[] { "no_img.png" };
+
+			var firstImg = listImg[0];
+		}
+		<label for="profileImageInput" class="image-wrapper">
+			<img id="profileImage" src="@Url.Content("~/images/users/" + firstImg)" class="img-thumbnail rounded-circle" alt="Avatar">
+		</label>
+		<!-- Nút thay đổi ảnh -->
+		<button id="changeImageButton" class="btn btn-primary mt-3" style="display: none;">Thay đổi ảnh</button>
+	</div>
+
+	<div class="col-lg-8">
+		<div class="card">
+			<div class="card-header text-white bg-primary">
+				Thông tin cá nhân
+			</div>
+			<div class="card-body" id="userInfoBody">
+				<div class="form-group d-flex align-items-center">
+					<label><strong>Họ và tên: </strong></label>
+					<div class="input-container">
+						<span class="view-mode">@Model.FullName</span>
+						<input type="text" name="FullName" class="form-control edit-mode" style="display: none;" value="@Model.FullName">
+						<small class="text-danger validation-message fullName"></small>
+					</div>
+				</div>
+				<div class="form-group d-flex align-items-center">
+					<label><strong>Ngày sinh: </strong></label>
+					<div class="input-container">
+						<span class="view-mode">@Model.BirthDay?.ToString("dd/MM/yyyy")</span>
+						<input type="date" name="BirthDay" class="form-control edit-mode" style="display: none;" value="@Model.BirthDay?.ToString("yyyy-MM-dd")">
+						<small class="text-danger validation-message birthDay"></small>
+					</div>
+				</div>
+				<div class="form-group d-flex align-items-center">
+					<label><strong>Email: </strong></label>
+					<div class="input-container">
+						<span class="view-mode">@Model.Email</span>
+						<input type="email" name="Email" class="form-control edit-mode" style="display: none;" value="@Model.Email">
+						<small class="text-danger validation-message email"></small>
+					</div>
+				</div>
+				<div class="form-group d-flex align-items-center">
+					<label><strong>Số điện thoại: </strong></label>
+					<div class="input-container">
+						<span class="view-mode">@Model.PhoneNumber</span>
+						<input type="text" name="PhoneNumber" class="form-control edit-mode" style="display: none;" value="@Model.PhoneNumber">
+						<small class="text-danger validation-message phoneNumber"></small>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+		<div class="mt-4">
+			<button id="editButton" class="btn btn-success">Chỉnh sửa thông tin</button>
+			<button id="saveButton" class="btn btn-success"
+					style="display: none; min-width:90px; ">
+				Lưu
+			</button>
+			<button id="cancelButton" class="btn btn-danger"
+					style="display: none; min-width: 90px">
+				Hủy
+			</button>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	document.addEventListener("DOMContentLoaded", function () {
+		const userInfoBody = document.getElementById("userInfoBody");
+		const editButton = document.getElementById("editButton");
+		const saveButton = document.getElementById("saveButton");
+		const cancelButton = document.getElementById("cancelButton");
+		const changeImageButton = document.getElementById("changeImageButton");
+
+		// Các phần tử chế độ xem và chỉnh sửa
+		const viewModes = document.querySelectorAll(".view-mode");
+		const editModes = document.querySelectorAll(".edit-mode");
+		const validationMessages = document.querySelectorAll(".validation-message");
+
+		// Lưu giá trị ban đầu để khôi phục khi nhấn "Hủy"
+		const originalValues = Array.from(editModes).map(input => input.value);
+
+		// Hàm kiểm tra đầu vào
+		function validateInputs() {
+			let isValid = true;
+
+			// Tên không được để trống hoặc chứa kí tự đặc biệt/số
+			const fullNameInput = document.querySelector(".edit-mode[name='FullName']");
+			const fullNameError = document.querySelector(".validation-message.fullName");
+			if (!fullNameInput.value.trim()) {
+				fullNameError.textContent = "Tên không được để trống.";
+				isValid = false;
+			} else {
+				fullNameError.textContent = "";
+			}
+
+			// Ngày sinh không được để trống
+			const birthDayInput = document.querySelector(".edit-mode[name='BirthDay']");
+			const birthDayError = document.querySelector(".validation-message.birthDay");
+			if (!birthDayInput.value) {
+				birthDayError.textContent = "Ngày sinh không được để trống.";
+				isValid = false;
+			} else {
+				birthDayError.textContent = "";
+			}
+
+			// Email hợp lệ
+			const emailInput = document.querySelector(".edit-mode[name='Email']");
+			const emailError = document.querySelector(".validation-message.email");
+			if (!emailInput.value.trim()) {
+				emailError.textContent = "Email không được để trống.";
+				isValid = false;
+			} else {
+				emailError.textContent = "";
+			}
+
+			// Số điện thoại hợp lệ
+			const phoneInput = document.querySelector(".edit-mode[name='PhoneNumber']");
+			const phoneError = document.querySelector(".validation-message.phoneNumber");
+			const phoneRegex = /^0\d{9}$/;
+			if (!phoneInput.value.trim()) {
+				phoneError.textContent = "Số điện thoại không được để trống.";
+				isValid = false;
+			} else if (!phoneRegex.test(phoneInput.value)) {
+				phoneError.textContent = "Số điện thoại phải bắt đầu bằng 0 và đủ 10 số.";
+				isValid = false;
+			} else {
+				phoneError.textContent = "";
+			}
+
+			// Bật/tắt nút lưu dựa trên trạng thái hợp lệ
+			saveButton.disabled = !isValid;
+			return isValid;
+		}
+
+		// Xử lý sự kiện nhấn nút "Chỉnh sửa thông tin"
+		editButton.addEventListener("click", function () {
+			viewModes.forEach(el => el.style.display = "none"); // Ẩn chế độ xem
+			editModes.forEach(el => el.style.display = "block"); // Hiển thị chế độ chỉnh sửa
+			saveButton.style.display = "inline-block"; // Hiển thị nút lưu
+			cancelButton.style.display = "inline-block"; // Hiển thị nút hủy
+			changeImageButton.style.display = "inline-block"; // Hiển thị thay ảnh
+			editButton.style.display = "none"; // Ẩn nút chỉnh sửa
+			validateInputs(); // Kiểm tra đầu vào ban đầu
+		});
+
+		// Xử lý sự kiện nhấn nút "Hủy"
+		cancelButton.addEventListener("click", function () {
+			// Khôi phục giá trị ban đầu
+			editModes.forEach((input, index) => {
+				input.value = originalValues[index];
+			});
+
+			// Xóa thông báo lỗi
+			validationMessages.forEach(msg => (msg.textContent = ""));
+
+			viewModes.forEach(el => el.style.display = "block"); // Hiển thị chế độ xem
+			editModes.forEach(el => el.style.display = "none"); // Ẩn chế độ chỉnh sửa
+			saveButton.style.display = "none"; // Ẩn nút lưu
+			cancelButton.style.display = "none"; // Ẩn nút hủy
+			changeImageButton.style.display = "none"; // Ẩn nút hủy
+			editButton.style.display = "inline-block"; // Hiển thị nút chỉnh sửa
+			// Khôi phục ảnh đại diện ban đầu
+
+		});
+
+		// Xử lý sự kiện nhấn nút "Lưu"
+		saveButton.addEventListener("click", function () {
+			if (!validateInputs()) return;
+
+			// Lấy giá trị cập nhật từ các ô input
+			const updatedUser = {
+				FullName: document.querySelector(".edit-mode[name='FullName']").value,
+				BirthDay: document.querySelector(".edit-mode[name='BirthDay']").value,
+				Email: document.querySelector(".edit-mode[name='Email']").value,
+				PhoneNumber: document.querySelector(".edit-mode[name='PhoneNumber']").value,
+			};
+			const formattedBirthDay = new Date(updatedUser.BirthDay).toLocaleDateString('vi-VN');
+
+			// Gửi yêu cầu cập nhật thông tin qua API
+			fetchPost(
+				"/api/admin/quan-li-tai-khoan/cap-nhat-thong-tin",
+				updatedUser,
+				(data) => {
+					// Cập nhật giá trị mới vào chế độ xem
+					viewModes.forEach((el, index) => {
+						if (index === 1) { // Chỉ định trường ngày sinh
+							el.textContent = formattedBirthDay;
+						} else {
+							el.textContent = Object.values(updatedUser)[index];
+						}
+					});
+
+					// Chuyển lại chế độ xem
+					viewModes.forEach(el => el.style.display = "block");
+					editModes.forEach(el => el.style.display = "none");
+					saveButton.style.display = "none";
+					cancelButton.style.display = "none";
+					changeImageButton.style.display = "none";
+					editButton.style.display = "inline-block";
+					// Hiển thị thông báo thành công
+					setTimeout(() => {
+						showSuccess(data.message);
+					}, 500);
+				},
+				(error) => {
+					showError("Thông tin không đầy đủ: " + error.message);
+				},
+				() => {
+					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
+				}
+			);
+		});
+
+		// Lắng nghe sự kiện thay đổi trên các input
+		editModes.forEach(input => {
+			input.addEventListener("input", validateInputs);
+		});
+
+	});
+
+</script>

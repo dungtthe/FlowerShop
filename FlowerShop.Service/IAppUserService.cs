@@ -1,4 +1,5 @@
-﻿using FlowerShop.DataAccess.Models;
+﻿using FlowerShop.Common.ViewModels;
+using FlowerShop.DataAccess.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
