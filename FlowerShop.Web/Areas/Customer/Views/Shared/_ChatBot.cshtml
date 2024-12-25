@@ -70,6 +70,7 @@
         flex: 1;
         overflow-y: auto;
         padding: 10px 20px;
+        max-height: 300px;
     }
 
     .messages__item {
@@ -177,6 +178,7 @@
     .chatbox__send--footer {
         color: white;
         cursor: pointer;
+        margin-top: 15px;
     }
 
     .chatbox__button {
@@ -219,20 +221,8 @@
                     <div class="messages__item messages__item--visitor">
                         Bạn cần hỗ trợ gì không?
                     </div>
-                    <div class="messages__item messages__item--operator">
-                        Tôi muốn mua hoa
-                    </div>
-                    <div class="messages__item messages__item--visitor">
-                        Bạn muốn chọn hoa như thế nào?
-                    </div>
-                    <div class="messages__item messages__item--operator">
-                        Hôm nay 20/11 thì tôi nên chọn hoa như thế nào?
-                    </div>
-                    <div class="messages__item messages__item--typing">
-                        <span class="messages__dot"></span>
-                        <span class="messages__dot"></span>
-                        <span class="messages__dot"></span>
-                    </div>
+                  
+                   
                 </div>
             </div>
             <div class="chatbox__footer">
@@ -240,51 +230,43 @@
                 <p onclick="SendMessageToChatbot()" class="chatbox__send--footer">Send</p>
             </div>
         </div>
-        <div class="chatbox__button">
-            <button>
-                <img src="@Url.Content("~/customer/chatbox/images/icons/chatbox-icon.svg")" alt="image">
-            </button>
-
-        </div>
+      
     </div>
 </div>
 
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const chatButton = document.querySelector('.chatbox__button');
+        
         const chatContent = document.querySelector('.chatbox__support');
         const inputField = document.querySelector('.chatbox__footer input');
         const messagesContainer = document.querySelector('.chatbox__messages div');
 
-        // Gán trạng thái hiển thị ban đầu là tắt
-        let isChatboxVisible = false;
-
-        // Thêm sự kiện click cho nút chatbox
-        chatButton.addEventListener('click', () => {
-            isChatboxVisible = !isChatboxVisible; // Thay đổi trạng thái hiển thị
-
-            if (isChatboxVisible) {
-                chatContent.style.display = 'flex'; // Hiển thị khung chatbox
-            } else {
-                chatContent.style.display = 'none'; // Ẩn khung chatbox
-            }
-        });
-
-        // Đảm bảo chatbox ban đầu được ẩn
-        chatContent.style.display = 'none';
+        const chatbox = document.getElementById("chatbox-container");
+       
 
 
-
+        
 
         // Xử lý sự kiện nhấn Enter trong ô nhập
         inputField.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                sendButton.click();
+                SendMessageToChatbot();
             }
         });
     });
+    const scrollToBottom = () => {
+        console.log("đã vô hàm kéo");
+        const messagesContainer = document.querySelector('.chatbox__messages div');
+        if (messagesContainer) {
+            requestAnimationFrame(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                console.log("đã kéo");
+            });
+        }
+    };
+
 
     // Hàm hiển thị tin nhắn trong khung chat
     const addMessage = (message, sender = 'visitor') => {
@@ -292,13 +274,23 @@
         const messageElement = document.createElement('div');
         messageElement.classList.add('messages__item', `messages__item--${sender}`);
         messageElement.textContent = message;
-        messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Tự động cuộn xuống cuối
+
+        if (messagesContainer) {
+            messagesContainer.appendChild(messageElement);
+            scrollToBottom(); // Cuộn xuống sau khi thêm tin nhắn
+        }
     };
 
+
     const SendMessageToChatbot = () => {
+        const inputField = document.querySelector(".chatbox__footer input"); // Khai báo biến inputField
         const message = document.querySelector(".chatbox__footer input").value;
         console.log(message);
+        if (message === '') return; // Không xử lý nếu tin nhắn trống
+
+        // Hiển thị tin nhắn người dùng trong khung chat
+        addMessage(message, 'operator')
+        inputField.value = '';
 
         const uri = "/api/chatbot/chat";
         fetchPost(
@@ -308,15 +300,18 @@
             (data) => {
                 console.log(data.message);
                 addMessage(data.message, 'visitor');
+                
             },
             //fail
             (data) => {
                 addMessage(data.message, 'visitor');
+                
             },
             //excep
             () => {
                 //addMessage('Xin lỗi, tôi không thể phản hồi lúc này.', 'operator');
                 console.log("chạy vào exception");
+                
             }
         );
     }

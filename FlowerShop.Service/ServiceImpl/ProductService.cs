@@ -457,6 +457,30 @@ namespace FlowerShop.Service.ServiceImpl
             return await _packagingRepository.SingleOrDefaultAsync(p => p.Id == packagingId);
         }
 
+        public async Task<decimal> GetPriceByNameAsync(string productName)
+        {
+            return await _productRepository.GetPriceByNameAsync(productName);
+        }
+
+        public async Task<IEnumerable<Product>> GetAllProductAsync()
+        {
+            try
+            {
+                // Lấy tất cả sản phẩm từ repository
+                var products = await _productRepository.GetAllAsync();
+
+                // Lọc các sản phẩm chưa bị xóa
+                return products.Where(p => !p.IsDelete);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                Console.WriteLine($"An error occurred while retrieving products: {ex.Message}");
+                // Re-throw the exception if you want the caller to handle it
+                throw;
+            }
+        }
+
 
 
     }

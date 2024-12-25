@@ -34,7 +34,7 @@
 .btn-custom {
     background-color: #681c1c;
     /* Màu nền mặc định */
-    color: white;
+    color: black;
     /* Màu chữ mặc định */
     border: 2px solid #681c1c;
     /* Màu viền mặc định */
@@ -45,14 +45,14 @@
 .btn-custom:hover {
     background-color: red;
     /* Màu nền khi hover */
-    color: white;
+    color: black;
     /* Màu chữ khi hover */
 }
 
 .btn-custom:active {
     background-color: darkred;
     /* Màu nền khi bấm */
-    color: white;
+    color: black;
     /* Màu chữ khi bấm */
 }
 
@@ -97,10 +97,11 @@
     transition: 0.5s;
 }
 
-.btn.border-secondary:hover {
-    background: var(--bs-white) !important;
-    color: var(--bs-white) !important;
-}
+    .btn.border-secondary:hover {
+        background: rgba(255, 0, 0, 0.5); /* Đỏ nhạt với độ trong suốt 50% */
+        color: black;
+    }
+
 
 /*** Topbar Start ***/
 .fixed-top {

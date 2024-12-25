@@ -63,23 +63,45 @@
 <div class="container-fluid fruite py-5">
     <div class="container py-5">
         <h1 class="mb-4">Hoa Yêu Thương</h1>
-        <div class="row g-4">
+        <div style="margin-bottom: 20px" class="row g-4">
             <div class="col-lg-12">
                 <div class="row g-4">
                     <div class="col-xl-3">
                         <div class="input-group w-100 mx-auto d-flex">
 
-                            <input oninput="SearchProductItem(this.value)" type="text" id="searchInput" class="form-control p-3" placeholder="Tìm kiếm sản phẩm..." aria-describedby="search-icon-1">
+                            <input oninput="SearchProductItem(this.value)"
+                                   type="text"
+                                   id="searchInput"
+                                   class="p-3"
+                                   placeholder="Tìm kiếm sản phẩm..."
+                                   aria-describedby="search-icon-1"
+                                   style="
+            display: block;
+            width: 80%;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #747d88;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border-radius: 10px 0px 0px 10px;
+box-shadow: none;outline: 1px solid #ced4da;
 
+            height: 50px;">
                             <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
                         </div>
                     </div>
 
 
                     <div class="col-6"></div>
-                    <div class="col-xl-3">
+                    <div  class="col-xl-3">
                         <label for="sortOrder">Sắp xếp giá:</label>
-                        <select id="sortOrder" name="sortOrder" class="border-0 form-select-sm bg-light" onchange="sortProducts()">
+                        <select style=" border: 1px solid #ced4da !important; border-radius: 10px; height: 40px; width: 180px;" id="sortOrder" name="sortOrder" class="border-0 form-select-sm bg-light" onchange="sortProducts()">
                             <option value="">Chưa sắp xếp</option>
                             <option value="ascending">Giá tăng dần</option>
                             <option value="descending">Giá giảm dần</option>
@@ -109,7 +131,7 @@
                                 </div>
                             </div>
 
-
+                            <!--Sản phẩm bán chạy-->
                             <div class="col-lg-12">
                                 <h4 class="mb-3">Sản phẩm bán chạy</h4>
                                 @foreach (var product in topSellingProducts.Take(5))
@@ -176,7 +198,7 @@
                         </div>
                     </div>
                     <div class="col-lg-9 section-products container">
-                        <div class="row g-4 inner-products">
+                        <div style="margin-top: 20px" class="row g-4 inner-products">
                             @if (Model == null || !Model.Any())
                             {
                                 <!-- Thông báo khi không có sản phẩm -->
@@ -187,10 +209,10 @@
                             }
                             else
                             {
-                                <div id="product-list" class="row" style="width: 900px">
+                                <div  id="product-list" class="row" style="width: 900px">
                                     @foreach (var item in Model)
                                     {
-                                        <div style="height: 281px; width: 218px" data-packaging-id="@item.PackagingId">
+                                        <div style="height: 281px; width: 250px" data-packaging-id="@item.PackagingId">
                                             @await Html.PartialAsync("_Product", item)
                                         </div>
                                        @*  <a href="@Url.Action("DetailsAsync", "ProductDetail", new { id = item.Id })" style="text-decoration: none; color: inherit;">

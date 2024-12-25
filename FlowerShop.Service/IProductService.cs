@@ -26,6 +26,9 @@ namespace FlowerShop.Service
         Task<Product> GetProductByIdAsync(int productId);
         Task<IEnumerable<Category>> GetCategoriesByProductIdAsync(int productId);
         Task<Packaging> GetPackagingByIdAsync(int packagingId);
+        Task<decimal> GetPriceByNameAsync(string productName);
+
+        Task<IEnumerable<Product>> GetAllProductAsync();
 
 
     }

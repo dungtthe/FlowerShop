@@ -284,6 +284,12 @@
     <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top">
         <i class="fa fa-arrow-up"></i>
     </a>
+    <div class="chatbox__button">
+        <button id="toggle-chatbox" onclick="toggleChatbox()">
+            <img src="@Url.Content("~/customer/chatbox/images/icons/chatbox-icon.svg")" alt="image">
+        </button>
+
+    </div>
     <div id="chatbox-container">
         <!-- Chatbox UI được nhúng ở đây -->
         @Html.Partial("_ChatBot")
@@ -321,10 +327,32 @@
         padding: 0; /* Xóa padding thừa */
         margin: 0; /* Xóa margin thừa */
         background-color: transparent; /* Màu nền chatbox */
-       
+        display: none; /* Ẩn chatbox ban đầu */
         border-radius: 8px; /* Bo tròn góc */
         overflow: hidden; /* Ẩn nội dung thừa */
     }
 
+    .chatbox__button {
+        position: fixed;
+        bottom: 110px; /* Điều chỉnh để nút chatbox nằm trên nút "Back to Top" */
+        right: 20px; /* Khoảng cách từ cạnh phải màn hình */
+        z-index: 1200; /* Nút chatbox cao hơn nút "Back to Top" */
+    }
+
+    
       
 </style>
+<script>
+    const chatboxContainer = document.getElementById('chatbox-container');
+    const backToTopButton = document.querySelector('.back-to-top');
+
+    function toggleChatbox() {
+        if (chatboxContainer.style.display === 'none' || chatboxContainer.style.display === '') {
+            chatboxContainer.style.display = 'block'; // Hiển thị chatbox
+           
+        } else {
+            chatboxContainer.style.display = 'none'; // Ẩn chatbox
+            
+        }
+    }
+</script>

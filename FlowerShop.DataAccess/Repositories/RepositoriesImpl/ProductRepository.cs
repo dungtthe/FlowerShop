@@ -4,13 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace FlowerShop.DataAccess.Repositories.RepositoriesImpl
 {
     public class ProductRepository : RepositoryBase<Product>, IProductRepository
     {
-        public ProductRepository(IDbFactory dbFactory) : base(dbFactory)
+        private readonly FlowerShopContext _context;
+        public ProductRepository(FlowerShopContext context, IDbFactory dbFactory) : base(dbFactory)
         {
+            _context = context;
         }
 
         public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId)
@@ -36,6 +39,46 @@ namespace FlowerShop.DataAccess.Repositories.RepositoriesImpl
 
             return products;
         }
+
+
+        public async Task<decimal> GetPriceByNameAsync(string productName)
+        {
+            try
+            {
+                var productPrice = await DbContext.ProductPrices
+                    .Where(pp =>
+                        pp.Product.Title.ToLower() == productName.ToLower() && // So khớp tên sản phẩm (chuyển thành chữ thường)
+                        !pp.Product.IsDelete && // Sản phẩm không bị xóa
+                        !pp.IsDelete) // Giá không bị xóa
+                    .OrderBy(pp => pp.Priority) // Sắp xếp theo độ ưu tiên
+                    .FirstOrDefaultAsync(); // Lấy giá trị đầu tiên hoặc null nếu không có
+
+                if (productPrice != null)
+                {
+                    Console.WriteLine($"ProductPrice: {productPrice.Price}");
+                   
+                }
+                else
+                {
+                    Console.WriteLine("No price found.");
+                }
+
+
+                return productPrice.Price;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return 0;
+            }
+        }
+
+
+
+
+        
+
+
 
 
     }
