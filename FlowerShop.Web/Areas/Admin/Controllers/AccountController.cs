@@ -21,7 +21,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var userInformation = await _appUserService.GetAppUser(HttpContext);
+            var userInformation = await _appUserService.GetAppUserByContextAsync(HttpContext);
             if (userInformation == null)
             {
                 return NotFound();

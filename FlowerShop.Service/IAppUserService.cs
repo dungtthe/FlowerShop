@@ -20,5 +20,7 @@ namespace FlowerShop.Service
 		Task<bool?> IsAdminAsync(string id);
 		Task<bool?> IsStaffAsync(string id);
 		Task<bool?> IsCustomerAsync(string id);
-    }
+		Task<PopupViewModel> UpdateUserAsync(AppUser updatedUser, HttpContext context);
+
+	}
 }

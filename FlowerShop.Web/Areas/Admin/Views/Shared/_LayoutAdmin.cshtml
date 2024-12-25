@@ -1,7 +1,7 @@
 ﻿@inject FlowerShop.Service.IAppUserService AppUserService
 
 @{
-	var userInformation = AppUserService.GetAppUser(ViewContext.HttpContext).Result;
+	var userInformation = AppUserService.GetAppUserByContextAsync(ViewContext.HttpContext).Result;
 	var fullName = userInformation?.FullName ?? "Khách";
 	var avatar = userInformation?.Images ?? "account_default.png";
 	string image = string.Empty;
