@@ -229,7 +229,7 @@
 
                             <div class="d-flex align-items-center justify-content-start mb-4">
                                 <!-- Di chuyển thẻ a ra ngoài phần div chứa tất cả nội dung sản phẩm -->
-                                <a href="@Url.Action("DetailsAsync", "ProductDetail", new { id = product.Id })" class="text-decoration-none w-100">
+                                <a href="@Url.Action("DetailsAsync", "Product", new { id = product.Id })" class="text-decoration-none w-100">
                                     <div class="d-flex align-items-center">
                                         <div class="rounded me-4" style="width: 100px; height: 100px;">
                                             @if (!string.IsNullOrEmpty(firstImageUrl))
