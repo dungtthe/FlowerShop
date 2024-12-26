@@ -2,6 +2,12 @@
 @using FlowerShop.Common.Helpers
 @model List<CartDetailViewModel>
 
+<style>
+    #btnSendToCheckout:hover {
+        background-color: brown !important;
+    }
+</style>
+
 <div class="container-fluid py-5">
     <div class="container py-5">
         <div class="table-responsive">
@@ -90,7 +96,9 @@
                                 <h6>Tổng tiền</h6>
                                 <span id="total-price-all">0</span>
                             </div>
-                            <button onclick="SendToCheckout()" class="btn btn-primary w-100">Mua hàng</button>
+                            <button id="btnSendToCheckout" onclick="SendToCheckout()" class="btn w-100"
+                                style="color: aliceblue !important; background-color: rgb(94, 21, 21);  ">Mua
+                                hàng</button>
                         </div>
                     </div>
                 </div>
@@ -186,7 +194,8 @@
 
     const SendToCheckout = () => {
         const rows = document.querySelectorAll('tbody tr');
-        let cartDetails = [];
+        let productsId = [];
+        let quantities = [];
         for (const row of rows) {
             const checkBox = row.querySelector(".product-checkbox");
             if (!checkBox.checked) {
@@ -194,13 +203,33 @@
             }
             const productId = checkBox.dataset.productId;
             const quantityInCart = parseInt((row.querySelector(".quantity-in-cart").value));
-            cartDetails.push({
-                productId,
-                quantityInCart
-            });
+            productsId.push(parseInt(productId));
+            quantities.push(quantityInCart);
         }
 
-        console.log(cartDetails);
+        //console.log(productsId);
+        //console.log(quantities);
 
+        const data = {
+            productsId,
+            quantities
+        };
+        const uri = "/api/cart/checkout";
+        fetchPost(
+            uri,
+            data,
+            //sus
+            () => {
+                window.location.href = `/cart/checkout`;
+            },
+            //fail
+            (data) => {
+                showError(data.message);
+            },
+            //excep
+            () => {
+                showError("Có lỗi xảy ra");
+            }
+        );
     }
 </script>

@@ -17,10 +17,10 @@ const AddProductToCart = (productId, quantity) => {
       }
     },
     (fail) => {
-      alert(fail.message);
+      showError(fail.message);
     },
     () => {
-      alert("có lỗi xảy ra");
+      showError("có lỗi xảy ra");
     }
   );
 };

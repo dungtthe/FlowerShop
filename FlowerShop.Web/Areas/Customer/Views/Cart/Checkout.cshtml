@@ -1,0 +1,418 @@
+﻿@using FlowerShop.Web.ViewModels
+@using FlowerShop.Common.Helpers
+@using FlowerShop.DataAccess.Models;
+@model List<CartDetailViewModel>
+@{
+    int total = 0;
+    var fullName = ViewBag.fullName as string;
+    var phoneNumber = ViewBag.phoneNumber as string;
+    var paymentMethods = ViewBag.paymentMethods as IEnumerable<PaymentMethod>;
+    var shippingCostPerKilometer = ViewBag.shippingCostPerKilometer;
+}
+
+@section CustomStyles {
+    @* google map *@
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <!-- Thêm Control Geocoder -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        #map {
+            height: 350px;
+            width: 100%;
+            position: relative;
+        }
+
+
+        .store-marker {
+            background-color: #e74c3c;
+            border-radius: 50%;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid white;
+        }
+
+        .customer-marker {
+            background-color: #3498db;
+            border-radius: 50%;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid white;
+        }
+
+        #search-container {
+
+            padding: 10px;
+            padding-left: 0px;
+            padding-bottom: 2px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #search-container input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+
+        #search-container button {
+            background-color: #f0a500;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        #search-container button:hover {
+            background-color: #d18b00;
+        }
+
+        #btnPlaceOrder:hover {
+            background-color: brown !important;
+        }
+    </style>
+}
+<input id="shippingCostPerKilometer" hidden value="@shippingCostPerKilometer" readonly>
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <!-- Thông tin chi tiết giỏ hàng -->
+        <h4>Chi tiết đơn hàng</h4>
+        <div class="table-responsive">
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center">Hình ảnh</th>
+                        <th class="text-center">Tên sản phẩm</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-center">Đơn giá</th>
+                        <th class="text-center">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td class="text-center">
+                                @if (item.ProductImage.Contains("http"))
+                                {
+                                    <img src="@item.ProductImage" class="img-fluid rounded-circle"
+                                        style="width: 80px; height: 80px;" alt="ảnh sản phẩm">
+                                }
+                                else
+                                {
+                                    <img src="@Url.Content("~/images/products/" + item.ProductImage)"
+                                        class="img-fluid rounded-circle" style="width: 80px; height: 80px;" alt="ảnh sản phẩm">
+                                }
+                            </td>
+                            <td class="text-center">@item.ProductName</td>
+                            <td class="text-center">@item.QuantityInCart</td>
+                            <td class="text-center">@Converter.ConvertToVietnameseDong(item.PriceSell ?? 0)</td>
+                            <td class="text-center">@Converter.ConvertToVietnameseDong((item.PriceSell ?? 0) *
+                            item.QuantityInCart)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Thông tin người nhận hàng -->
+        <h4>Thông tin người nhận</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="recipientName">Họ tên</label>
+                <input id="recipientName" type="text" class="form-control" placeholder="Nhập họ tên" required
+                    value="@fullName">
+            </div>
+            <div class="col-md-6">
+                <label for="recipientPhone">Số điện thoại</label>
+                <input id="recipientPhone" type="text" class="form-control" placeholder="Nhập số điện thoại" required
+                    value="@phoneNumber">
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <label for="recipientAddress">Địa chỉ giao hàng</label>
+                <input id="recipientAddress" type="text" class="form-control" placeholder="Nhập địa chỉ giao hàng"
+                    required>
+            </div>
+        </div>
+
+        <!-- Phương thức thanh toán -->
+        <h4 class="mt-4">Phương thức thanh toán</h4>
+        <select id="paymentMethod" class="form-select" required>
+            @foreach (var item in paymentMethods)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+        <!-- Phí vận chuyển -->
+        <div class="inner-price">
+            <h4 class="mt-4">Phí vận chuyển</h4>
+            <textarea readonly style="height: 40px;" class="form-control" id="shippingFee"
+                class="text-danger">Chưa xác định</textarea>
+        </div>
+
+        <!-- ggmap -->
+        <div id="search-container">
+            <input type="text" id="address-input" placeholder="Nhập địa chỉ của bạn">
+            <button onclick="searchAddress()">Tìm kiếm</button>
+        </div>
+        <div id="map"></div>
+        <div id="distance"></div>
+
+
+
+        <!-- Ghi chú -->
+        <h4 class="mt-4">Ghi chú</h4>
+        <textarea id="orderNote" class="form-control" rows="3" placeholder="Thêm ghi chú (tuỳ chọn)"></textarea>
+
+        <!-- Tóm tắt đơn hàng -->
+        <h4 class="mt-4">Tóm tắt đơn hàng</h4>
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <p>Tổng tiền hàng:</p>
+
+                    <p id="orderTotal">@Converter.ConvertToVietnameseDong(Model.Sum(x => (int)x.PriceSell *
+                        x.QuantityInCart))</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Phí vận chuyển:</p>
+                    <p id="shippingFeeSummary">Chưa xác định</p>
+                </div>
+                <div class="d-flex justify-content-between" style="font-size: 20px; color: black;">
+                    <p>Tổng thanh toán:</p>
+                    <p id="finalTotal">Chưa xác định</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nút xác nhận -->
+        <button id="btnPlaceOrder" onclick="HandleDatHang()"
+            style="color: aliceblue !important; background-color: rgb(94, 21, 21); " class="btn w-100 mt-4">Đặt
+            hàng</button>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <!-- Thêm Control Geocoder -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <script>
+        let map, customerMarker, routingControl;
+        const storeLocation = [10.870771, 106.803183];//UIT
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Khởi tạo map
+            map = L.map('map').setView(storeLocation, 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Tạo custom icon cho cửa hàng
+            const storeIcon = L.divIcon({
+                className: 'store-marker',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            // Tạo custom icon cho khách hàng
+            const customerIcon = L.divIcon({
+                className: 'customer-marker',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            // Marker cửa hàng
+            const storeMarker = L.marker(storeLocation, {
+                icon: storeIcon,
+                draggable: false
+            }).addTo(map);
+            storeMarker.bindPopup('Vị trí cửa hàng');
+
+            // Thêm geocoder control vào map
+            const geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false
+            }).addTo(map);
+
+            // Xử lý click trên map
+            map.on('click', function (e) {
+                updateCustomerPosition(e.latlng, customerIcon);
+            });
+        });
+
+        const searchAddress = () => {
+            const address = document.getElementById('address-input').value;
+            if (!address) return;
+
+            // Sử dụng Nominatim API để tìm kiếm địa chỉ
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const location = L.latLng(data[0].lat, data[0].lon);
+                        updateCustomerPosition(location, L.divIcon({
+                            className: 'customer-marker',
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        }));
+                        map.setView(location, 15);
+                    } else {
+                        showError('Không tìm thấy địa chỉ');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError('Có lỗi xảy ra khi tìm kiếm địa chỉ');
+                });
+        }
+
+        const updateCustomerPosition = (latlng, icon) => {
+            // Xóa marker cũ nếu có
+            if (customerMarker) {
+                map.removeLayer(customerMarker);
+            }
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+
+            // Thêm marker mới
+            customerMarker = L.marker(latlng, {
+                icon: icon,
+                draggable: true
+            }).addTo(map);
+            customerMarker.bindPopup('Vị trí của bạn');
+
+            // Tính tuyến đường
+            calculateRoute(storeLocation, latlng);
+
+            // Xử lý kéo thả marker
+            customerMarker.on('dragend', function (event) {
+                calculateRoute(storeLocation, event.target.getLatLng());
+            });
+
+
+
+            //handler tên địa chỉ
+            const latitude = latlng.lat;
+            const longitude = latlng.lng;
+
+            // Gọi API Reverse Geocoding để lấy thông tin địa chỉ
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Lấy thông tin địa chỉ từ API
+                    const address = data.address;
+                    //   console.log(address);
+                    // Kiểm tra các trường địa chỉ
+                    const road = address.road || "Không rõ đường";
+                    const city = address.city || address.town || address.village || "Không rõ thành phố";
+
+                    document.getElementById('recipientAddress').value = `${road}, ${city}`;
+                })
+                .catch(error => {
+                    console.error("Có lỗi khi gọi API Reverse Geocoding:", error);
+                    showError("Không thể lấy thông tin địa chỉ từ tọa độ.");
+                });
+        }
+
+        const calculateRoute = (from, to) => {
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(from[0], from[1]),
+                    L.latLng(to.lat, to.lng)
+                ],
+                routeWhileDragging: true,
+                lineOptions: {
+                    styles: [{ color: '#03A9F4', weight: 4 }]
+                },
+                createMarker: function () { return null; }
+            }).addTo(map);
+
+            routingControl.on('routesfound', function (e) {
+                const routes = e.routes;
+                const distance = routes[0].summary.totalDistance;
+                const time = routes[0].summary.totalTime;
+                const convertToKm = (distance / 1000).toFixed(2);
+                document.getElementById('distance').innerHTML = `<strong>Khoảng cách:</strong> ${convertToKm} km<br>`;
+                console.log(routes);
+                //cập nhật giá ship
+                try {
+                    const pricePerKm = parseInt(document.getElementById('shippingCostPerKilometer').value);
+                    const shippingCost = parseInt(convertToKm * pricePerKm);
+                    document.getElementById("shippingFee").textContent = convertToVietnameseDong(shippingCost);
+                    document.getElementById("shippingFeeSummary").textContent = convertToVietnameseDong(shippingCost);
+                    const elementTotal = document.getElementById("finalTotal");
+                    const elementOrderTotal = document.getElementById("orderTotal");
+                    elementTotal.textContent = convertToVietnameseDong(shippingCost + convertVietnameseDongToPrice(elementOrderTotal.textContent));
+                }
+                catch {
+                }
+            });
+        }
+
+        window.onload = () => {
+            // Lấy các phần tử có class 'leaflet-control-geocoder'
+            const searchControls = document.getElementsByClassName("leaflet-control-geocoder");
+            // Xóa chỉ các phần tử liên quan đến thanh tìm kiếm
+            while (searchControls.length > 0) {
+                searchControls[0].parentNode.removeChild(searchControls[0]);
+            }
+        };
+
+
+        const HandleDatHang = () => {
+            const elementFullName = document.getElementById("recipientName");
+            const elementshippingFee = document.getElementById("shippingFee");
+            const elementPhoneNumber = document.getElementById("recipientPhone");
+            const elementSelectPaymentMethod = document.getElementById("paymentMethod");
+            const elementSelectAddress = document.getElementById("recipientAddress");
+            const phoneNumber = elementPhoneNumber.value;
+            const fullName = elementFullName.value;
+            const address = elementSelectAddress.value;
+            const shippingFee = elementshippingFee.textContent;
+            if (shippingFee === "Chưa xác định") {
+                showError("Vui lòng chọn địa chỉ trên google map");
+                return;
+            }
+            if (fullName === null || fullName === "") {
+                showError("Họ tên người nhận không được để trống");
+                return;
+            }
+            if (phoneNumber === null || phoneNumber === "") {
+                showError("Số điện thoại không được để trống");
+                return;
+            }
+
+            if (!isValidPhoneNumber(phoneNumber)) {
+                showError("Số điện thoại không hợp lệ");
+                return;
+            }
+            const selectedPaymentMethodId = elementSelectPaymentMethod.value;
+            const fee = convertVietnameseDongToPrice(shippingFee);
+            const data = {
+                fullName,
+                phoneNumber,
+                address,
+                fee,
+                selectedPaymentMethodId
+            }
+
+            console.log(data);
+        }
+    </script>
+}
