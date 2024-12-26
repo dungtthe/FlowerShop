@@ -5,21 +5,22 @@
 }
 <style>
 	tbody tr {
-		cursor: pointer; /* Thay đổi con trỏ chuột thành kiểu pointer */
+		cursor: pointer;
+		/* Thay đổi con trỏ chuột thành kiểu pointer */
 	}
 
-		tbody tr:hover {
-			background-color: #f0f8ff; /* Màu nền nhạt khi lướt qua */
-		}
+	tbody tr:hover {
+		background-color: #f0f8ff;
+		/* Màu nền nhạt khi lướt qua */
+	}
 </style>
 
 <h1>Danh sách đơn hàng đã xác nhận</h1>
 <div class="mb-3" style="position: relative; width: 440px;">
-	<input type="text" id="searchBox"
-		   class="form-control pr-5"
-		   placeholder="Nhập tên khách hàng hoặc mã đơn hàng để tìm kiếm"
-		   oninput="searchOrders()" />
-	<i class="fa fa-search" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); color: gray;"></i>
+	<input type="text" id="searchBox" class="form-control pr-5"
+		placeholder="Nhập tên khách hàng hoặc mã đơn hàng để tìm kiếm" oninput="searchOrders()" />
+	<i class="fa fa-search"
+		style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); color: gray;"></i>
 </div>
 <table class="table">
 	<thead>
@@ -58,22 +59,16 @@
 				</td>
 				<td>
 					<!-- Nút đang chuẩn bị giao hàng -->
-					<button onclick="PreparedOrderById(@item.Id)"
-							class="btn btn-info btn-sm"
-							data-toggle="tooltip"
-							style="width: 95px;"
-							title="Chuẩn bị giao hàng">
+					<button onclick="PreparedOrderById(@item.Id)" class="btn btn-info btn-sm" data-toggle="tooltip"
+						style="width: 95px;" title="Chuẩn bị giao hàng">
 						<i class="fa-solid fa-box-open"></i> Chuẩn bị
 					</button>
 
 					<!-- Khoảng cách giữa các nút -->
 					<span style="margin: 0 5px;"></span>
 					<!-- Nút húy hóa đơn -->
-					<button onclick="CancelInvoiceById(@item.Id)"
-							class="btn btn-danger btn-sm"
-							data-toggle="tooltip"
-							style="width: 95px;"
-							title="Hủy đơn hàng">
+					<button onclick="CancelInvoiceById(@item.Id)" class="btn btn-danger btn-sm" data-toggle="tooltip"
+						style="width: 95px;" title="Hủy đơn hàng">
 						<i class="fa-solid fa-trash"></i> Hủy
 					</button>
 				</td>
@@ -83,6 +78,7 @@
 </table>
 @await Html.PartialAsync("_OrderDetailsModal")
 @await Html.PartialAsync("_CancelOrderBox")
+<script src="~/admin/js/orderModal.js"></script>
 
 <script>
 	// Hàm xác nhận sang chuẩn bị giap
@@ -149,68 +145,6 @@
 			}
 		);
 	};
-
-	//Hiển thị thông tin đơn hàng
-	function ShowOrderDetails(orderId) {
-		if (!orderId) {
-			showError("Không tìm thấy đơn hàng");
-			return;
-		}
-		try {
-			// Lấy thông tin từ row được chọn (tr) thông qua orderId
-			const row = document.querySelector(`#hoadon-row-${orderId}`);
-			const customerName = row.querySelector('td:nth-child(2)').innerText; // Tên khách hàng
-			const createDate = row.querySelector('td:nth-child(3)').innerText;  // Ngày tạo hóa đơn
-
-			// Đặt thông tin khách hàng và ngày tạo hóa đơn vào modal
-			document.getElementById("customerName").innerText = customerName;
-			document.getElementById("createDate").innerText = createDate;
-
-			fetchGet(`/api/admin/quan-li-don-hang/chi-tiet-don-hang/${orderId}`,
-				(response) => {
-					let tableBody = "";
-					let total = 0;
-					response.forEach(item => {
-						let thanhTien = item.unitPrice * item.quantity; // Thành tiền cho từng sản phẩm
-						total += thanhTien; // Cộng dồn tổng tiền
-
-						tableBody += `
-														<tr>
-															<td>${item.productId}</td>
-															<td>${item.product.title}</td>
-															<td>${item.quantity}</td>
-															<td>${item.unitPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-															<td>${thanhTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-														</tr>
-													`;
-					});
-
-					// Cập nhật nội dung bảng và tổng cộng
-					document.querySelector("#orderDetailsTable tbody").innerHTML = tableBody;
-					document.getElementById("orderTotal").innerText = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-
-					// Hiển thị modal
-					$('#orderDetailsModal').modal('show');
-				},
-				(res) => {
-					showError(res.message);
-				},
-				() => {
-					showError("Có lỗi khi kết nối đến server");
-				});
-			// Đổi màu của dòng khi nhấn double-click
-			const rowToHighlight = document.querySelector(`#hoadon-row-${orderId}`);
-			if (rowToHighlight) {
-				rowToHighlight.style.backgroundColor = "#f0f8ff"; // Màu nhạt báo hiệu
-				setTimeout(() => {
-					rowToHighlight.style.backgroundColor = ""; // Khôi phục màu ban đầu
-				}, 2000);
-			}
-		} catch (error) {
-			console.error(error);
-			showError("Đã xảy ra lỗi khi lấy chi tiết đơn hàng.");
-		}
-	}
 
 	//Tìm kiếm
 	const searchOrders = () => {
