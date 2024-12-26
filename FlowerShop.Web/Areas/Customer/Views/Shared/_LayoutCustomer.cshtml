@@ -58,7 +58,20 @@
     <link href="~/customer/css/mystyle.css" rel="stylesheet">
     <link href="~/customer/css/messagebox.css" rel="stylesheet">
     @RenderSection("CustomStyles", required: false)
+    <style>
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
 
+        .dropdown-item {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -131,9 +144,15 @@
                                             @(cartUser?.CartDetails?.Count ?? 0)
                                         </span>
                                     </a>
-                                    <a href="#" class="my-auto">
-                                        <i class="fas fa-user fa-2x"></i>
-                                    </a>
+                                    <div class="dropdown">
+                                        <a href="#" class="my-auto">
+                                            <i class="fas fa-user fa-2x"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+                                            <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+                                        </ul>
+                                    </div>
                                 </a>
 
                             }
