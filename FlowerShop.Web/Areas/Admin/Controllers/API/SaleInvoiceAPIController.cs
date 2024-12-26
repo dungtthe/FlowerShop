@@ -158,7 +158,7 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 					return BadRequest(new { error = "Vui lòng cung cấp ngày bắt đầu và ngày kết thúc." });
 				}
 
-				var data = await _saleInvoiceService.GetSalesDataByDateRangeAsync(startDate, endDate);
+				var data = await _saleInvoiceService.GetNineSalesDataByDateRangeAsync(startDate, endDate);
 
 				if (data == null || !data.ContainsKey("labels") || !data.ContainsKey("values"))
 				{
@@ -192,6 +192,32 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 
 		[HttpGet("doanh-thu")]
 		public async Task<IActionResult> GetAllSale([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+		{
+			try
+			{
+				if (!startDate.HasValue || !endDate.HasValue)
+				{
+					return BadRequest(new { error = "Vui lòng cung cấp ngày bắt đầu và ngày kết thúc." });
+				}
+
+				var data = await _saleInvoiceService.GetNineSalesDataByDateRangeAsync(startDate, endDate);
+
+				if (data == null || !data.ContainsKey("labels") || !data.ContainsKey("values"))
+				{
+					return NotFound(new { message = "Không tìm thấy dữ liệu doanh thu trong khoảng thời gian được chọn." });
+				}
+
+				return Ok(data);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi khi gọi API GetSalesDataByDateRange: {ex.Message}");
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		[HttpGet("excel-doanh-thu")]
+		public async Task<IActionResult> GetAllSaleForExcel([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
 		{
 			try
 			{
