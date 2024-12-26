@@ -1,20 +1,14 @@
 ﻿@inject FlowerShop.Service.IAppUserService AppUserService
+@using Newtonsoft.Json;
 
 @{
 	var userInformation = AppUserService.GetAppUserByContextAsync(ViewContext.HttpContext).Result;
 	var fullName = userInformation?.FullName ?? "Khách";
-	var avatar = userInformation?.Images ?? "account_default.png";
-	string image = string.Empty;
-	if (!string.IsNullOrEmpty(avatar))
-	{
-		image = avatar.Replace("\"", "").Trim('[', ']');
-	}
-	else
-	{
-		image = "account_default.png";
-	}
+	string[] listImg = userInformation.Images != null
+	? JsonConvert.DeserializeObject<string[]>(userInformation.Images)
+	: new string[] { "no_img.png" };
 
-	var src = "/images/users/";
+	var firstImg = listImg[0];
 }
 
 <!DOCTYPE html>
@@ -41,7 +35,6 @@
 	<!-- Custom styles for this template-->
 	<link href="~/admin/css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="~/admin/css/mystyle.css" rel="stylesheet">
-
 	@RenderSection("CustomStyles", required: false)
 </head>
 
@@ -54,12 +47,16 @@
 		<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
 			<!-- Sidebar - Brand -->
-			<a class="sidebar-brand d-flex align-items-center justify-content-center"
-			   asp-area="Admin" asp-controller="Statistical" asp-action="Index">
+			<a class="sidebar-brand d-flex align-items-center justify-content-center" asp-area="Admin"
+			   asp-controller="Statistical" asp-action="Index">
 				<div class="sidebar-brand-icon">
-					<img src="/admin/img/admin_logo.png" alt="Logo" style="width: 70px; height: 70px; object-fit: cover;">
+					<img src="/admin/img/admin_logo.png" alt="Logo"
+						 style="width: 70px; height: 70px; object-fit: cover;">
 				</div>
-				<div class="sidebar-brand-text mx-3 text-uppercase" style="font-size: 14px; font-weight: bold;">Hệ thống cửa hàng bán hoa</div>
+				<div class="sidebar-brand-text mx-3 text-uppercase" style="font-size: 14px; font-weight: bold;">
+					Hệ thống
+					cửa hàng bán hoa
+				</div>
 			</a>
 
 			<!-- Divider -->
@@ -74,8 +71,12 @@
 				<div id="collapseBaoCaoThongKe" class="collapse">
 					<div class="bg-white py-2 collapse-inner rounded">
 						<h6 class="collapse-header text-primary">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical" asp-action="Index">Doanh thu</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical" asp-action="TopSanPham">Sản phẩm bán chạy</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical" asp-action="Index">
+							Doanh
+							thu
+						</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Statistical"
+						   asp-action="TopSanPham">Sản phẩm bán chạy</a>
 					</div>
 				</div>
 			</li>
@@ -93,8 +94,14 @@
 				<div id="collapseQuanLyKho" class="collapse">
 					<div class="bg-white py-2 collapse-inner rounded">
 						<h6 class="collapse-header text-primary">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Index">Danh sách sản phẩm</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Create">Nhập hàng</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Index">
+							Danh
+							sách sản phẩm
+						</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="ProductItem" asp-action="Create">
+							Nhập
+							hàng
+						</a>
 					</div>
 				</div>
 			</li>
@@ -108,10 +115,12 @@
 				<div id="collapseQuanLyDanhMuc" class="collapse">
 					<div class="bg-light py-2 collapse-inner rounded">
 						<h6 class="collapse-header text-primary">Thao tác</h6>
-						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Category" asp-action="Index">
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Category"
+						   asp-action="Index">
 							<i></i> Danh sách danh mục
 						</a>
-						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Category" asp-action="Create">
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Category"
+						   asp-action="Create">
 							<i></i> Thêm danh mục
 						</a>
 					</div>
@@ -127,8 +136,14 @@
 				<div id="collapseQuanLySanPhamBan" class="collapse">
 					<div class="bg-white py-2 collapse-inner rounded">
 						<h6 class="collapse-header text-primary">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Danh sách sản phẩm</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Create">Thêm sản phẩm</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Index">
+							Danh sách
+							sản phẩm
+						</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Product" asp-action="Create">
+							Thêm sản
+							phẩm
+						</a>
 					</div>
 				</div>
 			</li>
@@ -142,10 +157,12 @@
 					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
 						<h6 class="collapse-header text-primary">Thao tác</h6>
-						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Packaging" asp-action="Index">
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Packaging"
+						   asp-action="Index">
 							<i></i> Danh sách đóng gói
 						</a>
-						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Packaging" asp-action="Create">
+						<a class="collapse-item text-dark" asp-area="Admin" asp-controller="Packaging"
+						   asp-action="Create">
 							<i></i> Thêm cách đóng gói
 						</a>
 					</div>
@@ -294,7 +311,10 @@
 					 data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
 						<h6 class="collapse-header text-primary">Thao tác</h6>
-						<a class="collapse-item" asp-area="Admin" asp-controller="Parameter" asp-action="Index">Xem danh sách</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="Parameter" asp-action="Index">
+							Xem danh
+							sách
+						</a>
 					</div>
 				</div>
 			</li>
@@ -313,7 +333,8 @@
 							Xem
 							danh sách
 						</a>
-						<a class="collapse-item" asp-area="Admin" asp-controller="PaymentMethod" asp-action="Create">Thêm phương thức</a>
+						<a class="collapse-item" asp-area="Admin" asp-controller="PaymentMethod"
+						   asp-action="Create">Thêm phương thức</a>
 					</div>
 				</div>
 			</li>
@@ -505,7 +526,7 @@
 								<span class="mr-2 d-none d-lg-inline text-gray-600 small">
 									@fullName
 								</span>
-								<img class="img-profile rounded-circle" src="@($"{src}{image}")">
+								<img class="img-profile rounded-circle" src="@Url.Content("~/images/users/" + firstImg)">
 							</a>
 							<!-- Dropdown - User Information -->
 							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -514,10 +535,11 @@
 									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
 									Thông tin tài khoản
 								</a>
-								<a class="dropdown-item" href="#">
+								<a class="dropdown-item" onclick="showChangePasswordModal()">
 									<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
 									Đổi mật khẩu
 								</a>
+
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
 									<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -560,21 +582,57 @@
 		<i class="fas fa-angle-up"></i>
 	</a>
 
-	<!-- Logout Modal-->
-	<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	<!-- ChangePassword Modal-->
+	<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
 		 aria-hidden="true">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-					<button class="close" type="button" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">×</span>
+				<!-- Modal Header -->
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+				<!-- Modal Body -->
+				<div class="modal-body ">
+					<form id="changePasswordForm">
+						<div class="mb-3 row align-items-center">
+							<label for="currentPassword" class="col-sm-4 col-form-label text-end">
+								Mật khẩu hiện
+								tại:
+							</label>
+							<div class="col-sm-8">
+								<input type="password" class="form-control" id="currentPassword"
+									   placeholder="Nhập mật khẩu hiện tại" required>
+								<small class="text-danger validation-message" id="currentPasswordError"></small>
+							</div>
+						</div>
+						<div class="mb-3 row align-items-center">
+							<label for="newPassword" class="col-sm-4 col-form-label text-end">Mật khẩu mới:</label>
+							<div class="col-sm-8">
+								<input type="password" class="form-control" id="newPassword"
+									   placeholder="Nhập mật khẩu mới" required>
+								<small class="text-danger validation-message" id="newPasswordError"></small>
+							</div>
+						</div>
+						<div class="mb-3 row align-items-center">
+							<label for="confirmNewPassword" class="col-sm-4 col-form-label text-end">
+								Mật khẩu
+								mới:
+							</label>
+							<div class="col-sm-8">
+								<input type="password" class="form-control" id="confirmNewPassword"
+									   placeholder="Xác nhận mật khẩu mới" required>
+								<small class="text-danger validation-message" id="confirmNewPasswordError"></small>
+							</div>
+						</div>
+					</form>
+				</div>
+				<!-- Modal Footer -->
 				<div class="modal-footer">
-					<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-					<a class="btn btn-primary" href="login.html">Đăng xuất</a>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+					<button type="button" class="btn btn-danger" onclick="ChangePassword()">Đổi mật khẩu</button>
 				</div>
 			</div>
 		</div>
@@ -599,12 +657,61 @@
 	<script src="~/js/httpHandle.js"></script>
 	<script src="~/admin/js/myjs.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+	<script>
+		function showChangePasswordModal() {
+			const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+			modal.show();
+		}
+		function ChangePassword() {
+			// Lấy giá trị từ các trường nhập liệu
+			const currentPassword = document.getElementById("currentPassword").value;
+			const newPassword = document.getElementById("newPassword").value;
+			const confirmNewPassword = document.getElementById("confirmNewPassword").value;
 
+			// Kiểm tra dữ liệu nhập
+			if (!currentPassword || !newPassword || !confirmNewPassword) {
+				showError("Vui lòng điền đầy đủ thông tin.");
+				return;
+			}
+			if (newPassword !== confirmNewPassword) {
+				showError("Mật khẩu mới không khớp.");
+				return;
+			}
+
+			// Tạo data để gửi tới API
+			const data = {
+				currentPassword: currentPassword,
+				newPassword: newPassword,
+				confirmNewPassword: confirmNewPassword,
+			};
+
+			// Gửi yêu cầu tới API
+			fetchPost(
+				`/api/admin/quan-li-tai-khoan/doi-mat-khau`,
+				data,
+				(response) => {
+					document.getElementById("changePasswordForm").reset();
+					setTimeout(() => {
+						showSuccess(response.message);
+					}, 500);
+				},
+				(error) => {
+					showError(error.message);
+				},
+				() => {
+					showError("Không thể kết nối tới máy chủ.");
+				}
+			);
+		}
+
+	</script>
 	@RenderSection("Scripts", required: false)
 
 	@await Html.PartialAsync("_PopUp.cshtml")
 
 	@await Html.PartialAsync("_MessageBox")
+
+	<!-- Change Password Modal -->
 
 </body>
 

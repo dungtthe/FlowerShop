@@ -14,6 +14,7 @@ using AutoMapper;
 using FlowerShop.Common.ViewModels;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using FlowerShop.Common.Template;
 
 namespace FlowerShop.Web.Areas.Admin.Controllers
 {
@@ -71,8 +72,15 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 Category category= _mapper.Map<Category>(categoryViewModel);
-                await _categoryService.AddAsync(category);
-                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Thêm danh mục thành công!"));
+                var rs =  await _categoryService.AddAsync(category);
+                if (rs.Id == ResponeMessage.SUCCESS)
+                {
+                    TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", rs.Message));
+                }
+                else
+                {
+                    TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Thất bại", rs.Message));
+                }
                 return RedirectToAction(nameof(Index));
             }
 
@@ -98,25 +106,27 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
             var categoryVM=_mapper.Map<CategoryViewModel>(rs);
-            var temp = (await _categoryService.GetAllCategoriesNotWithHierarchy()).Where(c=>c.Id!=id);
-            var categories = new List<Category>
+
+			//chỉ cho phép danh mục bán mới có hệ thống phân cấp
+			var categories = new List<Category>
+			{
+				new Category { Id = 0, Name = "Không có" }
+			};
+			if (rs.IsCategorySell)
             {
-                new Category { Id = 0, Name = "Không có" }
-            };
-
-
-            foreach (var c in temp)
-            {
-                var flag = await _categoryService.IsDescendantAsync(c.Id,rs.Id);
-                if (!flag)
-                {
-                    categories.Add(c);
-                }
-            }
-            ViewBag.Categories = new SelectList(categories.Where(c => c.Id != id), "Id", "Name");
-
-            ViewBag.SelectedSubCategories = categoryVM.SubCategories?.Select(c => c.Id).ToList() ?? new List<int>();
-
+				var temp = (await _categoryService.GetAllCategoriesNotWithHierarchy()).Where(c => c.Id != id && c.IsCategorySell);
+				
+				foreach (var c in temp)
+				{
+					var flag = await _categoryService.IsDescendantAsync(c.Id, rs.Id);
+					if (!flag)
+					{
+						categories.Add(c);
+					}
+				}
+			}
+			ViewBag.Categories = new SelectList(categories.Where(c => c.Id != id), "Id", "Name");
+			ViewBag.SelectedSubCategories = categoryVM.SubCategories?.Select(c => c.Id).ToList() ?? new List<int>();
             return View(categoryVM);
         }
 
@@ -131,31 +141,38 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
                 {
                     new Category { Id = 0, Name = "Không có" }
                 };
-                categories.AddRange(await _categoryService.GetAllCategoriesNotWithHierarchy());
 
-                ViewBag.Categories = new SelectList(categories.Where(c => c.Id != id), "Id", "Name");
+
+				var findCat = await _categoryService.GetCategoryByIdAsync(id);
+				if (findCat == null)
+				{
+					TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy danh mục!"));
+					return RedirectToAction("Index");
+				}
+
+                //chỉ danh mục bán mới cho có hệ thống phân cấp
+                if (findCat.IsCategorySell)
+                {
+					categories.AddRange((await _categoryService.GetAllCategoriesNotWithHierarchy()).Where(c => c.Id != id && c.IsCategorySell));
+				}
+
+				ViewBag.Categories = new SelectList(categories.Where(c => c.Id != id), "Id", "Name");
 
                 ViewBag.SelectedSubCategories = categoryVM.SelectedSubCategories;
 
                 return View(categoryVM);
             }
-            var category = await _categoryService.FindOneWithIncludeByIdAsync(id);
-            if (category == null)
+            var rs = await _categoryService.UpdateAsync(id,categoryVM.Name,categoryVM.ParentCategoryId??-1, categoryVM.SelectedSubCategories);
+
+            if (rs.Id == ResponeMessage.SUCCESS)
             {
-                TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Lỗi", "Không tìm thấy danh mục!"));
-                return RedirectToAction("Index");
-            }
-
-            category.Name = categoryVM.Name;
-            category.ParentCategoryId = (categoryVM.ParentCategoryId == 0) ? null : categoryVM.ParentCategoryId;
-
-            await _categoryService.Update(category, categoryVM.SelectedSubCategories);
-            TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", "Sửa thông tin danh mục thành công!"));
-            return RedirectToAction("Index");
+				TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.SUCCESS, "Thành công", rs.Message));
+			}
+            else
+            {
+				TempData["PopupViewModel"] = JsonConvert.SerializeObject(new PopupViewModel(PopupViewModel.ERROR, "Thất bại", rs.Message));
+			}
+			return RedirectToAction("Index");
         }
-
-      
-
-     
     }
 }

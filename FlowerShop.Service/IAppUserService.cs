@@ -9,18 +9,26 @@ using System.Threading.Tasks;
 
 namespace FlowerShop.Service
 {
-    public interface IAppUserService
-    {
-        Task<bool> LoginAsync(string username, string password, bool isPersistent);
-        Task<AppUser> GetAppUserByContextAsync(HttpContext context);
-        Task<AppUser> GetUserByIdAsync(string id);
-        Task<AppUser> GetUserByEmailAsync(string email);
-        Task<AppUser> GetUserByUserNameAsync(string userName);
+	public interface IAppUserService
+	{
+		Task<bool> LoginAsync(string username, string password, bool isPersistent);
+
+		Task<AppUser> GetAppUserByContextAsync(HttpContext context);
+
+		Task<AppUser> GetUserByIdAsync(string id);
+
+		Task<AppUser> GetUserByEmailAsync(string email);
+
+		Task<AppUser> GetUserByUserNameAsync(string userName);
 
 		Task<bool?> IsAdminAsync(string id);
-		Task<bool?> IsStaffAsync(string id);
-		Task<bool?> IsCustomerAsync(string id);
-		Task<PopupViewModel> UpdateUserAsync(AppUser updatedUser, HttpContext context);
 
+		Task<bool?> IsStaffAsync(string id);
+
+		Task<bool?> IsCustomerAsync(string id);
+
+		Task<PopupViewModel> UpdateUserAsync(string fullName, DateTime birtDay, string email, string phone, string bytesImage, HttpContext context);
+
+		Task<PopupViewModel> ChangePasswordAsync(AppUser user, string currentPassword, string newPassword);
 	}
 }

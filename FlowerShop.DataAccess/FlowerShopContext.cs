@@ -33,6 +33,7 @@ namespace FlowerShop.DataAccess
         public DbSet<Supplier>? Suppliers { get; set; }
         public DbSet<SupplierInvoice>? SupplierInvoices { get; set; }
         public DbSet<SupplierInvoiceDetail>? SupplierInvoiceDetails { get; set; }
+        public DbSet<PaymentToken>? PaymentTokens { get; set; }
 
 
 

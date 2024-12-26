@@ -101,34 +101,18 @@ namespace FlowerShop.Service.ServiceImpl
 
 
 
-        public async Task<Category> AddAsync(Category category)
+        public async Task<ResponeMessage> AddAsync(Category category)
         {
+            if (!category.IsCategorySell && category.ParentCategoryId!=null)
+            {
+                return new ResponeMessage(ResponeMessage.ERROR, "Danh mục trong kho không được phép có danh mục cha");
+            }
             await _categoryRepository.AddAsync(category);
             await _unitOfWork?.Commit();
-            return category;
+            return new ResponeMessage(ResponeMessage.SUCCESS, "Thêm danh mục thành công");
         }
 
-        public async Task Update(Category category, List<int> selectedSubCategories)
-        {
-            List<int> listUnselect = new List<int>();
-            foreach (var item in category.SubCategories)
-            {
-                if (!selectedSubCategories.Contains(item.Id))
-                {
-                    listUnselect.Add(item.Id);
-                }
-            }
 
-            foreach (var item in listUnselect)
-            {
-                var subCategory = await _categoryRepository.GetSingleByIdAsync(item);
-                if (subCategory != null)
-                {
-                    subCategory.ParentCategoryId = null;
-                }
-            }
-            await _unitOfWork.Commit();
-        }
 
         public async Task<ResponeMessage> DeleteAsync(int id)
         {
@@ -155,6 +139,10 @@ namespace FlowerShop.Service.ServiceImpl
                 {
                     return new ResponeMessage(ResponeMessage.ERROR, "Không thể xóa do danh mục này có danh mục con");
                 }
+            }
+            if (!category.IsCategorySell && category.Name == "KHÔNG XÁC ĐỊNH")
+            {
+                return new ResponeMessage(ResponeMessage.ERROR, "Không thể xóa do danh mục này là danh mục mặc định trong kho");
             }
             category.IsDelete = true;
             await _unitOfWork.Commit();
@@ -221,29 +209,117 @@ namespace FlowerShop.Service.ServiceImpl
 
 		public async Task<ResponeMessage> UpdateAsync(int categoryId, string nameCategory, int parrentCategoryId, List<int> selectedSubCategories)
 		{
-            var category = await _categoryRepository.GetSingleByIdAsync(categoryId);
+
+			#region kiểm tra dữ liệu đầu vào xem có hợp lệ hay k
+			var category = await FindOneWithIncludeByIdAsync(categoryId);
             if (category == null)
             {
                 return new ResponeMessage(ResponeMessage.ERROR,"Không tìm thấy danh mục");
             }
 
-            //update tên
-            category.Name = nameCategory;
+            foreach (var subCategory in selectedSubCategories)
+            {
+                var catFind = await _categoryRepository.GetSingleByIdAsync(subCategory);
+				if (catFind == null)
+				{
+					return new ResponeMessage(ResponeMessage.ERROR, "Không tìm thấy danh mục");
+				}
 
-            //update danh mục
+			}
+            if (!category.IsCategorySell)
+            {
+                parrentCategoryId = 0;
+            }
+            if (parrentCategoryId != 0)
+            {
+				var catFind = await _categoryRepository.GetSingleByIdAsync(parrentCategoryId);
+				if (catFind == null)
+				{
+					return new ResponeMessage(ResponeMessage.ERROR, "Không tìm thấy danh mục");
+				}
+			}
+
+         
+			#endregion
+
+			//update tên
+			category.Name = nameCategory;
+
+            //update danh mục cha
             if (parrentCategoryId == 0)
             {
                 category.ParentCategory = null;
 			}
             else
             {
-                var parentCate = (await _categoryRepository.GetAllAsync()).Where(c=>c.ParentCategoryId== categoryId);
-                if(parentCate.Any())
+                //danh mục trong kho không được phép có hệ thống phân cấp
+                if (!category.IsCategorySell)
                 {
-					return new ResponeMessage(ResponeMessage.ERROR, "Hệ thống phân cấp tối đa là 2. Danh mục hiện tại đang có danh mục con khác");
+					return new ResponeMessage(ResponeMessage.ERROR, "Danh mục trong kho không được phép có hệ thống phân cấp");
 				}
-            }
-            return null;
+
+
+                //nếu danh mục hiện tại mà có con rồi thì không cho phép nó làm con của danh mục khác
+                var findSub = (await _categoryRepository.GetAllAsync()).Where(c=> c.ParentCategoryId!=null&&c.ParentCategoryId==categoryId);
+                if (findSub.Any())
+                {
+                    return new ResponeMessage(ResponeMessage.ERROR, "Không thể thêm danh mục cha, do hệ thống phân cấp tối đa của danh mục bán là 2");
+                }
+
+
+                //danh mục được chọn làm cha mà có sản phẩm thuộc về thì k được phép
+                var findProducts = (await _productCategoryRepository.GetAllAsync()).Where(p=>!p.IsDelete && p.CategoryId==parrentCategoryId);
+                if (findProducts.Any())
+                {
+					return new ResponeMessage(ResponeMessage.ERROR, "Không thể thiết lập danh mục cha do danh mục cha được chọn đã có sản phẩm thuộc về");
+				}
+
+                //cập nhật danh mục cha
+                category.ParentCategoryId = parrentCategoryId;
+			}
+
+            //danh mục con được chọn đang là cha của danh mục khác thì không được phép
+            foreach(var item in selectedSubCategories)
+            {
+                var findSubs = (await _categoryRepository.GetAllAsync()).Where(c=>c.ParentCategoryId==item);
+                if (findSubs.Any())
+                {
+					return new ResponeMessage(ResponeMessage.ERROR, "Danh mục con được chọn đang là cha của danh mục khác");
+				}
+			}
+
+
+			//hệ thống phân cấp phải cùng thuộc bán hoặc trong kho
+			foreach (var item in selectedSubCategories)
+			{
+                var findCat = await _categoryRepository.GetSingleByIdAsync(item);
+                if (findCat.IsCategorySell != category.IsCategorySell)
+                {
+					return new ResponeMessage(ResponeMessage.ERROR, "Hệ thống phân cấp phải cùng thuộc loại để bán/trong kho.");
+				}
+			}
+
+
+			//update subcategories
+			List<int> listUnselect = new List<int>();
+			foreach (var item in category.SubCategories)
+			{
+				if (!selectedSubCategories.Contains(item.Id))
+				{
+					listUnselect.Add(item.Id);
+				}
+			}
+
+			foreach (var item in listUnselect)
+			{
+				var subCategory = await _categoryRepository.GetSingleByIdAsync(item);
+				if (subCategory != null)
+				{
+					subCategory.ParentCategoryId = null;
+				}
+			}
+			await _unitOfWork.Commit();
+			return new ResponeMessage(ResponeMessage.SUCCESS, "Sửa thông tin danh mục thành công.");
 
 		}
 	}

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FlowerShop.DataAccess.Migrations
 {
-    public partial class InitDbVer2 : Migration
+    public partial class FinalDBVer1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,7 +29,8 @@ namespace FlowerShop.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     ParentCategoryId = table.Column<int>(type: "int", nullable: true),
-                    IsCategorySell = table.Column<bool>(type: "bit", nullable: false)
+                    IsCategorySell = table.Column<bool>(type: "bit", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,7 +63,8 @@ namespace FlowerShop.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AllowedFeedbackDay = table.Column<int>(type: "int", nullable: false)
+                    AllowedFeedbackDay = table.Column<int>(type: "int", nullable: false),
+                    ShippingCostPerKilometer = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -168,6 +170,7 @@ namespace FlowerShop.DataAccess.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ImportPrice = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
                     Images = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true, defaultValue: "[\"no_img.png\"]"),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
@@ -191,6 +194,7 @@ namespace FlowerShop.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
                     Images = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true, defaultValue: "[\"no_img.png\"]"),
                     PackagingId = table.Column<int>(type: "int", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
@@ -223,27 +227,6 @@ namespace FlowerShop.DataAccess.Migrations
                         name: "FK_RoleClaims_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SupplierInvoices",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreateDay = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SupplierId = table.Column<int>(type: "int", nullable: false),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SupplierInvoices", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SupplierInvoices_Suppliers_SupplierId",
-                        column: x => x.SupplierId,
-                        principalTable: "Suppliers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -306,7 +289,13 @@ namespace FlowerShop.DataAccess.Migrations
                     CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PaymentMethodId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<byte>(type: "tinyint", nullable: false),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    ShippingCost = table.Column<int>(type: "int", nullable: false),
+                    NameRecipient = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PhoneNumberRecipient = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    DeliveryAddress = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -416,7 +405,8 @@ namespace FlowerShop.DataAccess.Migrations
                 {
                     CartId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -440,7 +430,8 @@ namespace FlowerShop.DataAccess.Migrations
                 columns: table => new
                 {
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -488,7 +479,9 @@ namespace FlowerShop.DataAccess.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    ProductItemId = table.Column<int>(type: "int", nullable: false)
+                    ProductItemId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -503,32 +496,6 @@ namespace FlowerShop.DataAccess.Migrations
                         name: "FK_ProductProductItems_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SupplierInvoiceDetails",
-                columns: table => new
-                {
-                    SupplierInvoiceId = table.Column<int>(type: "int", nullable: false),
-                    ProductItemId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPrice = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SupplierInvoiceDetails", x => new { x.SupplierInvoiceId, x.ProductItemId });
-                    table.ForeignKey(
-                        name: "FK_SupplierInvoiceDetails_ProductItems_ProductItemId",
-                        column: x => x.ProductItemId,
-                        principalTable: "ProductItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SupplierInvoiceDetails_SupplierInvoices_SupplierInvoiceId",
-                        column: x => x.SupplierInvoiceId,
-                        principalTable: "SupplierInvoices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -551,6 +518,27 @@ namespace FlowerShop.DataAccess.Migrations
                         name: "FK_Messages_Conversations_ConversationId",
                         column: x => x.ConversationId,
                         principalTable: "Conversations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    TimeCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SaleInvoiceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaymentTokens_SaleInvoices_SaleInvoiceId",
+                        column: x => x.SaleInvoiceId,
+                        principalTable: "SaleInvoices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -629,6 +617,72 @@ namespace FlowerShop.DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SupplierInvoiceDetails",
+                columns: table => new
+                {
+                    SupplierInvoiceId = table.Column<int>(type: "int", nullable: false),
+                    ProductItemId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    UnitPrice = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupplierInvoiceDetails", x => new { x.SupplierInvoiceId, x.ProductItemId });
+                    table.ForeignKey(
+                        name: "FK_SupplierInvoiceDetails_ProductItems_ProductItemId",
+                        column: x => x.ProductItemId,
+                        principalTable: "ProductItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupplierInvoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreateDay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SupplierId = table.Column<int>(type: "int", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Status = table.Column<byte>(type: "tinyint", nullable: false),
+                    SupplierInvoiceTokenId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupplierInvoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupplierInvoices_Suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Suppliers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupplierInvoiceTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TokenEmail = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    TokenAccept = table.Column<string>(type: "nvarchar(1006)", maxLength: 1006, nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SupplierInvoiceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupplierInvoiceTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupplierInvoiceTokens_SupplierInvoices_SupplierInvoiceId",
+                        column: x => x.SupplierInvoiceId,
+                        principalTable: "SupplierInvoices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_AppUserId",
                 table: "Addresses",
@@ -668,6 +722,11 @@ namespace FlowerShop.DataAccess.Migrations
                 name: "IX_Messages_ConversationId",
                 table: "Messages",
                 column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentTokens_SaleInvoiceId",
+                table: "PaymentTokens",
+                column: "SaleInvoiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductCategories_ProductId",
@@ -737,6 +796,16 @@ namespace FlowerShop.DataAccess.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SupplierInvoices_SupplierInvoiceTokenId",
+                table: "SupplierInvoices",
+                column: "SupplierInvoiceTokenId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupplierInvoiceTokens_SupplierInvoiceId",
+                table: "SupplierInvoiceTokens",
+                column: "SupplierInvoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
                 table: "UserClaims",
                 column: "UserId");
@@ -767,10 +836,29 @@ namespace FlowerShop.DataAccess.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_SupplierInvoiceDetails_SupplierInvoices_SupplierInvoiceId",
+                table: "SupplierInvoiceDetails",
+                column: "SupplierInvoiceId",
+                principalTable: "SupplierInvoices",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_SupplierInvoices_SupplierInvoiceTokens_SupplierInvoiceTokenId",
+                table: "SupplierInvoices",
+                column: "SupplierInvoiceTokenId",
+                principalTable: "SupplierInvoiceTokens",
+                principalColumn: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_SupplierInvoiceTokens_SupplierInvoices_SupplierInvoiceId",
+                table: "SupplierInvoiceTokens");
+
             migrationBuilder.DropTable(
                 name: "Addresses");
 
@@ -785,6 +873,9 @@ namespace FlowerShop.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "ParameterConfigurations");
+
+            migrationBuilder.DropTable(
+                name: "PaymentTokens");
 
             migrationBuilder.DropTable(
                 name: "ProductCategories");
@@ -823,9 +914,6 @@ namespace FlowerShop.DataAccess.Migrations
                 name: "ProductItems");
 
             migrationBuilder.DropTable(
-                name: "SupplierInvoices");
-
-            migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
@@ -833,9 +921,6 @@ namespace FlowerShop.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "Suppliers");
 
             migrationBuilder.DropTable(
                 name: "Products");
@@ -854,6 +939,15 @@ namespace FlowerShop.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "SupplierInvoices");
+
+            migrationBuilder.DropTable(
+                name: "SupplierInvoiceTokens");
+
+            migrationBuilder.DropTable(
+                name: "Suppliers");
         }
     }
 }

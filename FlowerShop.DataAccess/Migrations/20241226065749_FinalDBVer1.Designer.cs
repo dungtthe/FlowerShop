@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerShop.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20241221115009_add_attribute_ShippingCostPerKilometer_In_ParameterConfiguration")]
-    partial class add_attribute_ShippingCostPerKilometer_In_ParameterConfiguration
+    [Migration("20241226065749_FinalDBVer1")]
+    partial class FinalDBVer1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -398,6 +398,32 @@ namespace FlowerShop.DataAccess.Migrations
                     b.ToTable("PaymentMethods");
                 });
 
+            modelBuilder.Entity("FlowerShop.DataAccess.Models.PaymentToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("SaleInvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TimeCreate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SaleInvoiceId");
+
+                    b.ToTable("PaymentTokens");
+                });
+
             modelBuilder.Entity("FlowerShop.DataAccess.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -565,14 +591,35 @@ namespace FlowerShop.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("DeliveryAddress")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameRecipient")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Note")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<int>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumberRecipient")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("ShippingCost")
                         .HasColumnType("int");
 
                     b.Property<byte>("Status")
@@ -992,6 +1039,17 @@ namespace FlowerShop.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("FlowerShop.DataAccess.Models.PaymentToken", b =>
+                {
+                    b.HasOne("FlowerShop.DataAccess.Models.SaleInvoice", "SaleInvoice")
+                        .WithMany()
+                        .HasForeignKey("SaleInvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SaleInvoice");
                 });
 
             modelBuilder.Entity("FlowerShop.DataAccess.Models.Product", b =>

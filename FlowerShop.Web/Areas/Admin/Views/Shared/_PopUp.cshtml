@@ -78,7 +78,13 @@
 
     <script>
         $(document).ready(function () {
-            $('#layout-modal').modal('show');
+            // Kiểm tra loại tải trang
+            if (performance.navigation.type === 0) { // Tải trang bình thường
+                $('#layout-modal').modal('show'); // Hiển thị modal
+            } else {
+                console.log('Page loaded via Back/Forward or Reload, modal will not be shown.');
+            }
         });
     </script>
+
 }
