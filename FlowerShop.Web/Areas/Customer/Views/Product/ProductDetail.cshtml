@@ -67,7 +67,7 @@
                         <p class="mb-3">Danh mục: @ViewBag.Category?.Name</p>
 
                         <!-- Hiển thị số lượng tồn -->
-                        <p class="mb-3">Số lượng tồn: @ViewBag.Quantity</p>
+                        <p id="SLTon"  class="mb-3">Số lượng tồn: @ViewBag.Quantity</p>
 
                         <!-- Lấy giá sản phẩm từ model -->
                         <h5 class="fw-bold mb-3">
@@ -349,10 +349,9 @@
     function viewMore() {
         window.location.href = "/#san-pham-ban-chay";
     }
+    const availableQuantity = @ViewBag.Quantity;
+    console.log("Số lượng tồn:", availableQuantity);
 
-
-    // Giới hạn số lượng tồn (ví dụ 10 sản phẩm tồn kho)
-    const availableQuantity = @ViewBag.Quantity; // Số lượng tồn từ server
 
     // Lấy phần tử input
     const quantityInput = document.getElementById("quantityInput");
@@ -362,11 +361,18 @@
       // Kiểm tra ban đầu để đảm bảo nút giảm bị vô hiệu khi số lượng = 1
     if (parseInt(quantityInput.value, 10) <= 1) {
         decreaseBtn.disabled = true;
-    } 
+    }
+    if(availableQuantity == 1){
+        increaseBtn.disabled = true;
+    }
+
     // Hàm tăng số lượng
     function increaseQuantity() {
         let currentQuantity = parseInt(quantityInput.value, 10) || 1;
-        console.log("Số lượng hiện tại trước khi tăng:", currentQuantity);
+        console.log("Số lượng hiện tại trước khi tăng:", currentQuantity, availableQuantity);
+        if (currentQuantity == availableQuantity) {
+            increaseBtn.disabled = true;
+        }
 
         if (currentQuantity < availableQuantity) {
             currentQuantity += 1;
@@ -383,7 +389,10 @@
                 }
             }, 0);
         }
+        
     }
+
+
 
     // Hàm giảm số lượng
     function decreaseQuantity() {
@@ -419,85 +428,11 @@
             // Lấy số lượng từ input
             const quantityInput = document.getElementById("quantityInput");
             const quantity = parseInt(quantityInput.value) || 1; // Nếu không có giá trị hợp lệ, mặc định là 1
-
-            // Gửi yêu cầu kiểm tra giỏ hàng xem sản phẩm đã có trong giỏ hay chưa
-            const checkUri = `/api/cart/check?id=${productId}`;
-            fetch(checkUri, { method: 'GET' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.exists) {
-                        // Nếu sản phẩm đã có trong giỏ, gọi API cập nhật
-                        UpdateCartProduct(productId, data.existingQuantity + quantity);
-                    } else {
-                        // Nếu sản phẩm chưa có trong giỏ, gọi API thêm mới
-                        AddProductToCartNoCartjs(productId, quantity);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showError("Có lỗi xảy ra khi kiểm tra giỏ hàng");
-                });
+            AddProductToCart(productId, quantity);
+                    
+              
         }
 
-
-    // Hàm gọi API thêm sản phẩm vào giỏ hàng
-    function AddProductToCartNoCartjs(productId, quantity) {
-        const uri = `/api/cart/add?id=${productId}&quantity=${quantity}`;
-        fetch(uri, { method: 'GET' })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Failed to add product to cart');
-            })
-            .then(data => {
-                if (data.message === "new") {
-                    const cartCountSpan = document.getElementById("count-cartdetail");
-                    let currentCount = parseInt(cartCountSpan.textContent) || 0;
-                    currentCount++;
-                    cartCountSpan.textContent = currentCount;
-
-                    // Lưu số lượng giỏ hàng vào localStorage
-                    let currentCartCount = parseInt(localStorage.getItem('cartCount')) || 0;
-                    localStorage.setItem('cartCount', currentCartCount + 1);
-
-                    showSuccess("Đã thêm sản phẩm mới vào giỏ hàng");
-                } else {
-                    showSuccess("Đã thêm số lượng");
-                }
-                UpdateCartUI(); // Cập nhật lại giao diện giỏ hàng (nếu cần)
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
-            });
-    }
-
-
-
-
-   
-
-    // Hàm cập nhật sản phẩm trong giỏ hàng
-    function UpdateCartProduct(productId, quantity) {
-        console.log('Updating cart UI...');
-        const uri = `/api/cart/update?id=${productId}&quantity=${quantity}`;
-        fetch(uri, { method: 'PUT' })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Failed to update product in cart');
-            })
-            .then(data => {
-                showSuccess(data.message);
-                UpdateCartUI(); // Cập nhật lại giao diện giỏ hàng (nếu cần)
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError("Có lỗi xảy ra khi cập nhật sản phẩm trong giỏ hàng");
-            });
-    }
 
 
 </script>
