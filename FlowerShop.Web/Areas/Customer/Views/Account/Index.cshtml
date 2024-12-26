@@ -14,17 +14,17 @@
 			<div class="col-md-8">
 				<div class="card shadow-lg rounded-4">
 					<div class="card-header text-center"
-						 style="background-color: #f8d7da; color: #8c1c1c; height: 36px;">
+						style="background-color: #f8d7da; color: #8c1c1c; height: 36px;">
 					</div>
 					<div class="card-body py-4">
 						<div class="row">
 							<!-- Avatar -->
 							<div class="col-md-4 text-center border-end">
 								<img id="avatarImage" src="@Url.Content("~/images/users/" + firstImg)" alt="Avatar"
-									 class="rounded-circle img-thumbnail shadow-sm mb-3"
-									 style="width: 120px; height: 120px; cursor: pointer;" onclick="handleImageClick()">
+									class="rounded-circle img-thumbnail shadow-sm mb-3"
+									style="width: 120px; height: 120px; cursor: pointer;" onclick="handleImageClick()">
 								<input id="avatarInput" type="file" accept="image/*" style="display: none;"
-									   onchange="previewImage(event)">
+									onchange="previewImage(event)">
 								<h5 class="fw-bold text-dark">@Model.UserName</h5>
 							</div>
 
@@ -32,33 +32,33 @@
 							<div class="col-md-8">
 								<div class="d-flex justify-content-between align-items-center mb-3">
 									<label class="form-label text-muted fw-bold mb-0"
-										   style="width: 300px; text-align: left;">Họ và tên:</label>
+										style="width: 300px; text-align: left;">Họ và tên:</label>
 									<p id="fullName" class="form-control-plaintext mb-0"
-									   style="font-size: 1rem; text-align: left;">
+										style="font-size: 1rem; text-align: left;">
 										@Model.FullName
 									</p>
 								</div>
 								<div class="d-flex justify-content-between align-items-center mb-3">
 									<label class="form-label text-muted fw-bold mb-0"
-										   style="width: 300px; text-align: left;">Ngày sinh:</label>
+										style="width: 300px; text-align: left;">Ngày sinh:</label>
 									<p id="birthDay" class="form-control-plaintext mb-0"
-									   style="font-size: 1rem; text-align: left;">
+										style="font-size: 1rem; text-align: left;">
 										@Model.BirthDay?.ToString("dd/MM/yyyy")
 									</p>
 								</div>
 								<div class="d-flex justify-content-between align-items-center mb-3">
 									<label class="form-label text-muted fw-bold mb-0"
-										   style="width: 300px; text-align: left;">Số điện thoại:</label>
+										style="width: 300px; text-align: left;">Số điện thoại:</label>
 									<p id="phoneNumber" class="form-control-plaintext mb-0"
-									   style="font-size: 1rem; text-align: left;">
+										style="font-size: 1rem; text-align: left;">
 										@Model.PhoneNumber
 									</p>
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
 									<label class="form-label text-muted fw-bold mb-0"
-										   style="width: 300px; text-align: left;">Email:</label>
+										style="width: 300px; text-align: left;">Email:</label>
 									<p id="email" class="form-control-plaintext mb-0"
-									   style="font-size: 1rem; text-align: left;">
+										style="font-size: 1rem; text-align: left;">
 										@Model.Email
 									</p>
 								</div>
@@ -67,25 +67,78 @@
 					</div>
 					<div class="card-footer text-center" style="background-color: #f8d7da;">
 						<button id="editButton" onclick="enableEdit()"
-								class="btn btn-outline-primary me-3 rounded-pill px-4">
+							class="btn btn-outline-primary me-3 rounded-pill px-4">
 							Chỉnh sửa
 							thông tin
 						</button>
-						<button id="changePasswordButton" onclick="changePassword()"
-								class="btn btn-outline-primary me-3 rounded-pill px-4">
+						<button id="changePasswordButton" onclick="showChangePasswordModal()"
+							class="btn btn-outline-primary me-3 rounded-pill px-4">
 							Đổi
 							mật khẩu
 						</button>
 						<button id="cancelButton" onclick="cancel()" class="btn btn-outline-primary rounded-pill px-4"
-								style="display: none; width: 90px;">
+							style="display: none; width: 90px;">
 							Hủy
 						</button>
 						<button id="saveButton" onclick="save()" class="btn btn-outline-primary rounded-pill px-4"
-								style="display: none; width: 90px;">
+							style="display: none; width: 90px;">
 							Lưu
 						</button>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- ChangePassword Modal-->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header bg-primary text-white">
+				<h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu</h5>
+
+			</div>
+			<!-- Modal Body -->
+			<div class="modal-body ">
+				<form id="changePasswordForm">
+					<div class="mb-3 row align-items-center">
+						<label for="currentPassword" class="col-sm-4 col-form-label text-end">
+							Mật khẩu hiện
+							tại:
+						</label>
+						<div class="col-sm-8">
+							<input type="password" class="form-control" id="currentPassword"
+								placeholder="Nhập mật khẩu hiện tại" required>
+							<small class="text-danger validation-message" id="currentPasswordError"></small>
+						</div>
+					</div>
+					<div class="mb-3 row align-items-center">
+						<label for="newPassword" class="col-sm-4 col-form-label text-end">Mật khẩu mới:</label>
+						<div class="col-sm-8">
+							<input type="password" class="form-control" id="newPassword" placeholder="Nhập mật khẩu mới"
+								required>
+							<small class="text-danger validation-message" id="newPasswordError"></small>
+						</div>
+					</div>
+					<div class="mb-3 row align-items-center">
+						<label for="confirmNewPassword" class="col-sm-4 col-form-label text-end">
+							Mật khẩu
+							mới:
+						</label>
+						<div class="col-sm-8">
+							<input type="password" class="form-control" id="confirmNewPassword"
+								placeholder="Xác nhận mật khẩu mới" required>
+							<small class="text-danger validation-message" id="confirmNewPasswordError"></small>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- Modal Footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" onclick="ChangePassword()">Đổi mật khẩu</button>
 			</div>
 		</div>
 	</div>
@@ -96,15 +149,6 @@
 	const originalValues = {};
 	// Biến trạng thái để theo dõi chế độ chỉnh sửa
 	let editMode = false;
-	const convertFileToByteArray = (file, callback) => {
-		const reader = new FileReader();
-		reader.onload = function (event) {
-			const arrayBuffer = event.target.result;
-			const byteArray = new Uint8Array(arrayBuffer);
-			callback(byteArray); // Trả về mảng byte qua callback
-		};
-		reader.readAsArrayBuffer(file); // Đọc file dưới dạng ArrayBuffer
-	}
 	// Khi nhấn nút "Chỉnh sửa thông tin"
 	function enableEdit() {
 		editMode = true; // Kích hoạt chế độ chỉnh sửa
@@ -208,15 +252,15 @@
 			const avatarImageSrc = document.getElementById("avatarImage").src;
 			profileImageName = avatarImageSrc.substring(avatarImageSrc.lastIndexOf("/") + 1); // Lấy phần tên tệp từ URL
 		}
-		const updatedUser = {
+	@* const updatedUser = {
 			FullName: fullName
 			BirthDay: birthDay
 			Email: email
 			PhoneNumber: phoneNumber
-		};
+		}; *@
 
-		// Thay đổi lại <input> thành <p>
-		document.getElementById('fullName').outerHTML = `<p id="fullName" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${fullName}</p>`;
+			// Thay đổi lại <input> thành <p>
+			document.getElementById('fullName').outerHTML = `<p id="fullName" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${fullName}</p>`;
 		document.getElementById('birthDay').outerHTML = `<p id="birthDay" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${birthDay}</p>`;
 		document.getElementById('phoneNumber').outerHTML = `<p id="phoneNumber" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${phoneNumber}</p>`;
 		document.getElementById('email').outerHTML = `<p id="email" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${email}</p>`;
@@ -236,5 +280,53 @@
 		}
 		return '';
 	}
+
+	function showChangePasswordModal() {
+		const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+		modal.show();
+	}
+
+	function ChangePassword() {
+		// Lấy giá trị từ các trường nhập liệu
+		const currentPassword = document.getElementById("currentPassword").value;
+		const newPassword = document.getElementById("newPassword").value;
+		const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+
+		// Kiểm tra dữ liệu nhập
+		if (!currentPassword || !newPassword || !confirmNewPassword) {
+			showError("Vui lòng điền đầy đủ thông tin.");
+			return;
+		}
+		if (newPassword !== confirmNewPassword) {
+			showError("Mật khẩu mới không khớp.");
+			return;
+		}
+
+		// Tạo data để gửi tới API
+		const data = {
+			currentPassword: currentPassword,
+			newPassword: newPassword,
+			confirmNewPassword: confirmNewPassword,
+		};
+
+		// Gửi yêu cầu tới API
+		fetchPost(
+			`/api/admin/quan-li-tai-khoan/doi-mat-khau`,
+			data,
+			(response) => {
+				document.getElementById("changePasswordForm").reset();
+				setTimeout(() => {
+					showSuccess(response.message);
+				}, 500);
+			},
+			(error) => {
+				showError(error.message);
+			},
+			() => {
+				showError("Không thể kết nối tới máy chủ.");
+			}
+		);
+	}
+
 
 </script>
