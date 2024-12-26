@@ -1,0 +1,46 @@
+﻿<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title w-100 text-center" id="orderDetailsModalLabel">Chi Tiết Đơn Hàng</h5>
+			</div>
+			<div class="modal-body">
+				<p><strong>Người nhận hàng:</strong> <span id="recipientName"></span></p>
+				<p><strong id="name">Số điện thoại nhận hàng:</strong> <span id="phoneNumber"></span></p>
+				<p><strong id="name">Địa chỉ người nhận:</strong> <span id="address"></span></p>
+				<p><strong id="name">Tình trạng thanh toán:</strong> <span id="isPaid"></span></p>
+				<p><strong id="date">Ngày mua hàng:</strong> <span id="createDate"></span></p>
+				<hr>
+				<p style="font-size: 20px; text-align: center; font-weight: bold;">Danh sách các sản phẩm</p>
+				<table class="table table-bordered" id="orderDetailsTable">
+					<thead>
+						<tr>
+							<th>Mã Sản Phẩm</th>
+							<th>Tên Sản Phẩm</th>
+							<th>Số Lượng</th>
+							<th>Giá</th>
+							<th>Thành Tiền</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Nội dung chi tiết sản phẩm sẽ được thêm qua JavaScript -->
+					</tbody>
+					<tfoot>
+						<tr>
+							<th colspan="4" class="text-right">Phí ship:</th>
+							<th id="shippingFee"></th>
+						</tr>
+
+						<tr>
+							<th colspan="4" class="text-right">Tổng tiền:</th>
+							<th id="orderTotal"></th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
