@@ -5,6 +5,7 @@ using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +19,34 @@ namespace FlowerShop.Service.ServiceImpl
 		private readonly ISaleInvoiceRepository _saleInvoiceRepository;
 		private readonly ISaleInvoiceDetailRepository _saleInvoiceDetailRepository;
 		private readonly IUnitOfWork _unitOfWork;
+        private readonly FlowerShopContext _context;
 
-		public SaleInvoiceService(ISaleInvoiceRepository saleInvoiceRepository, IUnitOfWork unitOfWork, ISaleInvoiceDetailRepository saleInvoiceDetailRepository)
+        public SaleInvoiceService(FlowerShopContext context,ISaleInvoiceRepository saleInvoiceRepository, IUnitOfWork unitOfWork, ISaleInvoiceDetailRepository saleInvoiceDetailRepository)
 		{
 			_saleInvoiceRepository = saleInvoiceRepository;
 			_unitOfWork = unitOfWork;
 			_saleInvoiceDetailRepository = saleInvoiceDetailRepository;
-		}
+            _context = context;
+        }
 
-		public async Task<SaleInvoice> GetSingleById(int id)
+        public async Task<SaleInvoice> GetSaleInvoiceByIdAsync(int saleInvoiceId)
+        {
+            try
+            {
+                // Truy vấn SaleInvoice theo Id
+                var saleInvoice = await _context.SaleInvoices
+                    .Where(s => s.Id == saleInvoiceId && !s.IsDelete) // Kiểm tra IsDelete nếu cần
+                    .FirstOrDefaultAsync();
+
+                return saleInvoice;
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi nếu cần thiết
+                throw new Exception("An error occurred while retrieving the sale invoice.", ex);
+            }
+        }
+        public async Task<SaleInvoice> GetSingleById(int id)
 		{
 			if (id == -1)
 			{
