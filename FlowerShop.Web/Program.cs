@@ -187,7 +187,7 @@ static async Task SeedData(IServiceProvider serviceProvider)
 	var dbContext = serviceProvider.GetRequiredService<FlowerShopContext>();
 
 	// 1. Tạo các role (vai trò) nếu chưa tồn tại
-	string[] roles = { "Admin","Staff" ,"Customer" }; // Danh sách vai trò cần thêm
+	string[] roles = { "Admin", "Staff", "Customer" }; // Danh sách vai trò cần thêm
 	foreach (var role in roles)
 	{
 		if (!await roleManager.RoleExistsAsync(role))
@@ -196,16 +196,16 @@ static async Task SeedData(IServiceProvider serviceProvider)
 		}
 	}
 
-	// 2. Kiểm tra và tạo người dùng
-	if (userManager.Users.All(u => u.UserName != "Admin"))
+	// 2. Kiểm tra và tạo người dùng "Admin"
+	if (userManager.Users.All(u => u.UserName != "admin"))
 	{
 		// Tạo Cart trước
-		var cart = new Cart();
-		dbContext.Carts.Add(cart); // Thêm giỏ hàng vào DbContext
+		var adminCart = new Cart();
+		dbContext.Carts.Add(adminCart); // Thêm giỏ hàng vào DbContext
 		await dbContext.SaveChangesAsync(); // Lưu để lấy Id
 
 		// Tạo AppUser và gán CartId
-		var user = new AppUser
+		var adminUser = new AppUser
 		{
 			UserName = "admin", // Tên người dùng
 			Email = "dungtienthe1920@gmail.com", // Email người dùng
@@ -215,29 +215,71 @@ static async Task SeedData(IServiceProvider serviceProvider)
 			IsLock = false, // Trạng thái khóa
 			IsDelete = false, // Trạng thái xóa
 			BirthDay = DateTime.Parse("2003-04-30"), // Ngày sinh
-			CartId = cart.Id, // Gán CartId từ giỏ hàng vừa tạo
+			CartId = adminCart.Id, // Gán CartId từ giỏ hàng vừa tạo
 			AccessFailedCount = 0, // Số lần đăng nhập thất bại
 			LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
 		};
 
 		// Tạo người dùng với mật khẩu
-		var result = await userManager.CreateAsync(user, "123456"); // Mật khẩu là "123456"
+		var adminResult = await userManager.CreateAsync(adminUser, "123456"); // Mật khẩu là "123456"
 
-		if (result.Succeeded)
+		if (adminResult.Succeeded)
 		{
 			// 3. Gán vai trò "Admin" cho người dùng vừa tạo
-			await userManager.AddToRoleAsync(user, "Admin");
-			// Lưu các thay đổi vào DbContext
-			await dbContext.SaveChangesAsync();
+			await userManager.AddToRoleAsync(adminUser, "Admin");
 		}
 		else
 		{
 			// Xử lý lỗi (nếu có)
-			foreach (var error in result.Errors)
+			foreach (var error in adminResult.Errors)
 			{
 				Console.WriteLine($"Error: {error.Description}");
 			}
 		}
 	}
-}
 
+	// 3. Kiểm tra và tạo người dùng "Customer"
+	if (userManager.Users.All(u => u.UserName != "customer"))
+	{
+		// Tạo Cart trước
+		var customerCart = new Cart();
+		dbContext.Carts.Add(customerCart); // Thêm giỏ hàng vào DbContext
+		await dbContext.SaveChangesAsync(); // Lưu để lấy Id
+
+		// Tạo AppUser và gán CartId
+		var customerUser = new AppUser
+		{
+			UserName = "customer", // Tên người dùng
+			Email = "customer@example.com", // Email người dùng
+			EmailConfirmed = true, // Xác nhận email
+			PhoneNumberConfirmed = true, // Xác nhận số điện thoại
+			FullName = "Nguyen Van Customer", // Họ và tên
+			IsLock = false, // Trạng thái khóa
+			IsDelete = false, // Trạng thái xóa
+			BirthDay = DateTime.Parse("1995-01-01"), // Ngày sinh
+			CartId = customerCart.Id, // Gán CartId từ giỏ hàng vừa tạo
+			AccessFailedCount = 0, // Số lần đăng nhập thất bại
+			LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
+		};
+
+		// Tạo người dùng với mật khẩu
+		var customerResult = await userManager.CreateAsync(customerUser, "customer123"); // Mật khẩu là "customer123"
+
+		if (customerResult.Succeeded)
+		{
+			// 3. Gán vai trò "Customer" cho người dùng vừa tạo
+			await userManager.AddToRoleAsync(customerUser, "Customer");
+		}
+		else
+		{
+			// Xử lý lỗi (nếu có)
+			foreach (var error in customerResult.Errors)
+			{
+				Console.WriteLine($"Error: {error.Description}");
+			}
+		}
+	}
+
+	// Lưu thay đổi vào DbContext
+	await dbContext.SaveChangesAsync();
+}
