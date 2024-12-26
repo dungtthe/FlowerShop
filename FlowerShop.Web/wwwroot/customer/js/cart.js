@@ -1,7 +1,11 @@
 //thêm 1 sản phẩm vào giỏ hàng
 const AddProductToCart = (productId, quantity) => {
-  // Ngăn chặn sự kiện click lan tới các phần tử cha
-  event.stopPropagation();
+    try {
+        // Ngăn chặn sự kiện click lan tới các phần tử cha
+        event.stopPropagation();
+    }
+    catch(error) {
+    }   
   const uri = `/api/cart/add?id=${productId}&quantity=${quantity}`;
   fetchGet(
     uri,
@@ -24,3 +28,6 @@ const AddProductToCart = (productId, quantity) => {
     }
   );
 };
+
+
+

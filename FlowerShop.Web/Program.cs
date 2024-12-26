@@ -66,6 +66,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISupplierInvoiceService, SupplierInvoiceService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IParameterService, ParameterService>();
+builder.Services.AddScoped<IFeedBackService, FeedBackService>();
+builder.Services.AddScoped<ISaleInvoiceDetailService, SaleInvoiceDetailsService>();
 
 //đăng ký Identity
 //builder.Services.AddIdentity<AppUser, IdentityRole>()

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
+using FlowerShop.Service.ServiceImpl;
 
 namespace FlowerShop.Web.Areas.Customer.Controllers
 {
@@ -13,14 +14,22 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IPackagingService _packagingService;
+        private readonly IFeedBackService _feedBackService; 
+        private readonly IAppUserService _appUserService; 
+        private readonly ISaleInvoiceService _saleInvoiceService; 
+        private readonly ISaleInvoiceDetailService _saleInvoiceDetailService; 
         private readonly FlowerShopContext _context;
 
-        public ProductController(FlowerShopContext context, ICategoryService categoryService, IProductService productService, IPackagingService packagingService)
+        public ProductController(FlowerShopContext context, ICategoryService categoryService, IProductService productService, IPackagingService packagingService, IFeedBackService feedBackService, IAppUserService appUserService, ISaleInvoiceService saleInvoiceService, ISaleInvoiceDetailService saleInvoiceDetailService)
         {
             _categoryService = categoryService;
             _productService = productService;
             _packagingService = packagingService;
             _context = context;
+            _feedBackService = feedBackService;
+            _appUserService = appUserService;
+            _saleInvoiceService = saleInvoiceService;
+            _saleInvoiceDetailService = saleInvoiceDetailService;
         }
 
         [HttpGet("detail")]
@@ -51,6 +60,35 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
 
                 // Lấy thông tin đóng gói qua Service
                 var packaging = await _productService.GetPackagingByIdAsync(product.PackagingId);
+                
+                var reviews = await _feedBackService.GetFeedBackByIdAsync(product.Id);
+
+                if (reviews != null)
+                {
+                    foreach (var feedback in reviews)
+                    {
+                        // Lấy thông tin SaleInvoiceDetail tương ứng từ Feedback
+                        var saleInvoiceDetail = await _saleInvoiceDetailService.GetSaleInvoiceDetailByIdAsync(feedback.SaleInvoiceDetailId);
+
+                        if (saleInvoiceDetail != null)
+                        {
+                            // Lấy thông tin SaleInvoice từ SaleInvoiceDetail
+                            var saleInvoice = await _saleInvoiceService.GetSaleInvoiceByIdAsync(saleInvoiceDetail.SaleInvoiceId);
+
+                            if (saleInvoice != null)
+                            {
+                                // Lấy thông tin Customer từ SaleInvoice
+                                var customer = await _appUserService.GetUserByIdAsync(saleInvoice.CustomerId);
+                                if (customer != null)
+                                {
+                                    // Truyền tên khách hàng vào ViewBag
+                                    ViewBag.CustomerName = customer.FullName;
+                                }
+                            }
+                        }
+                    }
+                }
+
 
                 // Truyền dữ liệu qua ViewBag
                 ViewBag.Category = category;
@@ -58,7 +96,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
                 ViewBag.Quantity = product.Quantity; // Thêm số lượng tồn vào ViewBag
                 ViewBag.topSellingProducts = topSellingProducts;
                 ViewBag.RelatedProducts = relatedProducts; // Truyền sản phẩm cùng danh mục vào ViewBag
-
+                ViewBag.Reviews = reviews;
 
                 return View("ProductDetail", product);
             }

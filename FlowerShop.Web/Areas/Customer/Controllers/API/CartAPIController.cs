@@ -42,6 +42,8 @@ namespace FlowerShop.Web.Areas.Customer.Controllers.API
             return Ok(new { message = rsp.Message });
         }
 
+     
+
         [HttpGet("delete")]
         public async Task<IActionResult> DeleteProductFromCartAsync(int id)
         {

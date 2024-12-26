@@ -1,0 +1,16 @@
+﻿@model FlowerShop.DataAccess.Models.FeedBack;
+
+
+<div class="d-flex">
+    <img src="/customer/img/avatar.jpg" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;" alt="">
+    <div class="">
+        <p class="mb-2" style="font-size: 14px;">@Model.SendingTime</p>
+        <div class="d-flex justify-content-between">
+            <h5>@ViewBag.CustomerName</h5>
+
+        </div>
+        <p class="text-dark">
+            @Model.Content
+        </p>
+    </div>
+</div>

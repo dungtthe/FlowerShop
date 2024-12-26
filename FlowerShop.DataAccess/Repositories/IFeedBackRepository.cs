@@ -10,5 +10,6 @@ namespace FlowerShop.DataAccess.Repositories
 {
     public interface IFeedBackRepository : IRepository<FeedBack>
     {
+        Task<IEnumerable<FeedBack>> GetFeedBackByProductIdAsync(int productId);
     }
 }
