@@ -48,6 +48,7 @@ builder.Services.AddScoped<ISaleInvoiceDetailRepository, SaleInvoiceDetailReposi
 builder.Services.AddScoped<ISupplierInvoiceDetailRepository, SupplierInvoiceDetailRepository>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierInvoiceRepository, SupplierInvoiceRepository>();
+builder.Services.AddScoped<IPaymentTokenRepository, PaymentTokenRepository>();
 
 //đăng ký Service
 builder.Services.AddScoped<IAppUserService, AppUserService>();

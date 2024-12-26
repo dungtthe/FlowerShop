@@ -40,5 +40,18 @@ namespace FlowerShop.DataAccess.Models
 		public string? Note {  get; set; }
 		[Required]
 		public bool IsPaid {  get; set; }
-	}
+        [Required]
+        public int ShippingCost { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string ? NameRecipient { get; set; }
+        [Required]
+		[Phone]
+		[MaxLength(30)]
+		public string ? PhoneNumberRecipient {  get; set; }
+		[Required]
+        [MaxLength(1000)]
+        public string ? DeliveryAddress { get; set; }
+    }
 }
