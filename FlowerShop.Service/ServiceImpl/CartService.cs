@@ -69,6 +69,10 @@ namespace FlowerShop.Service.ServiceImpl
                 {
                     msg = "old";
                 }
+                else
+                {
+                    cartDetailOld.Quantity = 0;
+                }
                 cartDetailOld.IsDeleted = false;
                 cartDetailOld.Quantity += quantity;
             }

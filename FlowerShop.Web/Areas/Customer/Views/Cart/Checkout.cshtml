@@ -170,7 +170,7 @@
 
         <!-- Ghi chú -->
         <h4 class="mt-4">Ghi chú</h4>
-        <textarea id="orderNote" class="form-control" rows="3" placeholder="Thêm ghi chú (tuỳ chọn)"></textarea>
+        <textarea id="orderNote" class="form-control" rows="3" placeholder="Thêm ghi chú (nếu cần)"></textarea>
 
         <!-- Tóm tắt đơn hàng -->
         <h4 class="mt-4">Tóm tắt đơn hàng</h4>
@@ -381,10 +381,12 @@
             const elementPhoneNumber = document.getElementById("recipientPhone");
             const elementSelectPaymentMethod = document.getElementById("paymentMethod");
             const elementSelectAddress = document.getElementById("recipientAddress");
+            const elementNote = document.getElementById("orderNote");
             const phoneNumber = elementPhoneNumber.value;
             const fullName = elementFullName.value;
             const address = elementSelectAddress.value;
             const shippingFee = elementshippingFee.textContent;
+            const note = elementNote.value;
             if (shippingFee === "Chưa xác định") {
                 showError("Vui lòng chọn địa chỉ trên google map");
                 return;
@@ -409,10 +411,32 @@
                 phoneNumber,
                 address,
                 fee,
-                selectedPaymentMethodId
+                selectedPaymentMethodId,
+                note
             }
 
-            console.log(data);
+            //  console.log(data);
+            const uri = "/api/hoa-don/confirm-checkout";
+            fetchPost(
+                uri,
+                data,
+                //sus
+                (data) => {
+                    showSuccess("Đặt hàng thành công");
+                    setTimeout(() => {
+                        window.location.href = data.message;
+                    }, 2000);
+                },
+                //error
+                (error) => {
+                    showError(error.message);
+                }
+                ,
+                //exception
+                () => {
+                    showError("Có lỗi xảy ra");
+                }
+            );
         }
     </script>
 }

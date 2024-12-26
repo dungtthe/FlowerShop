@@ -1,6 +1,6 @@
 ﻿using FlowerShop.Common.Template;
 using FlowerShop.Service;
-using FlowerShop.Web.ViewModels.Request;
+using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -63,7 +63,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers.API
 
 
         [HttpPost("checkout")]
-        public async Task<IActionResult> CheckoutAsync(Request_CheckoutViewModel ? data)
+        public async Task<IActionResult> CheckoutAsync(CheckoutViewModel ? data)
         {
             var user = await _appUserService.GetAppUserByContextAsync(HttpContext);
             if(data==null || user == null)

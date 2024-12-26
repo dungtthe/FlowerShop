@@ -1,4 +1,5 @@
-﻿using FlowerShop.Common.ViewModels;
+﻿using FlowerShop.Common.Template;
+using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess.Models;
 using System;
 using System.Collections.Generic;
@@ -55,5 +56,7 @@ namespace FlowerShop.Service
 		Task<Dictionary<string, object>> GetTopSellingProductsAsync(DateTime? startDate, DateTime? endDate);
 
 		Task<Dictionary<string, object>> GetAllSale(DateTime? startDate, DateTime? endDate);
+
+		Task<ResponeMessage> ConfirmCheckoutAsync(AppUser user, string fullName, string phoneNumber, string address, string note, int shippingFee, int selectedPaymentMethodId, string sProductIds);
 	}
 }
