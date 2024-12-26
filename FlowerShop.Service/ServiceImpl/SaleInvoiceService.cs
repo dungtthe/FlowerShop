@@ -533,5 +533,89 @@ namespace FlowerShop.Service.ServiceImpl
 				throw;
 			}
 		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangChoXacNhanCuaNguoiDung(string userId)
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DANG_CHO && item.CustomerId == userId)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDangGiaoCuaNguoiDung(string userId)
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DANG_GIAO_HANG && item.CustomerId == userId)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThanhCongCuaNguoiDung(string userId)
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.GIAO_HANG_THANH_CONG && item.CustomerId == userId)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDaHuyCuaNguoiDung(string userId)
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DA_HUY && item.CustomerId == userId)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDaXacNhanCuaNguoiDung(string userId)
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DA_XAC_NHAN && item.CustomerId == userId)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangDangChuanBiCuaNguoiDung(string userId)
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.DANG_CHUAN_BI && item.CustomerId == userId)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
+
+		public async Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThatBaiCuaNguoiDung(string userId)
+		{
+			var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+			var result = new List<SaleInvoice>();
+			foreach (var item in tempresult)
+			{
+				if (item.Status == ConstStatusSaleInvoice.GIAO_HANG_THAT_BAI && item.CustomerId == userId)
+					result.Add(item);
+			}
+			return result.ToList();
+		}
 	}
 }
