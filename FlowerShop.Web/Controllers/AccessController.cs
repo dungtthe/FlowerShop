@@ -3,6 +3,7 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.Service;
 using FlowerShop.Web.ViewModels;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +12,11 @@ namespace FlowerShop.Web.Controllers
 	public class AccessController : Controller
 	{
 		private readonly IAppUserService _appUserService;
-		public AccessController(IAppUserService appUserService)
+		private readonly SignInManager<AppUser> _signInManager;
+		public AccessController(IAppUserService appUserService, SignInManager<AppUser> signInManager)
 		{
 			this._appUserService = appUserService;
+			this._signInManager = signInManager;
 		}
 
 		[HttpGet("/login")]
@@ -79,5 +82,12 @@ namespace FlowerShop.Web.Controllers
 			return View();
 		}
 
-	}
+
+        [HttpGet("/logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home"); 
+        }
+    }
 }

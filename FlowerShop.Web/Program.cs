@@ -85,8 +85,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
 	options.LoginPath = "/login";
-	options.LogoutPath = "/logout";
-	options.AccessDeniedPath = "/access-denied";
+	//options.LogoutPath = "/logout";//Khi SignOutAsync được gọi, người dùng sẽ được chuyển đến /logout.
+    options.AccessDeniedPath = "/access-denied";
 
 	options.Events = new CookieAuthenticationEvents
 	{
