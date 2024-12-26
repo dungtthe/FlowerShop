@@ -13,5 +13,6 @@ namespace FlowerShop.Service
         Task<ResponeMessage> AddProductToCartAsync(AppUser appUser, int productId, int quantity);
         Task<Cart> GetCartByUserIdAsync(string userId);
         Task<ResponeMessage> DeleteProductFromCartAsync(AppUser appUser,int productId);
+        Task<ResponeMessage> UpdateProductInCartAsync(AppUser appUser, int productId, int quantity);
     }
 }

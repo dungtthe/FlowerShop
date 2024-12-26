@@ -2,6 +2,7 @@
 using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
+using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -117,5 +118,47 @@ namespace FlowerShop.Service.ServiceImpl
             }
             return user?.Cart;
         }
+
+        public async Task<ResponeMessage> UpdateProductInCartAsync(AppUser appUser, int productId, int quantity)
+        {
+            // Kiểm tra số lượng hợp lệ
+            if (quantity <= 0)
+            {
+                return new ResponeMessage(ResponeMessage.ERROR, "Số lượng phải lớn hơn 0.");
+            }
+
+            // Lấy thông tin sản phẩm
+            var product = await _productRepository.SingleOrDefaultWithIncludeAsync(p => p.Id == productId && !p.IsDelete);
+            if (product == null)
+            {
+                return new ResponeMessage(ResponeMessage.NOT_FOUND, "Sản phẩm không tồn tại.");
+            }
+
+            // Lấy giỏ hàng của người dùng
+            var cart = await GetCartByUserIdAsync(appUser.Id);
+            if (cart == null)
+            {
+                return new ResponeMessage(ResponeMessage.NOT_FOUND, "Giỏ hàng của người dùng không tồn tại.");
+            }
+
+            // Tìm sản phẩm trong chi tiết giỏ hàng
+            var cartDetail = cart.CartDetails.FirstOrDefault(cd => cd.ProductId == productId);
+            if (cartDetail == null)
+            {
+                return new ResponeMessage(ResponeMessage.NOT_FOUND, "Sản phẩm không tồn tại trong giỏ hàng.");
+            }
+
+            // Cập nhật số lượng sản phẩm trong giỏ hàng
+            cartDetail.Quantity = quantity;
+            cartDetail.IsDeleted = false;
+
+
+            // Lưu thay đổi
+            await _unitOfWork.Commit();
+
+            return new ResponeMessage(ResponeMessage.SUCCESS, "Cập nhật số lượng sản phẩm trong giỏ hàng thành công.");
+        }
+
+
     }
-}
+} 

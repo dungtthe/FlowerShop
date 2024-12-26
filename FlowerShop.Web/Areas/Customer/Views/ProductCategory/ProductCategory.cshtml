@@ -16,45 +16,14 @@
 </style>
 
 
-@{
-    string parentCategoryName = "";
 
-    // Determine the parent category name based on ParentCategoryId
-    switch (@ViewBag.Category?.ParentCategoryId)
-    {
-        case 1:
-            parentCategoryName = "CHỦ ĐỀ";
-            break;
-        case 2:
-            parentCategoryName = "ĐỐI TƯỢNG";
-            break;
-        case 3:
-            parentCategoryName = "KIỂU DÁNG";
-            break;
-        case 4:
-            parentCategoryName = "HOA TƯƠI";
-            break;
-        case 5:
-            parentCategoryName = "MÀU SẮC";
-            break;
-        case 6:
-            parentCategoryName = "BỘ SƯU TẬP";
-            break;
-        case 7:
-            parentCategoryName = "QUÀ TẶNG KÈM";
-            break;
-        default:
-            parentCategoryName = "Unknown Category";
-            break;
-    }
-}
 
 <!-- Single Page Header start -->
 <div class="container-fluid page-header py-5">
     <h1 class="text-center text-white display-6">@ViewBag.Category?.Name</h1>
     <ol class="breadcrumb justify-content-center mb-0">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item"><a href="#">@parentCategoryName</a></li>
+        <li class="breadcrumb-item"><a href="#">Danh mục</a></li>
         <li class="breadcrumb-item active text-white">@ViewBag.Category?.Name</li>
     </ol>
 </div>

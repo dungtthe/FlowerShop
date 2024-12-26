@@ -31,7 +31,6 @@
     <h1 class="text-center text-white display-6">Chi tiết sản phẩm</h1>
     <ol class="breadcrumb justify-content-center mb-0">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item"><a href="#">Pages</a></li>
         <li class="breadcrumb-item active text-white">Chi tiết sản phẩm</li>
     </ol>
 </div>
@@ -81,25 +80,32 @@
                         <!-- Phần input tăng giảm số lượng -->
                         <div class="input-group quantity mb-5" style="width: 100px;">
                             <div class="input-group-btn">
-                                <button class="btn btn-sm btn-minus rounded-circle bg-light border">
+                                <button id="decreaseBtn" class="btn btn-sm btn-minus rounded-circle bg-light border" onclick="decreaseQuantity();">
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </div>
-                            <input type="text" class="form-control form-control-sm text-center border-0" value="1">
+                            <input id="quantityInput" type="text" class="form-control form-control-sm text-center border-0" value="1" readonly>
                             <div class="input-group-btn">
-                                <button class="btn btn-sm btn-plus rounded-circle bg-light border">
+                                <button id="increaseBtn" class="btn btn-sm btn-plus rounded-circle bg-light border" onclick="increaseQuantity();">
                                     <i class="fa fa-plus"></i>
                                 </button>
                             </div>
                         </div>
 
+
+
                         <!-- Nút thêm vào giỏ hàng -->
-                        <a id="btnAddToCart" href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary">
-                            <i  class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                        <a id="btnAddToCart"
+                           href="javascript:void(0);"
+                           class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"
+                           onclick="HandleAddToCart(@Model.Id)">
+                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
                         </a>
+
                     </div>
 
 
+                    <!--Review-->
 
                     <div class="col-lg-12">
                         <nav>
@@ -176,7 +182,7 @@
                         </div>
                     </div>
 
-
+                    <!-- Comment -->
                     <form action="#">
                         <h4 class="mb-5 fw-bold">Leave a Reply</h4>
                         <div class="row g-4">
@@ -196,6 +202,8 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Sản phẩm bán chạy -->
             <div class="col-lg-4 col-xl-3">
                 <div class="row g-4 fruite">
 
@@ -281,7 +289,8 @@
 
                     <div class="vesitable-item" style="width: 250px; min-height: 400px; display: flex; flex-direction: column; justify-content: space-between; margin: 0 12px;">
                         <!-- Thêm thẻ a bao quanh toàn bộ sản phẩm -->
-                        <a href="@Url.Action("DetailsAsync", "ProductDetail", new { id = relatedProduct.Id })" class="text-decoration-none">
+                       
+                            <a href="@Url.Action("detail", "Product", new { id = relatedProduct.Id })" class="text-decoration-none">
                             <div class="border border-primary rounded position-relative" style="height: 100%; display: flex; flex-direction: column;">
                                 <div class="vesitable-img" style="height: 200px; overflow: hidden; border-radius: 10px; border-bottom: 1px solid #681c1c;">
                                     @if (!string.IsNullOrEmpty(firstImageUrl))
@@ -309,8 +318,12 @@
                                         {
                                             <p class="text-dark fs-5 fw-bold" style="margin: 0;">Price not available</p>
                                         }
-                                        <a id="btnAddToCart"  href="#" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary" style="margin-top: 50px">
-                                            <i  class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                        <!-- Nút thêm vào giỏ hàng -->
+                                        <a id="btnAddToCart"
+                                           href="javascript:void(0);"
+                                           class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"
+                                           onclick="HandleAddToCart(@Model.Id)">
+                                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
                                         </a>
                                     </div>
                                 </div>
@@ -332,7 +345,160 @@
 
 
 <script>
+    // Hàm điều hướng trang
     function viewMore() {
         window.location.href = "/#san-pham-ban-chay";
     }
+
+
+    // Giới hạn số lượng tồn (ví dụ 10 sản phẩm tồn kho)
+    const availableQuantity = @ViewBag.Quantity; // Số lượng tồn từ server
+
+    // Lấy phần tử input
+    const quantityInput = document.getElementById("quantityInput");
+    const increaseBtn = document.getElementById("increaseBtn");
+    const decreaseBtn = document.getElementById("decreaseBtn");
+
+      // Kiểm tra ban đầu để đảm bảo nút giảm bị vô hiệu khi số lượng = 1
+    if (parseInt(quantityInput.value, 10) <= 1) {
+        decreaseBtn.disabled = true;
+    } 
+    // Hàm tăng số lượng
+    function increaseQuantity() {
+        let currentQuantity = parseInt(quantityInput.value, 10) || 1;
+        console.log("Số lượng hiện tại trước khi tăng:", currentQuantity);
+
+        if (currentQuantity < availableQuantity) {
+            currentQuantity += 1;
+            decreaseBtn.disabled = false;
+            // Delay setting the value to check for any interference
+            setTimeout(() => {
+                quantityInput.value = currentQuantity.toString();
+                console.log("Số lượng sau khi tăng (sau delay):", quantityInput.value);
+                // Vô hiệu hóa nút tăng khi đã đạt số lượng tối đa
+                if (currentQuantity >= availableQuantity) {
+                    increaseBtn.disabled = true;
+                } else {
+                    increaseBtn.disabled = false;
+                }
+            }, 0);
+        }
+    }
+
+    // Hàm giảm số lượng
+    function decreaseQuantity() {
+        let currentQuantity = parseInt(quantityInput.value, 10) || 1;
+        console.log("Số lượng hiện tại trước khi giảm:", currentQuantity);
+
+        setTimeout(() => {
+            if (currentQuantity > 1) {
+                currentQuantity -= 1; // Giảm số lượng
+                quantityInput.value = currentQuantity.toString(); // Cập nhật trực tiếp vào DOM
+                console.log("Số lượng sau khi giảm:", quantityInput.value);
+            } else {
+                quantityInput.value = "1"; // Giới hạn số lượng không thấp hơn 1
+                console.log("Số lượng chỉnh lại về 1:", quantityInput.value);
+            }
+
+            // Vô hiệu hóa nút giảm khi số lượng = 1
+            if (currentQuantity <= 1) {
+                decreaseBtn.disabled = true;
+            } else {
+                decreaseBtn.disabled = false;
+            }
+        }, 0);
+    }
+
+  
+
+
+        // Hàm gọi API thêm sản phẩm vào giỏ hàng hoặc cập nhật số lượng sản phẩm
+        function HandleAddToCart(productId) {
+            event.stopPropagation(); // Ngăn chặn sự kiện lan tới các phần tử cha
+
+            // Lấy số lượng từ input
+            const quantityInput = document.getElementById("quantityInput");
+            const quantity = parseInt(quantityInput.value) || 1; // Nếu không có giá trị hợp lệ, mặc định là 1
+
+            // Gửi yêu cầu kiểm tra giỏ hàng xem sản phẩm đã có trong giỏ hay chưa
+            const checkUri = `/api/cart/check?id=${productId}`;
+            fetch(checkUri, { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        // Nếu sản phẩm đã có trong giỏ, gọi API cập nhật
+                        UpdateCartProduct(productId, data.existingQuantity + quantity);
+                    } else {
+                        // Nếu sản phẩm chưa có trong giỏ, gọi API thêm mới
+                        AddProductToCartNoCartjs(productId, quantity);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError("Có lỗi xảy ra khi kiểm tra giỏ hàng");
+                });
+        }
+
+
+    // Hàm gọi API thêm sản phẩm vào giỏ hàng
+    function AddProductToCartNoCartjs(productId, quantity) {
+        const uri = `/api/cart/add?id=${productId}&quantity=${quantity}`;
+        fetch(uri, { method: 'GET' })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Failed to add product to cart');
+            })
+            .then(data => {
+                if (data.message === "new") {
+                    const cartCountSpan = document.getElementById("count-cartdetail");
+                    let currentCount = parseInt(cartCountSpan.textContent) || 0;
+                    currentCount++;
+                    cartCountSpan.textContent = currentCount;
+
+                    // Lưu số lượng giỏ hàng vào localStorage
+                    let currentCartCount = parseInt(localStorage.getItem('cartCount')) || 0;
+                    localStorage.setItem('cartCount', currentCartCount + 1);
+
+                    showSuccess("Đã thêm sản phẩm mới vào giỏ hàng");
+                } else {
+                    showSuccess("Đã thêm số lượng");
+                }
+                UpdateCartUI(); // Cập nhật lại giao diện giỏ hàng (nếu cần)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
+            });
+    }
+
+
+
+
+   
+
+    // Hàm cập nhật sản phẩm trong giỏ hàng
+    function UpdateCartProduct(productId, quantity) {
+        console.log('Updating cart UI...');
+        const uri = `/api/cart/update?id=${productId}&quantity=${quantity}`;
+        fetch(uri, { method: 'PUT' })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Failed to update product in cart');
+            })
+            .then(data => {
+                showSuccess(data.message);
+                UpdateCartUI(); // Cập nhật lại giao diện giỏ hàng (nếu cần)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError("Có lỗi xảy ra khi cập nhật sản phẩm trong giỏ hàng");
+            });
+    }
+
+
 </script>
+
