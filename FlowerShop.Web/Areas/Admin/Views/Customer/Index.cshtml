@@ -46,7 +46,7 @@
 	<tbody>
 		@foreach (var item in Model)
 		{
-			<tr ondblclick="openModal(@item.Id)">
+			<tr ondblclick="openModal('@item.UserName')">
 				<td>
 					@(stt++)
 				</td>
@@ -81,7 +81,8 @@
 					</a> |
 
 					<!-- Nút khóa -->
-					<button onclick="LockCustomerById(@item.Id)"
+					<button data-username="@item.UserName"
+							onclick="LockCustomer('@item.UserName')"
 							class="bg-transparent"
 							style="border: none;"
 							data-toggle="tooltip"
@@ -135,9 +136,9 @@
 </div>
 
 <script>
-	//Lấy id khách hàng được chọn
-	const getIsLockValue = (id) => {
-		const button = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+	//Lấy username khách hàng được chọn
+	const getIsLockValue = (username) => {
+		const button = document.querySelector(`button[data-username="${username}"]`);
 		if (button) {
 			const tr = button.closest('tr');
 			if (tr) {
@@ -152,36 +153,38 @@
 	};
 
 	// Hàm để khóa khách hàng
-	const LockCustomerById = (id) => {
-		const currentIsLock = getIsLockValue(id);
+	const LockCustomer = (username) => {
+		const currentIsLock = getIsLockValue(username);
 		if (currentIsLock === true) {
-			showError("Tài khoản khách hàng đã bị khóa.");
+			showError("Tài khoản đã bị khóa.");
 			return;
 		}
-		showConfirm("Bạn có muốn khóa khách hàng này không?", () => {
-			const reqData = { id: id };
 
-			fetchDelete('/api/admin/quan-li-khach-hang/delete', reqData,
+		showConfirm("Bạn có muốn tài khoản này không?", () => {
+			const reqData = { username: username };
+			fetchPost(
+				`/api/admin/quan-li-khach-hang/lock/${username}`,
+				reqData,
 				(response) => {
-					// Cập nhật giá trị IsLock
-					const iconCell = document.querySelector(`button[onclick="LockCustomerById(${id})"]`)
+					// Cập nhật view
+					const iconCell = document.querySelector(`button[data-username="${username}"]`)
 						.closest('tr')
 						.querySelector('.is-lock');
 					if (iconCell) {
-						iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+						iconCell.innerHTML = '<i class="fa-solid fa-lock icon-lock" style="color:red"></i>';
 						iconCell.setAttribute('data-is-lock', 'true');
 					}
 					// Cập nhật icon của nút khóa
-					const lockButton = document.querySelector(`button[onclick="LockCustomerById(${id})"]`);
+					const lockButton = document.querySelector(`button[data-username="${username}"]`);
 					if (lockButton) {
-						lockButton.innerHTML = '<i class="fa-solid fa-lock icon-lock" style ="color:red"></i>';
+						lockButton.innerHTML = '<i class="fa-solid fa-lock" style="color:red;"></i>';
 					}
 					setTimeout(() => {
 						showSuccess(response.message);
 					}, 500);
 				},
-				(response) => {
-					showError(response.message);
+				(respone) => {
+					showError(respone.message);
 				},
 				() => {
 					showError("Có lỗi xảy ra khi kết nối đến máy chủ.");
@@ -208,15 +211,15 @@
 	};
 
 	//Mở viewModal
-	const openModal = (id) => {
-		const row = document.querySelector(`tr[ondblclick="openModal(${id})"]`);
+	const openModal = (username) => {
+		const row = document.querySelector(`tr[ondblclick="openModal(${username})"]`);
 		if (row) {
 			row.style.backgroundColor = "#f0f8ff"; // Màu nhạt báo hiệu
 			setTimeout(() => {
 				row.style.backgroundColor = ""; // Khôi phục màu ban đầu
 			}, 2000);
 		}
-		fetchGet(`/api/admin/quan-li-khach-hang/chi-tiet-khach-hang/${id}`,
+		fetchGet(`/api/admin/quan-li-khach-hang/chi-tiet-khach-hang/${username}`,
 			(data) => {
 				console.log(data);
 				showModalWithData(data);

@@ -1,4 +1,5 @@
 using FlowerShop.Common.Helpers;
+using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess;
 using FlowerShop.Service;
 using FlowerShop.Service.ServiceImpl;
@@ -15,41 +16,42 @@ namespace FlowerShop.Web.Areas.Admin.Controllers.API
 	public class CustomerAPIController : ControllerBase
 	{
 		private readonly ICustomerService _customerService;
+		private readonly IAppUserService _appUserService;
 
-		public CustomerAPIController(ICustomerService customerService)
+		public CustomerAPIController(ICustomerService customerService, IAppUserService appUserService)
 		{
 			_customerService = customerService;
+			_appUserService = appUserService;
 		}
 
-		[HttpDelete("delete")]
-		public async Task<IActionResult> Delete([FromBody] RequestDeleteByIdViewModel reqData)
+		[HttpPost("lock/{username}")]
+		public async Task<IActionResult> Lock(string username)
 		{
-			if (reqData == null)
+			if (username == null)
+			{
+				return BadRequest(new { message = "Không tìm khách hàng" });
+			}
+			var user = await _appUserService.GetUserByUserNameAsync(username);
+			if (user == null)
 			{
 				return BadRequest(new { message = "Không tìm thấy khách hàng" });
 			}
-			string? id = reqData.Id.ToString();
-			var customer = await _customerService.GetSingleById(id);
-			if (customer == null)
-			{
-				return BadRequest(new { message = "Không tìm thấy khách hàng" });
-			}
-			await _customerService.Delete(customer);
-			return Ok(new { message = "Đã khóa tài khoản của khách hàng" });
+			PopupViewModel rsp = await _customerService.Delete(user);
+			return Ok(new { success = (rsp.Type == PopupViewModel.SUCCESS) ? true : false, message = rsp.Message });
 		}
 
-		[HttpGet("chi-tiet-khach-hang/{id}")]
-		public async Task<IActionResult> ChiTietKhachHang(int id)
+		[HttpGet("chi-tiet-khach-hang/{username}")]
+		public async Task<IActionResult> ChiTietKhachHang(string username)
 		{
-			if (id <= 0)
+			if (username == "")
 			{
 				return BadRequest(new { message = "Không tìm thấy khách hàng" });
 			}
 
-			var khachhang = await _customerService.ChiTietKhachHang(id.ToString());
+			var khachhang = await _customerService.ChiTietKhachHang(username);
 			if (khachhang == null)
 			{
-				return NotFound(new { message = "Không tìm khách hàng" });
+				return NotFound(new { message = "Không tìm thấy khách hàng" });
 			}
 
 			return Ok(khachhang);

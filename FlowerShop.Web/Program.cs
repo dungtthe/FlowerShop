@@ -229,54 +229,80 @@ static async Task SeedData(IServiceProvider serviceProvider)
 			// 3. Gán vai trò "Admin" cho người dùng vừa tạo
 			await userManager.AddToRoleAsync(adminUser, "Admin");
 		}
-		else
+	}
+
+	// 3. Tạo 5 nhân viên
+	for (int i = 1; i <= 5; i++)
+	{
+		string userName = $"staff0{i}";
+		if (userManager.Users.All(u => u.UserName != userName))
 		{
-			// Xử lý lỗi (nếu có)
-			foreach (var error in adminResult.Errors)
+			// Tạo Cart trước
+			var staffCart = new Cart();
+			dbContext.Carts.Add(staffCart); // Thêm giỏ hàng vào DbContext
+			await dbContext.SaveChangesAsync(); // Lưu để lấy Id
+
+			// Tạo AppUser và gán CartId
+			var staffUser = new AppUser
 			{
-				Console.WriteLine($"Error: {error.Description}");
+				UserName = userName, // Tên người dùng
+				Email = $"staff0{i}@example.com", // Email người dùng
+				EmailConfirmed = true, // Xác nhận email
+				PhoneNumberConfirmed = true, // Xác nhận số điện thoại
+				FullName = $"Trần Bình An", // Họ và tên
+				IsLock = false, // Trạng thái khóa
+				IsDelete = false, // Trạng thái xóa
+				BirthDay = DateTime.Parse($"199{i}-01-01"), // Ngày sinh
+				CartId = staffCart.Id, // Gán CartId từ giỏ hàng vừa tạo
+				AccessFailedCount = 0, // Số lần đăng nhập thất bại
+				LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
+			};
+
+			// Tạo người dùng với mật khẩu
+			var staffResult = await userManager.CreateAsync(staffUser, "staff123"); // Mật khẩu là "staff123"
+
+			if (staffResult.Succeeded)
+			{
+				// Gán vai trò "Staff" cho người dùng vừa tạo
+				await userManager.AddToRoleAsync(staffUser, "Staff");
 			}
 		}
 	}
 
-	// 3. Kiểm tra và tạo người dùng "Customer"
-	if (userManager.Users.All(u => u.UserName != "customer"))
+	// 4. Tạo 5 khách hàng
+	for (int i = 1; i <= 5; i++)
 	{
-		// Tạo Cart trước
-		var customerCart = new Cart();
-		dbContext.Carts.Add(customerCart); // Thêm giỏ hàng vào DbContext
-		await dbContext.SaveChangesAsync(); // Lưu để lấy Id
-
-		// Tạo AppUser và gán CartId
-		var customerUser = new AppUser
+		string userName = $"customer0{i}";
+		if (userManager.Users.All(u => u.UserName != userName))
 		{
-			UserName = "customer", // Tên người dùng
-			Email = "customer@example.com", // Email người dùng
-			EmailConfirmed = true, // Xác nhận email
-			PhoneNumberConfirmed = true, // Xác nhận số điện thoại
-			FullName = "Nguyen Van Customer", // Họ và tên
-			IsLock = false, // Trạng thái khóa
-			IsDelete = false, // Trạng thái xóa
-			BirthDay = DateTime.Parse("1995-01-01"), // Ngày sinh
-			CartId = customerCart.Id, // Gán CartId từ giỏ hàng vừa tạo
-			AccessFailedCount = 0, // Số lần đăng nhập thất bại
-			LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
-		};
+			// Tạo Cart trước
+			var customerCart = new Cart();
+			dbContext.Carts.Add(customerCart); // Thêm giỏ hàng vào DbContext
+			await dbContext.SaveChangesAsync(); // Lưu để lấy Id
 
-		// Tạo người dùng với mật khẩu
-		var customerResult = await userManager.CreateAsync(customerUser, "customer123"); // Mật khẩu là "customer123"
-
-		if (customerResult.Succeeded)
-		{
-			// 3. Gán vai trò "Customer" cho người dùng vừa tạo
-			await userManager.AddToRoleAsync(customerUser, "Customer");
-		}
-		else
-		{
-			// Xử lý lỗi (nếu có)
-			foreach (var error in customerResult.Errors)
+			// Tạo AppUser và gán CartId
+			var customerUser = new AppUser
 			{
-				Console.WriteLine($"Error: {error.Description}");
+				UserName = userName, // Tên người dùng
+				Email = $"customer0{i}@example.com", // Email người dùng
+				EmailConfirmed = true, // Xác nhận email
+				PhoneNumberConfirmed = true, // Xác nhận số điện thoại
+				FullName = $"Trần Thanh Ly", // Họ và tên
+				IsLock = false, // Trạng thái khóa
+				IsDelete = false, // Trạng thái xóa
+				BirthDay = DateTime.Parse($"199{i}-01-01"), // Ngày sinh
+				CartId = customerCart.Id, // Gán CartId từ giỏ hàng vừa tạo
+				AccessFailedCount = 0, // Số lần đăng nhập thất bại
+				LockoutEnabled = false, // Khóa tài khoản khi đăng nhập sai nhiều lần
+			};
+
+			// Tạo người dùng với mật khẩu
+			var customerResult = await userManager.CreateAsync(customerUser, "customer123"); // Mật khẩu là "customer123"
+
+			if (customerResult.Succeeded)
+			{
+				// Gán vai trò "Customer" cho người dùng vừa tạo
+				await userManager.AddToRoleAsync(customerUser, "Customer");
 			}
 		}
 	}
