@@ -141,7 +141,7 @@ box-shadow: none;outline: 1px solid #ced4da;
 
                                     // Kiểm tra xem danh sách ảnh có chứa ảnh không
                                     var firstImageUrl = imageUrls?.FirstOrDefault();
-
+                                     <a href="@Url.Action("detail", "Product", new { id = product.Id })" class="text-decoration-none w-100">
                                     <div class="d-flex align-items-center justify-content-start mb-4">
                                         <div class="rounded me-4" style="width: 100px; height: 100px;">
                                             @if (!string.IsNullOrEmpty(firstImageUrl))
@@ -173,6 +173,7 @@ box-shadow: none;outline: 1px solid #ced4da;
                                             </div>
                                         </div>
                                     </div>
+                                    </a>
                                 }
                                 <div id="btnViewMore" class="d-flex justify-content-center my-4">
                                     <a class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100" onclick="viewMore()">View More</a>
