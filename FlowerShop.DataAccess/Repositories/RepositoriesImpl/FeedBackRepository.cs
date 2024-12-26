@@ -59,5 +59,25 @@ namespace FlowerShop.DataAccess.Repositories.RepositoriesImpl
 
 
 
+        public async Task<FeedBack> GetFeedbackBySaleInvoiceDetailIdAndUserIdAsync(int saleInvoiceDetailId, string userId)
+        {
+            return await _context.FeedBacks
+                .Join(_context.SaleInvoiceDetails,
+                    feedback => feedback.SaleInvoiceDetailId,
+                    detail => detail.Id,
+                    (feedback, detail) => new { Feedback = feedback, Detail = detail })
+                .Join(_context.SaleInvoices,
+                    combined => combined.Detail.SaleInvoiceId,
+                    invoice => invoice.Id,
+                    (combined, invoice) => new { combined.Feedback, combined.Detail, Invoice = invoice })
+                .Where(x => x.Feedback.SaleInvoiceDetailId == saleInvoiceDetailId
+                    && !x.Feedback.IsDelete
+                    && x.Invoice.CustomerId == userId)
+                .Select(x => x.Feedback)
+                .FirstOrDefaultAsync();
+        }
+
+
+
     }
 }

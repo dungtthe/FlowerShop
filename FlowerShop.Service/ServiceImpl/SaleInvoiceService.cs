@@ -46,6 +46,24 @@ namespace FlowerShop.Service.ServiceImpl
                 throw new Exception("An error occurred while retrieving the sale invoice.", ex);
             }
         }
+        public async Task<SaleInvoice> GetSaleInvoiceByProductIdAsync(int productId)
+        {
+            try
+            {
+                // Truy vấn SaleInvoice dựa trên ProductId
+                var saleInvoice = await _context.SaleInvoiceDetails
+                    .Where(detail => detail.ProductId == productId && !detail.IsDelete) // Kiểm tra IsDelete
+                    .Select(detail => detail.SaleInvoice) // Lấy thông tin SaleInvoice tương ứng
+                    .FirstOrDefaultAsync();
+
+                return saleInvoice; // Trả về hóa đơn đầu tiên tìm thấy, hoặc null nếu không có
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi nếu cần thiết
+                throw new Exception("An error occurred while retrieving the sale invoice by product ID.", ex);
+            }
+        }
         public async Task<SaleInvoice> GetSingleById(int id)
 		{
 			if (id == -1)
