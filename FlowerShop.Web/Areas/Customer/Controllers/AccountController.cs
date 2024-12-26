@@ -25,10 +25,11 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
 		[HttpGet("")]
 		public async Task<IActionResult> Index()
 		{
+			ViewBag.tilePage = "Thông tin tài khoản";
 			var userInformation = await _appUserService.GetAppUserByContextAsync(HttpContext);
 			if (userInformation == null)
 			{
-				return NotFound();
+				return RedirectToAction("NotFound", "Error");
 			}
 			return View(userInformation);
 		}
