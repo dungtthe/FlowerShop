@@ -1,0 +1,51 @@
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title w-100 text-center" id="orderDetailsModalLabel">
+          Chi Tiết Đơn Nhập Hàng
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Nhà cung cấp:</strong> <span id="supplierName"></span></p>
+        <p>
+          <strong id="date">Ngày tạo đơn nhập hàng:</strong>
+          <span id="createDate"></span>
+        </p>
+        <hr />
+        <p style="font-size: 20px; text-align: center; font-weight: bold">
+          Danh sách các sản phẩm
+        </p>
+        <table class="table table-bordered" id="orderDetailsTable">
+          <thead>
+            <tr>
+              <th>Mã Sản Phẩm</th>
+              <th>Tên Sản Phẩm</th>
+              <th>Số Lượng</th>
+              <th>Giá</th>
+              <th>Thành Tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Nội dung chi tiết sản phẩm sẽ được thêm qua JavaScript -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="4" class="text-right">Tổng tiền:</th>
+              <th id="orderTotal"></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
