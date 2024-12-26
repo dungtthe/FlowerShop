@@ -18,14 +18,12 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
         private readonly IAppUserService _appUserService; 
         private readonly ISaleInvoiceService _saleInvoiceService; 
         private readonly ISaleInvoiceDetailService _saleInvoiceDetailService; 
-        private readonly FlowerShopContext _context;
 
         public ProductController(FlowerShopContext context, ICategoryService categoryService, IProductService productService, IPackagingService packagingService, IFeedBackService feedBackService, IAppUserService appUserService, ISaleInvoiceService saleInvoiceService, ISaleInvoiceDetailService saleInvoiceDetailService)
         {
             _categoryService = categoryService;
             _productService = productService;
             _packagingService = packagingService;
-            _context = context;
             _feedBackService = feedBackService;
             _appUserService = appUserService;
             _saleInvoiceService = saleInvoiceService;

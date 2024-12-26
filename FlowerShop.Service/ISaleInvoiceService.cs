@@ -60,5 +60,7 @@ namespace FlowerShop.Service
 		Task<Dictionary<string, object>> GetAllSale(DateTime? startDate, DateTime? endDate);
 
 		Task<ResponeMessage> ConfirmCheckoutAsync(AppUser user, string fullName, string phoneNumber, string address, string note, int shippingFee, int selectedPaymentMethodId, string sProductIds);
+	
+	
 	}
 }

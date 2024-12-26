@@ -36,7 +36,25 @@ namespace FlowerShop.Service.ServiceImpl
             _productPriceRepository = productPriceRepository;
         }
 
-        public async Task<SaleInvoice> GetSingleById(int id)
+		public async Task<SaleInvoice> GetSaleInvoiceByIdAsync(int saleInvoiceId)
+		{
+			try
+			{
+                // Truy vấn SaleInvoice theo Id
+                var saleInvoice = (await _saleInvoiceRepository.FindAsync(s=>s.Id==saleInvoiceId && !s.IsDelete)).FirstOrDefault();
+					
+
+				return saleInvoice;
+			}
+			catch (Exception ex)
+			{
+				// Log lỗi nếu cần thiết
+				throw new Exception("An error occurred while retrieving the sale invoice.", ex);
+			}
+		}
+
+
+		public async Task<SaleInvoice> GetSingleById(int id)
         {
             if (id == -1)
             {
