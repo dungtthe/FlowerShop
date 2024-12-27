@@ -128,14 +128,29 @@
             
         }
    
-
+        /* Responsive Adjustments */
+          @@media (max-width: 768px) {
+        .col-md-6.bg-image {
+            display: none !important; /* Ẩn cột trái chứa hình ảnh */
+        }
+        
+        .col-md-6 {
+            width: 100%; /* Cột phải chiếm toàn bộ chiều rộng */
+            height: 100vh; /* Đảm bảo chiều cao bằng toàn màn hình */
+        }
+        
+        .login-wrap {
+            max-width: 90%; /* Điều chỉnh chiều rộng form đăng nhập */
+            margin: 0 auto; /* Căn giữa form đăng nhập */
+        }
+    }
     </style>
 </head>
 
 <body>
     <section class="ftco-section" style="height: 100vh;">
         <div class="container-fluid h-100">
-            <div class="row no-gutters h-100">
+            <div class="row no-gutters bg-image h-100">
                 <!-- Cột trái: Ảnh -->
                 <div class="col-md-6 d-flex align-items-center justify-content-center bg-image"
                      style="background-image: url('/login-register/assets/images/bg.jpeg'); background-size: cover; background-position: center; height: 100vh; margin: 0; padding: 0; left: 0; position: relative;">
@@ -170,14 +185,8 @@
                                 </div>
                             </div>
                         </form>
-                        <p style="color: black;" class="w-100 text-center">&mdash; Hoặc đăng nhập với &mdash;</p>
-                        <div class="social d-flex text-center">
-
-                            <a href="#" class="px-2 py-2 ml-md-1 rounded">
-                                <i class="fa fa-google mr-2"></i>Google
-                            </a>
-
-                        </div>
+                        
+                        
                     </div>
                 </div>
             </div>

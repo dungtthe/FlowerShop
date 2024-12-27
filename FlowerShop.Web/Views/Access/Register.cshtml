@@ -101,6 +101,23 @@
             color: #0056b3;
             text-decoration: underline;
         }
+
+        /* Responsive Adjustments */
+        @@media (max-width: 768px) {
+            .col-md-6.bg-image {
+                display: none !important; /* Ẩn cột trái chứa hình ảnh */
+            }
+
+            .col-md-6 {
+                width: 100%; /* Cột phải chiếm toàn bộ chiều rộng */
+                height: 100vh; /* Đảm bảo chiều cao bằng toàn màn hình */
+            }
+
+            .login-wrap {
+                max-width: 90%; /* Điều chỉnh chiều rộng form đăng nhập */
+                margin: 0 auto; /* Căn giữa form đăng nhập */
+            }
+        }
     </style>
 </head>
 
