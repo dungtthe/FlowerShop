@@ -406,7 +406,27 @@
         // Ghi lại giá trị reviewText
         console.log("Giá trị bình luận:", reviewText);
 
-        fetch('/product/postFeedback', {
+
+        const uri = "/product/postFeedback";
+        const dataSend = { content: reviewText, productId: productId };
+        fetchPost(
+        uri,
+        dataSend,
+        //sus
+        (data)=>{
+                showSuccess(data.message);
+                window.location.reload(); 
+                
+        },
+        //fail
+        (data)=>{
+            showError(data.message);
+        },
+        //excep
+        ()=>{
+
+        });
+       @*  fetch('/product/postFeedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -432,7 +452,7 @@
             .catch(error => {
                 console.error("Lỗi:", error); // Ghi lại lỗi
                 showError("Có lỗi xảy ra khi gửi bình luận."); // Hiển thị thông báo lỗi
-            });
+            }); *@
     });
 
 </script>

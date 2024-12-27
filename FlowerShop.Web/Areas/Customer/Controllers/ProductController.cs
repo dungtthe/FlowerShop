@@ -6,6 +6,7 @@ using FlowerShop.DataAccess.Models;
 using FlowerShop.Service.ServiceImpl;
 using System.Text.Json;
 using FlowerShop.Common.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlowerShop.Web.Areas.Customer.Controllers
 {
@@ -126,7 +127,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             var appUser = await _appUserService.GetAppUserByContextAsync(HttpContext);
             if (appUser == null)
             {
-                return Unauthorized("Bạn cần đăng nhập để gửi phản hồi.");
+                return BadRequest(new {message = "Bạn cần đăng nhập để sử dụng chức năng này"});
             }
 
             // Kiểm tra xem người dùng đã mua sản phẩm chưa
@@ -141,12 +142,7 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             // Kiểm tra xem hóa đơn có tồn tại và có thuộc về người dùng không
             if (saleInvoice == null || saleInvoice.CustomerId != appUser.Id)
             {
-                return Ok(new PopupViewModel
-                {
-                    Type = PopupViewModel.ERROR,
-                    Title = "Thông báo",
-                    Message = "Bạn phải mua sản phẩm này trước khi có thể bình luận."
-                });
+                return BadRequest(new { message = "Bạn phải mua sản phẩm này trước khi có thể bình luận." });
             }
 
             // Lấy SaleInvoiceDetail đầu tiên tương ứng với sản phẩm
@@ -156,24 +152,18 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             // Kiểm tra xem có tìm thấy SaleInvoiceDetail không
             if (saleInvoiceDetail == null)
             {
-                return Ok(new PopupViewModel
-                {
-                    Type = PopupViewModel.ERROR,
-                    Title = "Thông báo",
-                    Message = "Không tìm thấy chi tiết hóa đơn cho sản phẩm này."
-                });
+                return BadRequest(new { message = "Không tìm thấy chi tiết hóa đơn cho sản phẩm này" });
+
+               
             }
 
             // Kiểm tra xem người dùng đã gửi phản hồi cho SaleInvoiceDetail này chưa
             var existingFeedback = await _feedBackService.GetFeedbackBySaleInvoiceDetailIdAsync(saleInvoiceDetail.Id, appUser.Id);
             if (existingFeedback != null)
             {
-                return Ok(new PopupViewModel
-                {
-                    Type = 2,
-                    Title = "Thông báo",
-                    Message = "Bạn đã gửi phản hồi cho sản phẩm này rồi."
-                });
+
+                return BadRequest(new { message = "Bạn đã gửi phản hồi cho sản phẩm này rồi." });
+
             }
 
             // Tạo một thực thể feedback mới và lưu vào cơ sở dữ liệu
@@ -185,11 +175,9 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             };
 
             await _feedBackService.AddAsync(feedback);
-            return Ok(new PopupViewModel
-            {
-                Type = PopupViewModel.SUCCESS,
-                Message = "Phản hồi đã được gửi thành công!"
-            });
+            return Ok(new { message = "Phản hồi đã được gửi thành công!." });
+
+            
         }
     }
 }
