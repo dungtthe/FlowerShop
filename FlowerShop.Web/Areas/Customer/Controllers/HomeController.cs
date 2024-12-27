@@ -28,9 +28,11 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             var topSellingProducts = await _productService.GetTopSellingProductsAsync();
             var newProducts = await _productService.GetNewProductsAsync(0);
             var giftProducts = await _productService.GetGiftCategoryProductsAsync(0, 10);
+            var products = await _productService.GetAllProductAsync();
             ViewBag.topSellingProducts = topSellingProducts;
             ViewBag.newProducts = newProducts;
             ViewBag.giftProducts = giftProducts;
+            ViewBag.products = products;
             return View();
 
             //try

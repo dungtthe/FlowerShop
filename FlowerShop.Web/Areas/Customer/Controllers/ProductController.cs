@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.Service.ServiceImpl;
+using System.Text.Json;
+using FlowerShop.Common.ViewModels;
 
 namespace FlowerShop.Web.Areas.Customer.Controllers
 {
@@ -105,9 +107,89 @@ namespace FlowerShop.Web.Areas.Customer.Controllers
             }
         }
 
+        [HttpPost("postFeedback")]
+        public async Task<IActionResult> PostFeedback([FromBody] JsonElement feedbackModel) // Sử dụng JsonElement
+        {
+            // Kiểm tra sự hợp lệ của dữ liệu
+            if (feedbackModel.ValueKind == JsonValueKind.Undefined ||
+            !feedbackModel.TryGetProperty("content", out JsonElement contentElement) ||
+            string.IsNullOrWhiteSpace(contentElement.GetString()) ||
+            !feedbackModel.TryGetProperty("productId", out JsonElement productIdElement))
+            {
+                return Ok(new PopupViewModel
+                {
+                    Type = PopupViewModel.ERROR,
+                    Message = "Dữ liệu phản hồi không hợp lệ."
+                });
+            }
+            // Lấy thông tin người dùng từ HttpContext
+            var appUser = await _appUserService.GetAppUserByContextAsync(HttpContext);
+            if (appUser == null)
+            {
+                return Unauthorized("Bạn cần đăng nhập để gửi phản hồi.");
+            }
 
+            // Kiểm tra xem người dùng đã mua sản phẩm chưa
+            var saleInvoiceDetails = await _saleInvoiceDetailService.GetSaleInvoiceDetailsByUserIdAsync(appUser.Id);
 
+            // Lấy ProductId từ feedbackModel
+            int productIdInt = productIdElement.GetInt32(); // Lấy giá trị ProductId
 
+            // Lấy thông tin hóa đơn tương ứng với ProductId
+            var saleInvoice = await _saleInvoiceService.GetSaleInvoiceByProductIdAsync(productIdInt);
 
+            // Kiểm tra xem hóa đơn có tồn tại và có thuộc về người dùng không
+            if (saleInvoice == null || saleInvoice.CustomerId != appUser.Id)
+            {
+                return Ok(new PopupViewModel
+                {
+                    Type = PopupViewModel.ERROR,
+                    Title = "Thông báo",
+                    Message = "Bạn phải mua sản phẩm này trước khi có thể bình luận."
+                });
+            }
+
+            // Lấy SaleInvoiceDetail đầu tiên tương ứng với sản phẩm
+            var saleInvoiceDetail = saleInvoiceDetails
+                .FirstOrDefault(detail => detail.ProductId == productIdInt);
+
+            // Kiểm tra xem có tìm thấy SaleInvoiceDetail không
+            if (saleInvoiceDetail == null)
+            {
+                return Ok(new PopupViewModel
+                {
+                    Type = PopupViewModel.ERROR,
+                    Title = "Thông báo",
+                    Message = "Không tìm thấy chi tiết hóa đơn cho sản phẩm này."
+                });
+            }
+
+            // Kiểm tra xem người dùng đã gửi phản hồi cho SaleInvoiceDetail này chưa
+            var existingFeedback = await _feedBackService.GetFeedbackBySaleInvoiceDetailIdAsync(saleInvoiceDetail.Id, appUser.Id);
+            if (existingFeedback != null)
+            {
+                return Ok(new PopupViewModel
+                {
+                    Type = 2,
+                    Title = "Thông báo",
+                    Message = "Bạn đã gửi phản hồi cho sản phẩm này rồi."
+                });
+            }
+
+            // Tạo một thực thể feedback mới và lưu vào cơ sở dữ liệu
+            var feedback = new FeedBack
+            {
+                Content = contentElement.GetString(), // Lấy giá trị nội dung
+                SendingTime = DateTime.UtcNow,
+                SaleInvoiceDetailId = saleInvoiceDetail.Id // Gán ID nếu cần
+            };
+
+            await _feedBackService.AddAsync(feedback);
+            return Ok(new PopupViewModel
+            {
+                Type = PopupViewModel.SUCCESS,
+                Message = "Phản hồi đã được gửi thành công!"
+            });
+        }
     }
 }

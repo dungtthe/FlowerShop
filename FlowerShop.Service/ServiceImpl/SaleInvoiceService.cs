@@ -582,5 +582,18 @@ namespace FlowerShop.Service.ServiceImpl
             return null;
 
         }
-    }
+
+		public async Task<SaleInvoice> GetSaleInvoiceByProductIdAsync(int productId)
+		{
+			try
+			{
+				return await _saleInvoiceDetailRepository.GetSaleInvoiceByProductIdAsync(productId);
+			}
+			catch (Exception ex)
+			{
+				// Xử lý log lỗi hoặc tùy chỉnh ngoại lệ
+				throw new Exception("An error occurred while retrieving the sale invoice by product ID.", ex);
+			}
+		}
+	}
 }

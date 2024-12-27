@@ -11,7 +11,9 @@ namespace FlowerShop.Service
 {
 	public interface ISaleInvoiceService
 	{
-		Task<SaleInvoice> GetSaleInvoiceByIdAsync(int saleInvoiceId);
+		Task<SaleInvoice> GetSaleInvoiceByProductIdAsync(int productId);
+
+        Task<SaleInvoice> GetSaleInvoiceByIdAsync(int saleInvoiceId);
 
         Task<ICollection<SaleInvoice>> GetSaleInvoiceWithIcludeAsync();
 

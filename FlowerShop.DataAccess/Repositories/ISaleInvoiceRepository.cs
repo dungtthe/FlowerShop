@@ -10,5 +10,5 @@ namespace FlowerShop.DataAccess.Repositories
 {
     public interface ISaleInvoiceRepository:IRepository<SaleInvoice>
     {
-    }
+	}
 }

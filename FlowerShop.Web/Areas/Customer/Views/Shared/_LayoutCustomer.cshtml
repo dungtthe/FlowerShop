@@ -176,10 +176,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex align-items-center">
-                    <div class="input-group w-75 mx-auto d-flex">
-                        <input type="search" class="form-control p-3" placeholder="keywords"
-                            aria-describedby="search-icon-1">
-                        <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                    <div class="input-group w-75 mx-auto d-flex flex-column">
+                        <div class="d-flex">
+                            <input type="search" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
+                            <span id="search-icon-1" class="input-group-text"><i class="fa fa-search"></i></span>
+                        </div>
+                        <div id="suggestion-box" class="suggestion-box"></div>
                     </div>
                 </div>
             </div>
@@ -348,6 +350,49 @@
 
 </html>
 <style>
+    .form-control.p-3 {
+        width: 100%;
+    }
+
+    .suggestion-box {
+        border: 1px solid #ccc;
+        height: 150px; /* Có thể điều chỉnh chiều cao tối đa */
+        overflow-y: auto;
+        position: absolute;
+        z-index: 1000;
+        background-color: white;
+        width: 100%; /* Đặt chiều rộng 100% để khớp với ô tìm kiếm */
+        margin-top: 55px;
+    }
+
+    span.input-group-text {
+        width: 50px; /* Chiều rộng của icon tìm kiếm */
+    }
+
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+    /* Định vị chatbox */
+    #chatbox-container {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        z-index: 1100;
+        width: 400px;
+        height: 570px;
+        padding: 0;
+        margin: 0;
+        background-color: transparent;
+        display: none;
+        border-radius: 8px;
+        overflow: hidden;
+    }
     /* Định vị chatbox */
     #chatbox-container {
         position: fixed;
@@ -384,6 +429,39 @@
     }
 </style>
 <script>
+
+    const products = [];
+
+        console.log(products); // Kiểm tra giá trị
+
+    document.querySelector('.form-control').addEventListener('input', function() {
+        const input = this.value.toUpperCase();
+        const suggestions = products.filter(product => product.includes(input));
+        displaySuggestions(suggestions);
+        console.log(products);
+    });
+
+    function displaySuggestions(suggestions) {
+        const suggestionBox = document.getElementById('suggestion-box');
+        suggestionBox.innerHTML = '';
+        suggestions.forEach(product => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.innerText = product;
+            suggestionItem.className = 'suggestion-item';
+            suggestionItem.onclick = () => redirectToSearch(product);
+            suggestionBox.appendChild(suggestionItem);
+        });
+    }
+
+    function redirectToSearch(product) {
+        window.location.href = `SearchProduct.cshtml?query=${product}`;
+    }
+
+    document.querySelector('.form-control').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            redirectToSearch(this.value);
+        }
+    });
     const chatboxContainer = document.getElementById('chatbox-container');
     const backToTopButton = document.querySelector('.back-to-top');
 

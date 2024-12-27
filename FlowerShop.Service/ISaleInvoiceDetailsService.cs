@@ -10,5 +10,6 @@ namespace FlowerShop.Service
     public interface ISaleInvoiceDetailService
     {
      Task<SaleInvoiceDetail> GetSaleInvoiceDetailByIdAsync(int saleInvoiceDetailId);
+        Task<List<SaleInvoiceDetail>> GetSaleInvoiceDetailsByUserIdAsync(string userId);
     }
 }

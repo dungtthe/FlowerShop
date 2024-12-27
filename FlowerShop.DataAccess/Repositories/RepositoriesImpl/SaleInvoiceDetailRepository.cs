@@ -34,5 +34,13 @@ namespace FlowerShop.DataAccess.Repositories.RepositoriesImpl
             return rs;
         }
 
-    }
+		public async Task<SaleInvoice?> GetSaleInvoiceByProductIdAsync(int productId)
+		{
+			return await DbSet
+				.Where(detail => detail.ProductId == productId && !detail.IsDelete) // Điều kiện
+				.Select(detail => detail.SaleInvoice) // Lấy SaleInvoice tương ứng
+				.FirstOrDefaultAsync(); // Lấy phần tử đầu tiên hoặc null nếu không có
+		}
+
+	}
 }

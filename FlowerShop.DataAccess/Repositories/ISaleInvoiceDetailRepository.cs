@@ -11,5 +11,6 @@ namespace FlowerShop.DataAccess.Repositories
     public interface ISaleInvoiceDetailRepository : IRepository<SaleInvoiceDetail>
     {
         Task<IEnumerable<int>> GetProductIdTopSellingProductsAsync(int top = 8);
-    }
+		Task<SaleInvoice?> GetSaleInvoiceByProductIdAsync(int productId);
+	}
 }

@@ -11,5 +11,7 @@ namespace FlowerShop.Service
     {
         Task<IEnumerable<FeedBack>> GetAllFeedbackAsync();
         Task<IEnumerable<FeedBack>> GetFeedBackByIdAsync(int productId);
+        Task<FeedBack> AddAsync(FeedBack feedBack);
+        Task<FeedBack> GetFeedbackBySaleInvoiceDetailIdAsync(int saleInvoiceDetailId, string userId);
     }
 }
