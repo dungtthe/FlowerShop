@@ -144,13 +144,21 @@
                                             @(cartUser?.CartDetails?.Count ?? 0)
                                         </span>
                                     </a>
+
                                     <div class="dropdown">
-                                        <a href="#" class="my-auto">
+                                        <a class="my-auto">
                                             <i class="fas fa-user fa-2x"></i>
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
-                                            <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+                                            <li>
+                                                <a class="dropdown-item" asp-area="Customer" asp-controller="Account"
+                                                   asp-action="Index">Thông tin cá nhân</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" asp-area="Customer"
+                                                   asp-controller="PurchaseHistory" asp-action="Index">Lịch sử mua hàng</a>
+                                            </li>
+                                            <li><a href="/logout" class="dropdown-item">Đăng xuất</a></li>
                                         </ul>
                                     </div>
                                 </a>
@@ -270,21 +278,20 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="d-flex flex-column text-start footer-item">
                         <h4 class="text-light mb-3">Account</h4>
-                        <a class="btn-link" href="">My Account</a>
-                        <a class="btn-link" href="">Shop details</a>
-                        <a class="btn-link" href="">Shopping Cart</a>
-                        <a class="btn-link" href="">Wishlist</a>
-                        <a class="btn-link" href="">Order History</a>
-                        <a class="btn-link" href="">International Orders</a>
+                        <a class="btn-link">My Account</a>
+                        <a class="btn-link">Shop details</a>
+                        <a class="btn-link">Shopping Cart</a>
+                        <a class="btn-link">Wishlist</a>
+                        <a class="btn-link">Order History</a>
+                        <a class="btn-link">International Orders</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="footer-item">
                         <h4 class="text-light mb-3">Contact</h4>
-                        <p>Address: 1429 Netus Rd, NY 48247</p>
-                        <p>Email: Example@gmail.com</p>
-                        <p>Phone: +0123 4567 8910</p>
-                        <p>Payment Accepted</p>
+                        <p>Address: Phường Linh Trung, Tp. Thủ Đức, HCM</p>
+                        <p>Email: FlowerShopUIT@gmail.com</p>
+                        <p>Phone: 0493 712 672</p>
                         <img src="" class="img-fluid" alt="">
                     </div>
                 </div>

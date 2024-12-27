@@ -1,0 +1,332 @@
+﻿@model FlowerShop.DataAccess.Models.AppUser
+@using Newtonsoft.Json;
+@{
+	string[] listImg = Model.Images != null
+	? JsonConvert.DeserializeObject<string[]>(Model.Images)
+	: new string[] { "no_img.png" };
+
+	var firstImg = listImg[0];
+}
+<div class="container-fluid py-5">
+	<div class="container py-5 text-center">
+		<div class="row justify-content-center">
+			<!-- Card thông tin tài khoản -->
+			<div class="col-md-8">
+				<div class="card shadow-lg rounded-4">
+					<div class="card-header text-center"
+						style="background-color: #f8d7da; color: #8c1c1c; height: 36px;">
+					</div>
+					<div class="card-body py-4">
+						<div class="row">
+							<!-- Avatar -->
+							<div class="col-md-4 text-center border-end">
+								<img id="avatarImage" src="@Url.Content("~/images/users/" + firstImg)" alt="Avatar"
+									class="rounded-circle img-thumbnail shadow-sm mb-3"
+									style="width: 120px; height: 120px; cursor: pointer;" onclick="handleImageClick()">
+								<input id="avatarInput" type="file" accept="image/*" style="display: none;"
+									onchange="previewImage(event)">
+								<h5 class="fw-bold text-dark">@Model.UserName</h5>
+							</div>
+
+							<!-- Thông tin cá nhân -->
+							<div class="col-md-8">
+								<div class="d-flex justify-content-between align-items-center mb-3">
+									<label class="form-label text-muted fw-bold mb-0"
+										style="width: 300px; text-align: left;">Họ và tên:</label>
+									<p id="fullName" class="form-control-plaintext mb-0"
+										style="font-size: 1rem; text-align: left;">
+										@Model.FullName
+									</p>
+								</div>
+								<div class="d-flex justify-content-between align-items-center mb-3">
+									<label class="form-label text-muted fw-bold mb-0"
+										style="width: 300px; text-align: left;">Ngày sinh:</label>
+									<p id="birthDay" class="form-control-plaintext mb-0"
+										style="font-size: 1rem; text-align: left;">
+										@Model.BirthDay?.ToString("dd/MM/yyyy")
+									</p>
+								</div>
+								<div class="d-flex justify-content-between align-items-center mb-3">
+									<label class="form-label text-muted fw-bold mb-0"
+										style="width: 300px; text-align: left;">Số điện thoại:</label>
+									<p id="phoneNumber" class="form-control-plaintext mb-0"
+										style="font-size: 1rem; text-align: left;">
+										@Model.PhoneNumber
+									</p>
+								</div>
+								<div class="d-flex justify-content-between align-items-center">
+									<label class="form-label text-muted fw-bold mb-0"
+										style="width: 300px; text-align: left;">Email:</label>
+									<p id="email" class="form-control-plaintext mb-0"
+										style="font-size: 1rem; text-align: left;">
+										@Model.Email
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card-footer text-center" style="background-color: #f8d7da;">
+						<button id="editButton" onclick="enableEdit()"
+							class="btn btn-outline-primary me-3 rounded-pill px-4">
+							Chỉnh sửa
+							thông tin
+						</button>
+						<button id="changePasswordButton" onclick="showChangePasswordModal()"
+							class="btn btn-outline-primary me-3 rounded-pill px-4">
+							Đổi
+							mật khẩu
+						</button>
+						<button id="cancelButton" onclick="cancel()" class="btn btn-outline-primary rounded-pill px-4"
+							style="display: none; width: 90px;">
+							Hủy
+						</button>
+						<button id="saveButton" onclick="save()" class="btn btn-outline-primary rounded-pill px-4"
+							style="display: none; width: 90px;">
+							Lưu
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- ChangePassword Modal-->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header bg-primary text-white">
+				<h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu</h5>
+
+			</div>
+			<!-- Modal Body -->
+			<div class="modal-body ">
+				<form id="changePasswordForm">
+					<div class="mb-3 row align-items-center">
+						<label for="currentPassword" class="col-sm-4 col-form-label text-end">
+							Mật khẩu hiện
+							tại:
+						</label>
+						<div class="col-sm-8">
+							<input type="password" class="form-control" id="currentPassword"
+								placeholder="Nhập mật khẩu hiện tại" required>
+							<small class="text-danger validation-message" id="currentPasswordError"></small>
+						</div>
+					</div>
+					<div class="mb-3 row align-items-center">
+						<label for="newPassword" class="col-sm-4 col-form-label text-end">Mật khẩu mới:</label>
+						<div class="col-sm-8">
+							<input type="password" class="form-control" id="newPassword" placeholder="Nhập mật khẩu mới"
+								required>
+							<small class="text-danger validation-message" id="newPasswordError"></small>
+						</div>
+					</div>
+					<div class="mb-3 row align-items-center">
+						<label for="confirmNewPassword" class="col-sm-4 col-form-label text-end">
+							Mật khẩu
+							mới:
+						</label>
+						<div class="col-sm-8">
+							<input type="password" class="form-control" id="confirmNewPassword"
+								placeholder="Xác nhận mật khẩu mới" required>
+							<small class="text-danger validation-message" id="confirmNewPasswordError"></small>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- Modal Footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" onclick="ChangePassword()">Đổi mật khẩu</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Biến lưu giá trị ban đầu
+	const originalValues = {};
+	// Biến trạng thái để theo dõi chế độ chỉnh sửa
+	let editMode = false;
+	// Khi nhấn nút "Chỉnh sửa thông tin"
+	function enableEdit() {
+		editMode = true; // Kích hoạt chế độ chỉnh sửa
+
+		// Lưu giá trị ban đầu vào đối tượng
+		originalValues.fullName = document.getElementById('fullName').innerText;
+		originalValues.birthDay = document.getElementById('birthDay').innerText;
+		originalValues.phoneNumber = document.getElementById('phoneNumber').innerText;
+		originalValues.email = document.getElementById('email').innerText;
+
+		// Chuyển các trường thông tin từ <p> sang <input>
+		const fields = [
+			{ id: 'fullName', value: originalValues.fullName },
+			{ id: 'birthDay', value: originalValues.birthDay },
+			{ id: 'phoneNumber', value: originalValues.phoneNumber },
+			{ id: 'email', value: originalValues.email }
+		];
+
+		fields.forEach(field => {
+			const element = document.getElementById(field.id);
+
+			if (field.id === 'birthDay') {
+				const dateValue = formatDateToInput(field.value); // Chuyển dd/MM/yyyy thành yyyy-MM-dd
+				element.outerHTML = `<input id="${field.id}" type="date" class="form-control mb-0" value="${dateValue}" style="font-size: 1rem; text-align: left;">`;
+			} else {
+				element.outerHTML = `<input id="${field.id}" class="form-control mb-0" value="${field.value}" style="font-size: 1rem; text-align: left;">`;
+			}
+		});
+
+		// Hiển thị nút "Lưu" và "Hủy", ẩn nút "Chỉnh sửa"
+		document.getElementById('saveButton').style.display = 'inline-block';
+		document.getElementById('cancelButton').style.display = 'inline-block';
+		document.getElementById('editButton').style.display = 'none';
+		document.getElementById('changePasswordButton').style.display = 'none';
+	}
+
+	// Xử lý sự kiện nhấn vào ảnh
+	function handleImageClick() {
+		if (!editMode) {
+			return;
+		}
+		document.getElementById('avatarInput').click(); // Kích hoạt hộp thoại chọn ảnh
+	}
+
+	// Xử lý hiển thị ảnh xem trước
+	function previewImage(event) {
+		const file = event.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = function (e) {
+				document.getElementById('avatarImage').src = e.target.result; // Cập nhật ảnh xem trước
+			};
+			reader.readAsDataURL(file);
+		}
+	}
+
+	// Hàm chuyển đổi định dạng dd/MM/yyyy thành yyyy-MM-dd để hiển thị trong input[type="date"]
+	function formatDateToInput(dateString) {
+		const parts = dateString.split('/');
+		if (parts.length === 3) {
+			return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+		}
+		return '';
+	}
+
+	// Nút hủy
+	function cancel() {
+		editMode = false; // Tắt chế độ chỉnh sửa
+
+		// Khôi phục ảnh ban đầu
+		document.getElementById('avatarImage').src = "@Url.Content("~/images/users/" + firstImg)";
+
+		// Khôi phục giá trị ban đầu
+		document.getElementById('fullName').outerHTML = `<p id="fullName" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${originalValues.fullName}</p>`;
+		document.getElementById('birthDay').outerHTML = `<p id="birthDay" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${originalValues.birthDay}</p>`;
+		document.getElementById('phoneNumber').outerHTML = `<p id="phoneNumber" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${originalValues.phoneNumber}</p>`;
+		document.getElementById('email').outerHTML = `<p id="email" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${originalValues.email}</p>`;
+
+		// Hiển thị nút "Chỉnh sửa" và "Đổi mật khẩu", ẩn nút "Lưu" và "Hủy"
+		document.getElementById('saveButton').style.display = 'none';
+		document.getElementById('cancelButton').style.display = 'none';
+		document.getElementById('editButton').style.display = 'inline-block';
+		document.getElementById('changePasswordButton').style.display = 'inline-block';
+	}
+
+	//Nút lưu
+	function save() {
+		// Lấy giá trị từ các trường <input>
+		const fullName = document.getElementById('fullName').value;
+		const birthDay = formatDateToDisplay(document.getElementById('birthDay').value); // Định dạng lại
+		const phoneNumber = document.getElementById('phoneNumber').value;
+		const email = document.getElementById('email').value;
+
+		const profileImageInput = document.getElementById("avatarInput");
+		let profileImageName = ""; // Giá trị mặc định nếu không chọn ảnh
+		if (profileImageInput.files.length > 0) {
+			profileImageName = profileImageInput.files[0].name; // Lấy tên tệp ảnh
+		}
+		else {
+			// Nếu không chọn ảnh, lấy tên ảnh ban đầu từ src của thẻ img
+			const avatarImageSrc = document.getElementById("avatarImage").src;
+			profileImageName = avatarImageSrc.substring(avatarImageSrc.lastIndexOf("/") + 1); // Lấy phần tên tệp từ URL
+		}
+	@* const updatedUser = {
+			FullName: fullName
+			BirthDay: birthDay
+			Email: email
+			PhoneNumber: phoneNumber
+		}; *@
+
+			// Thay đổi lại <input> thành <p>
+			document.getElementById('fullName').outerHTML = `<p id="fullName" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${fullName}</p>`;
+		document.getElementById('birthDay').outerHTML = `<p id="birthDay" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${birthDay}</p>`;
+		document.getElementById('phoneNumber').outerHTML = `<p id="phoneNumber" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${phoneNumber}</p>`;
+		document.getElementById('email').outerHTML = `<p id="email" class="form-control-plaintext mb-0" style="font-size: 1rem; text-align: left;">${email}</p>`;
+
+		// Cập nhật các nút
+		document.getElementById('saveButton').style.display = 'none';
+		document.getElementById('cancelButton').style.display = 'none';
+		document.getElementById('editButton').style.display = 'inline-block';
+		document.getElementById('changePasswordButton').style.display = 'inline-block';
+	}
+
+	// Hàm chuyển đổi định dạng yyyy-MM-dd thành dd/MM/yyyy để hiển thị
+	function formatDateToDisplay(dateString) {
+		const parts = dateString.split('-');
+		if (parts.length === 3) {
+			return `${parts[2]}/${parts[1]}/${parts[0]}`;
+		}
+		return '';
+	}
+
+	function showChangePasswordModal() {
+		const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+		modal.show();
+	}
+
+	function ChangePassword() {
+		// Lấy giá trị từ các trường nhập liệu
+		const currentPassword = document.getElementById("currentPassword").value;
+		const newPassword = document.getElementById("newPassword").value;
+		const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+
+		// Kiểm tra dữ liệu nhập
+		if (!currentPassword || !newPassword || !confirmNewPassword) {
+			showError("Vui lòng điền đầy đủ thông tin.");
+			return;
+		}
+		if (newPassword !== confirmNewPassword) {
+			showError("Mật khẩu mới không khớp.");
+			return;
+		}
+
+		// Tạo data để gửi tới API
+		const data = {
+			currentPassword: currentPassword,
+			newPassword: newPassword,
+			confirmNewPassword: confirmNewPassword,
+		};
+
+		// Gửi yêu cầu tới API
+		fetchPost(
+			`/api/admin/quan-li-tai-khoan/doi-mat-khau`,
+			data,
+			(response) => {
+				document.getElementById("changePasswordForm").reset();
+				setTimeout(() => {
+					showSuccess(response.message);
+				}, 500);
+			},
+			(error) => {
+				showError(error.message);
+			},
+			() => {
+				showError("Không thể kết nối tới máy chủ.");
+			}
+		);
+	}
+
+
+</script>

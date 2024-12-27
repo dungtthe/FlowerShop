@@ -5,9 +5,11 @@ using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,29 +22,38 @@ namespace FlowerShop.Service.ServiceImpl
 		private readonly IAppUserRepository _appUserRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly FlowerShopContext _context;
+		private readonly UserManager<AppUser> _userManager;
+		private readonly IAppUserService _appUserService;
 
-		public CustomerService(IAppUserRepository appUserRepository, IUnitOfWork unitOfWork, FlowerShopContext context)
+		public CustomerService(IAppUserRepository appUserRepository, IUnitOfWork unitOfWork, FlowerShopContext context, UserManager<AppUser> userManager, IAppUserService appUserService)
 		{
 			_appUserRepository = appUserRepository;
 			_unitOfWork = unitOfWork;
 			_context = context;
+			_userManager = userManager;
+			_appUserService = appUserService;
 		}
 
-		public async Task<AppUser> ChiTietKhachHang(string id)
+		public async Task<AppUser> ChiTietKhachHang(string username)
 		{
-			var khachhang = await GetSingleById(id);
-			if (khachhang == null)
+			var customer = await _appUserService.GetUserByUserNameAsync(username);
+			if (customer == null)
 			{
 				return new AppUser(); // Trả về danh sách rỗng
 			}
-			return khachhang;
+			return customer;
 		}
 
 		public async Task<PopupViewModel> Delete(AppUser appUser)
 		{
 			try
 			{
-				appUser.IsLock = true;
+				var customer = await _appUserService.GetUserByUserNameAsync(appUser.UserName);
+				if (customer == null)
+				{
+					return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Không tìm thấy khách hàng!");
+				}
+				customer.IsLock = true;
 				var rs = await UpdateAsync(appUser);
 				if (rs == null)
 				{
@@ -56,21 +67,18 @@ namespace FlowerShop.Service.ServiceImpl
 			}
 		}
 
-		public async Task<ICollection<AppUser>> GetCustomerAsync()
+		public async Task<IEnumerable<AppUser>> GetCustomerAsync()
 		{
-			var khachhang = _context.UserRoles.Where(x => x.RoleId == "2").ToList();
-
-			var result = (await _appUserRepository.GetAllAsync()).ToList();
-			var customerList = new List<AppUser>();
-			foreach (var appUser in result)
+			var khachhangList = await _appUserRepository.GetAllAsync();
+			if (khachhangList != null)
 			{
-				foreach (var appRole in khachhang)
+				foreach (var khachhang in khachhangList)
 				{
-					if (appRole.UserId == appUser.Id)
-						customerList.Add(appUser);
+					khachhang.RolesName = await _userManager.GetRolesAsync(khachhang);
 				}
 			}
-			return customerList;
+
+			return khachhangList.Where(u => u.RolesName.Contains(ConstRole.CUSTOMER));
 		}
 
 		public async Task<AppUser> GetSingleById(string id)

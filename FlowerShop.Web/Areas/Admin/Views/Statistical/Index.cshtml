@@ -142,7 +142,7 @@
 
 	async function getAllSalesData(startDate = '', endDate = '') {
 		try {
-			const url = `/api/admin/quan-li-don-hang/doanh-thu?startDate=${startDate}&endDate=${endDate}`;
+			const url = `/api/admin/quan-li-don-hang/excel-doanh-thu?startDate=${startDate}&endDate=${endDate}`;
 			const response = await fetch(url);
 			if (!response.ok) {
 				const error = await response.json();

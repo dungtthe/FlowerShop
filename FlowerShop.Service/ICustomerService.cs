@@ -10,7 +10,7 @@ namespace FlowerShop.Service
 {
 	public interface ICustomerService
 	{
-		Task<ICollection<AppUser>> GetCustomerAsync();
+		Task<IEnumerable<AppUser>> GetCustomerAsync();
 
 		Task<AppUser> UpdateAsync(AppUser customer);
 

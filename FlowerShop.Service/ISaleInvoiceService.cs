@@ -11,6 +11,7 @@ namespace FlowerShop.Service
 {
 	public interface ISaleInvoiceService
 	{
+
 		Task<SaleInvoice> GetSaleInvoiceByProductIdAsync(int productId);
 
         Task<SaleInvoice> GetSaleInvoiceByIdAsync(int saleInvoiceId);
@@ -55,6 +56,8 @@ namespace FlowerShop.Service
 
 		Task<int> SoDonHangCho();
 
+		Task<Dictionary<string, object>> GetNineSalesDataByDateRangeAsync(DateTime? startDate, DateTime? endDate);
+
 		Task<Dictionary<string, object>> GetSalesDataByDateRangeAsync(DateTime? startDate, DateTime? endDate);
 
 		Task<Dictionary<string, object>> GetTopSellingProductsAsync(DateTime? startDate, DateTime? endDate);
@@ -62,7 +65,19 @@ namespace FlowerShop.Service
 		Task<Dictionary<string, object>> GetAllSale(DateTime? startDate, DateTime? endDate);
 
 		Task<ResponeMessage> ConfirmCheckoutAsync(AppUser user, string fullName, string phoneNumber, string address, string note, int shippingFee, int selectedPaymentMethodId, string sProductIds);
-	
-	
-	}
+        Task<ICollection<SaleInvoice>> LayCacDonHangChoXacNhanCuaNguoiDung(string userId);
+
+        Task<ICollection<SaleInvoice>> LayCacDonHangDaXacNhanCuaNguoiDung(string userId);
+
+        Task<ICollection<SaleInvoice>> LayCacDonHangDangChuanBiCuaNguoiDung(string userId);
+
+        Task<ICollection<SaleInvoice>> LayCacDonHangDangGiaoCuaNguoiDung(string userId);
+
+        Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThanhCongCuaNguoiDung(string userId);
+
+        Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThatBaiCuaNguoiDung(string userId);
+
+        Task<ICollection<SaleInvoice>> LayCacDonHangDaHuyCuaNguoiDung(string userId);
+
+    }
 }

@@ -31,20 +31,6 @@ namespace FlowerShop.Web.Areas.Admin.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var saleInvoice = await _saleInvoiceService.GetSaleInvoiceWithIcludeAsync();
-			var saleInvoiceListVM = new List<SaleInvoiceViewModel>();
-			foreach (var item in saleInvoice)
-			{
-				saleInvoiceListVM.Add(new SaleInvoiceViewModel()
-				{
-					Id = item.Id,
-					CreateDay = item.CreateDay,
-					Customer = item.Customer,
-					CustomerId = item.CustomerId,
-					PaymentMethod = item.PaymentMethod,
-					Status = item.Status,
-					IsDelete = item.IsDelete,
-				});
-			}
 			return View(saleInvoice);
 		}
 

@@ -1,9 +1,12 @@
-﻿using FlowerShop.Common.ViewModels;
+﻿using FlowerShop.Common.MyConst;
+using FlowerShop.Common.ViewModels;
 using FlowerShop.DataAccess;
 using FlowerShop.DataAccess.Infrastructure;
 using FlowerShop.DataAccess.Models;
 using FlowerShop.DataAccess.Repositories;
 using FlowerShop.DataAccess.Repositories.RepositoriesImpl;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,28 +20,43 @@ namespace FlowerShop.Service.ServiceImpl
     {
         private readonly IAppUserRepository _appUserRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<AppUser> _userManager;
         private readonly FlowerShopContext _context;
-        public UserService(IAppUserRepository appUserRepository, IUnitOfWork unitOfWork, FlowerShopContext context)
+        private readonly IAppUserService _appUserService;
+
+        public UserService(IAppUserRepository appUserRepository, UserManager<AppUser> userManager, IUnitOfWork unitOfWork, IAppUserService appUserService, FlowerShopContext context)
         {
             _unitOfWork = unitOfWork;
             _appUserRepository = appUserRepository;
+            _userManager = userManager;
             _context = context;
+            _appUserService = appUserService;
         }
+
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
-            var nhanvien = _context.UserRoles.Where(x => x.RoleId == "3").ToList();
-            var result = (await _appUserRepository.GetAllAsync()).ToList();
-            var appUserList = new List<AppUser>();
-            foreach (var appUser in result)
+            //var nhanvien = _context.UserRoles.Where(x => x.Rol == "3").ToList();
+            //var result = (await _appUserRepository.GetAllAsync()).ToList();
+            //var appUserList = new List<AppUser>();
+            //foreach (var appUser in result)
+            //{
+            //    foreach (var appRole in nhanvien)
+            //    {
+            //        if (appRole.UserId == appUser.Id)
+            //            appUserList.Add(appUser);
+            //    }
+            //}
+
+            var users = await _appUserRepository.GetAllAsync();
+            if (users != null)
             {
-                foreach (var appRole in nhanvien)
+                foreach (var user in users)
                 {
-                    if (appRole.UserId == appUser.Id)
-                        appUserList.Add(appUser);
+                    user.RolesName = await _userManager.GetRolesAsync(user);
                 }
             }
-            return appUserList;
 
+            return users.Where(u => u.RolesName.Contains(ConstRole.STAFF));
         }
 
         public async Task<AppUser> GetSingleById(string? id)
@@ -61,13 +79,16 @@ namespace FlowerShop.Service.ServiceImpl
             return result;
         }
 
-
         public async Task<PopupViewModel> Delete(AppUser appUser)
         {
             try
             {
-                appUser.IsLock = true;
-                //appUser.IsDelete = true;
+                var staff = await _appUserService.GetUserByUserNameAsync(appUser.UserName);
+                if (staff == null)
+                {
+                    return new PopupViewModel(PopupViewModel.ERROR, "Thất bại", "Không tìm thấy nhân viên!");
+                }
+                staff.IsLock = true;
                 var rs = await UpdateAsync(appUser);
                 if (rs == null)
                 {
@@ -90,7 +111,6 @@ namespace FlowerShop.Service.ServiceImpl
             }
             return rs;
         }
-
 
         public async Task<AppUser> FindOneWithIncludeByIdAsync(string id)
         {

@@ -595,5 +595,164 @@ namespace FlowerShop.Service.ServiceImpl
 				throw new Exception("An error occurred while retrieving the sale invoice by product ID.", ex);
 			}
 		}
-	}
+
+		public async Task<Dictionary<string, object>> GetNineSalesDataByDateRangeAsync(DateTime? startDate, DateTime? endDate)
+		{
+			try
+			{
+				var invoices = await _saleInvoiceRepository.GetAllAsync();
+
+				var filteredInvoices = invoices.Where(i => i.Status == ConstStatusSaleInvoice.GIAO_HANG_THANH_CONG);
+
+				if (startDate.HasValue)
+				{
+					filteredInvoices = filteredInvoices.Where(i => i.CreateDay >= startDate.Value);
+				}
+				if (endDate.HasValue)
+				{
+					filteredInvoices = filteredInvoices.Where(i => i.CreateDay <= endDate.Value);
+				}
+
+				// Nhóm doanh thu theo ngày
+				var dailySales = filteredInvoices
+					.GroupBy(i => i.CreateDay.Date)
+					.ToDictionary(g => g.Key, g => g.ToList());
+
+				// Danh sách ngày cần hiển thị: luôn bao gồm startDate và endDate
+				var labels = new HashSet<string>
+				{
+					startDate.Value.ToString("dd/MM/yyyy"),
+					endDate.Value.ToString("dd/MM/yyyy")
+				};
+
+				var values = new List<double>();
+
+				// Thêm tối đa 7 ngày có doanh thu khác 0, ưu tiên ngày gần nhất với ngày bắt đầu
+				foreach (var day in dailySales.Keys.OrderBy(d => d))
+				{
+					if (labels.Count >= 9) break; // Bao gồm startDate, endDate và tối đa 5 ngày khác
+					labels.Add(day.ToString("dd/MM/yyyy"));
+				}
+
+				// Đảm bảo giá trị được sắp xếp theo thời gian
+				var sortedLabels = labels.OrderBy(label => DateTime.ParseExact(label, "dd/MM/yyyy", null)).ToList();
+
+				foreach (var label in sortedLabels)
+				{
+					var date = DateTime.ParseExact(label, "dd/MM/yyyy", null);
+
+					if (dailySales.ContainsKey(date))
+					{
+						double total = 0;
+						foreach (var invoice in dailySales[date])
+						{
+							total += await TongTienCuaMotDonHang(invoice.Id);
+						}
+						values.Add(total);
+					}
+					else
+					{
+						// Gán 0 nếu không có hóa đơn cho ngày đó
+						values.Add(0);
+					}
+				}
+
+				return new Dictionary<string, object>
+		{
+			{ "labels", sortedLabels },
+			{ "values", values }
+		};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi trong Service GetSalesDataByDateRangeAsync: {ex.Message}");
+				throw;
+			}
+		}
+
+        public async Task<ICollection<SaleInvoice>> LayCacDonHangChoXacNhanCuaNguoiDung(string userId)
+        {
+            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+            var result = new List<SaleInvoice>();
+            foreach (var item in tempresult)
+            {
+                if (item.Status == ConstStatusSaleInvoice.DANG_CHO && item.CustomerId == userId)
+                    result.Add(item);
+            }
+            return result.ToList();
+        }
+
+        public async Task<ICollection<SaleInvoice>> LayCacDonHangDangGiaoCuaNguoiDung(string userId)
+        {
+            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+            var result = new List<SaleInvoice>();
+            foreach (var item in tempresult)
+            {
+                if (item.Status == ConstStatusSaleInvoice.DANG_GIAO_HANG && item.CustomerId == userId)
+                    result.Add(item);
+            }
+            return result.ToList();
+        }
+
+        public async Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThanhCongCuaNguoiDung(string userId)
+        {
+            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+            var result = new List<SaleInvoice>();
+            foreach (var item in tempresult)
+            {
+                if (item.Status == ConstStatusSaleInvoice.GIAO_HANG_THANH_CONG && item.CustomerId == userId)
+                    result.Add(item);
+            }
+            return result.ToList();
+        }
+
+        public async Task<ICollection<SaleInvoice>> LayCacDonHangDaHuyCuaNguoiDung(string userId)
+        {
+            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+            var result = new List<SaleInvoice>();
+            foreach (var item in tempresult)
+            {
+                if (item.Status == ConstStatusSaleInvoice.DA_HUY && item.CustomerId == userId)
+                    result.Add(item);
+            }
+            return result.ToList();
+        }
+
+        public async Task<ICollection<SaleInvoice>> LayCacDonHangDaXacNhanCuaNguoiDung(string userId)
+        {
+            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+            var result = new List<SaleInvoice>();
+            foreach (var item in tempresult)
+            {
+                if (item.Status == ConstStatusSaleInvoice.DA_XAC_NHAN && item.CustomerId == userId)
+                    result.Add(item);
+            }
+            return result.ToList();
+        }
+
+        public async Task<ICollection<SaleInvoice>> LayCacDonHangDangChuanBiCuaNguoiDung(string userId)
+        {
+            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+            var result = new List<SaleInvoice>();
+            foreach (var item in tempresult)
+            {
+                if (item.Status == ConstStatusSaleInvoice.DANG_CHUAN_BI && item.CustomerId == userId)
+                    result.Add(item);
+            }
+            return result.ToList();
+        }
+
+        public async Task<ICollection<SaleInvoice>> LayCacDonHangGiaoThatBaiCuaNguoiDung(string userId)
+        {
+            var tempresult = (await _saleInvoiceRepository.GetAllWithIncludeAsync(c => c.Customer, p => p.PaymentMethod));
+            var result = new List<SaleInvoice>();
+            foreach (var item in tempresult)
+            {
+                if (item.Status == ConstStatusSaleInvoice.GIAO_HANG_THAT_BAI && item.CustomerId == userId)
+                    result.Add(item);
+            }
+            return result.ToList();
+        }
+
+    }
 }
