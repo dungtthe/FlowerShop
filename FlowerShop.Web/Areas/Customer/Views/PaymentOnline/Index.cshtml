@@ -1,0 +1,43 @@
+﻿
+
+@{
+    var SO_TAI_KHOAN = ViewBag.SO_TAI_KHOAN as string;
+    var NGAN_HANG = ViewBag.NGAN_HANG as string;
+    var SO_TIEN = ViewBag.SO_TIEN as string;
+    var NOI_DUNG = ViewBag.NOI_DUNG as string;
+    var link = $"https://qr.sepay.vn/img?acc={SO_TAI_KHOAN}&bank={NGAN_HANG}&amount={SO_TIEN}&des={NOI_DUNG}";
+}
+<style>
+    .qr-container {
+        text-align: center;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .qr-container img {
+            width: 200px; /* Kích thước QR Code */
+            height: 200px;
+            margin-bottom: 10px;
+        }
+
+        .qr-container p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+</style>
+
+
+<div class="container-fluid py-5">
+    <div class="container py-5">
+<div class="qr-container">
+    <!-- Nhúng QR Code -->
+            <img src="@link"
+         alt="QR Code for MBBank">
+    <p>Vui lòng quét mã QR sau để chuyển khoản</p>
+</div>
+</div>
+</div>
